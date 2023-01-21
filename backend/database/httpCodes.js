@@ -1,0 +1,23 @@
+const OK = 200;
+const CREATED = 201;
+const NO_CONTENT = 204;
+const BAD_REQUEST = 400;
+const FORBIDDEN = 403;
+const NOT_FOUND = 404;
+const IM_A_TEA_POT = 418;
+const INTERNAL_SERVER_ERROR = 500;
+const NOT_IMPLEMENTED = 501;
+
+
+module.exports = {
+    OK,
+    CREATED,
+    NO_CONTENT,
+    BAD_REQUEST,
+    FORBIDDEN,
+    NOT_FOUND,
+    IM_A_TEA_POT,
+    INTERNAL_SERVER_ERROR,
+    NOT_IMPLEMENTED
+
+}
