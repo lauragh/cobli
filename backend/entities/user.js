@@ -1,13 +1,15 @@
 class User {
     constructor(
+        // id,
         dateLastAccess,
         dateRegistration,
         name,
         email,
         password,
         colorBlindness,
-        occupation
+        occupation,
     ){
+        // this.id = id;
         this.dateLastAccess = dateLastAccess;
         this.dateRegistration = dateRegistration;
         this.name = name;

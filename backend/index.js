@@ -20,3 +20,4 @@ app.listen(process.env.PORT, () => {
 
 //routes
 require('./controllers/user.controller')(app)
+require('./controllers/image.controller')(app)

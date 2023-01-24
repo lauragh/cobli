@@ -2,8 +2,7 @@
 //Functions needed from firebase SDK to initialize database
 const initializeApp = require('firebase/app').initializeApp;
 //Add SDKs for the firebase products
-const databaseFunctions = require('firebase/database');
-const getDatabase = databaseFunctions.getDatabase;
+const { getDatabase, ref, set, onValue, get, child, push} = require('firebase/database');
 
 const firebaseConfig = {
   apiKey: "AIzaSyDJcRVGyKKsMiFKpAU1b0wDbkfOo3KOiRk",
@@ -19,11 +18,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(firebaseApp);
+const db = getDatabase();
 
 module.exports = {
     firebaseApp,
-    databaseFunctions,
-    ref: databaseFunctions.ref,
-    getDatabase
+    getDatabase,
+    onValue,
+    ref,
+    set,
+    get,
+    child,
+    push,
+    db
         // analytics,
 }
