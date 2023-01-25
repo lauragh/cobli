@@ -5,7 +5,9 @@ class Image {
         brightness,
         saturation,
         contrast,
-        dateCreation
+        dateCreation,
+        dateUpdation,
+        colorTags,
     ){
         this.img = img;
         this.name = name;
@@ -13,6 +15,8 @@ class Image {
         this.saturation = saturation;
         this.contrast = contrast;
         this.dateCreation = dateCreation;
+        this.dateUpdation = dateUpdation;
+        this.colorTags = colorTags;
     }
 }
 

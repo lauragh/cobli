@@ -1,8 +1,7 @@
 
 class Color {
     constructor(
-        id,
-        color,
+        color_name,
         clarity,
         hexCod,
         rgb,
@@ -10,14 +9,13 @@ class Color {
         hsv,
         position
     ){
-        this.id = id;
-        this.color = color;
+        this.color_name = color_name;
         this.clarity = clarity;
         this.hexCod = hexCod;
         this.rgb = rgb;
         this.hsl = hsl;
         this.hsv = hsv;
-        this.positio = position;
+        this.position = position;
     }
 }
 

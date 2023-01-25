@@ -3,9 +3,57 @@ const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
 const User = require('../entities/user');
 const bcrypt = require('bcrypt');
-// const { v4: uuidv4 } = require('uuid');
 
-//Constant
+const usuario = "-NMcYHxLY0F-yfnPx7b_";
+
+////* CRUD FUNCTIONS *////
+
+
+//Create a user
+async function createUser(data, db) {
+    try{
+        const salt = bcrypt.genSaltSync();
+        const cpassword = bcrypt.hashSync(data.password, salt);
+        const userDateLastAccess = new Date();
+        const userDateRegistration = new Date();
+
+        let user = new User(
+            // id,
+            userDateLastAccess.toLocaleString(),
+            userDateRegistration.toLocaleString(),
+            data.name,
+            data.email,
+            cpassword,
+            data.colorBlindness,
+            data.occupation,
+            null
+        );
+
+        let userObject = {
+            dateLastAccess: user.dateLastAccess,
+            dateRegistration: user.dateRegistration,
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            colorBlindness: user.colorBlindness,
+            occupation: user.occupation,
+            images: user.images,
+        }
+
+        const userRef = firebaseRef.ref(db, 'users/');
+        const newUserRef = firebaseRef.push(userRef);
+        await firebaseRef.set(
+            newUserRef, userObject
+        );
+        console.log(user)
+        return true;
+    }
+    catch(err){
+        console.log("An error has occured:" + err);
+        return false;
+    }
+}
+
 
 async function getUsers(db) {
     let result = null;
@@ -27,10 +75,8 @@ async function getUsers(db) {
     return result;
 }
 
-async function getUser(userId, db) {
+async function getUser(db) {
     let result = null;
-    // console.log(userId)
-
     //////*Otra forma de obtener datos*////////
 
     // const distanceRef = await firebaseRef.ref(db, 'users/' + userId );
@@ -40,7 +86,7 @@ async function getUser(userId, db) {
     // }) 
 
     await firebaseRef.get(
-        firebaseRef.child(db, `users/${userId}`)
+        firebaseRef.child(db, `users/${usuario}`)
     )
     .then((snapshot) => {
         if(snapshot.exists()){
@@ -54,42 +100,35 @@ async function getUser(userId, db) {
     return result;
 }
 
-async function createUser(rawData, db) {
-    try{
-        const salt = bcrypt.genSaltSync();
-        const cpassword = bcrypt.hashSync(rawData.password, salt);
-        // const id = uuidv4(); 
-        const userDateLastAccess = new Date();
-        const userDateRegistration = new Date();
 
+//Modify one image in particular
+async function updateUser(data, db) {
+    try{
+        const userDateLastAccess = new Date();
         let user = new User(
-            // id,
+            data.dateRegistration,
+            data.name,
+            data.email,
+            data.password,
+            data.colorBlindness,
+            data.occupation,
             userDateLastAccess.toLocaleString(),
-            userDateRegistration.toLocaleString(),
-            rawData.name,
-            rawData.email,
-            cpassword,
-            rawData.colorBlindness,
-            rawData.occupation,
+            null
         );
 
         let userObject = {
-            // id: user.id,
-            dateLastAccess: user.dateLastAccess,
-            dateRegistration: user.dateRegistration,
             name: user.name,
             email: user.email,
             password: user.password,
             colorBlindness: user.colorBlindness,
             occupation: user.occupation,
+            dateLastAccess: user.dateLastAccess,
+            dateRegistration: user.dateRegistration,
         }
 
-        const userRef = firebaseRef.ref(db, 'users/');
-        const newUserRef = firebaseRef.push(userRef);
-        await firebaseRef.set(
-            newUserRef, userObject
-        );
-        console.log(user)
+        let locationRef = firebaseRef.ref(db, `users/${usuario}`);
+        await firebaseRef.update(locationRef, userObject);
+
         return true;
     }
     catch(err){
@@ -98,8 +137,8 @@ async function createUser(rawData, db) {
     }
 }
 
-async function deleteUser(userId, db) {
-    let locationRef = firebaseRef.ref(db, 'users/' + userId);
+async function deleteUser(db) {
+    let locationRef = firebaseRef.ref(db, `users/${usuario}`);
     await firebaseRef.set(locationRef, null);
 
 }
@@ -107,13 +146,23 @@ async function deleteUser(userId, db) {
 // module.exports = { getUsers, createUsers}
 
 module.exports = function (app) {
+    app.post('/users', async (req, res) => {
+        const db = firebaseRef.getDatabase();
+
+        if(req.body !== undefined){
+            let userCreated = await createUser(req.body, db);
+            console.log(userCreated);
+            res.status(userCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
+            res.send();
+        }
+    });
+
     app.get('/users', async (req, res) => {
         const db = firebaseRef.ref(firebaseRef.getDatabase());
-        // const db = firebaseRef.db;
         let user, allUsers;
 
-        if(req.query.id !== undefined && Object.keys(req.query).length === 1){
-            user = await getUser(req.query.id, db);
+        if(req.query.userId !== undefined && Object.keys(req.query).length === 1){
+            user = await getUser(req.query.userId, db);
             console.log('usuario',user);
             res.send(user);
             res.status(user === null ? httpCodes.NOT_FOUND : httpCodes.OK);
@@ -122,31 +171,27 @@ module.exports = function (app) {
             allUsers = await getUsers(db);
             // console.log(allUsers["7cd5db46-0d10-42ef-b7d1-2344f9fe8853"])
             // console.log(allUsers[Object.keys(allUsers)[0]].dateLastAccess)
-            console.log(allUsers);
+            console.log('usuarios',allUsers);
             res.send(allUsers);
             res.status(allUsers === null ? httpCodes.NOT_FOUND : httpCodes.OK);
         }
     });
 
-    // app.get('/users/getUser/', async (req, res) => {
-    //     const db = firebaseRef.getDatabase();
-    //     let user = await getUser(req.query.id, db);
-    //     console.log(req.query.id);
-    //     res.send();
-    // });
-
-    app.post('/users', async (req, res) => {
+    app.put('/users/', async (req, res) => {
         const db = firebaseRef.getDatabase();
-        let userCreated = await createUser(req.body, db);
-        res.status(userCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
-        res.send();
+        console.log(req.query.userId);
+        console.log(req.body);
+        if(req.query.userId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
+            userModified = await updateUser(req.body, db);
+            console.log('userModified',userModified);
+            res.send(userModified);
+            res.status(userModified === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+        }
     });
 
     app.delete('/users', async (req, res) => {
         const db = firebaseRef.getDatabase();
-        let userDeleted = await deleteUser(req.query.id, db);
-
-        console.log(req.query.id);
+        let userDeleted = await deleteUser(req.query.userId, db);
         res.send();
     })
 }
