@@ -113,20 +113,18 @@ async function deleteColor(colorId, db) {
 }
 
 
-module.exports = function (app) {
 
-    app.post('/users/'+usuario+'/images', async (req, res) => {
+    const create_color = async (req, res) => {
         const db = firebaseRef.getDatabase();
-
         if(req.query.imageId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
             let colorCreated = await createColor(req.query.imageId, req.body, db);
             console.log(colorCreated);
             res.status(colorCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
             res.send();
         }
-    });
+    }
 
-    app.get('/users/'+usuario+'/images/'+image, async (req, res) => {
+    const get_color = async (req, res) => {
         const db = firebaseRef.ref(firebaseRef.getDatabase());
 
         let colors = await getColors(db);
@@ -135,9 +133,9 @@ module.exports = function (app) {
         console.log(colors);
         res.send(colors);
         res.status(colors === null ? httpCodes.NOT_FOUND : httpCodes.OK);
-    });
+    };
 
-    app.put('/users/'+usuario+'/images/'+image+'/colorTags', async (req, res) => {
+    const update_color = async (req, res) => {
         const db = firebaseRef.getDatabase();
 
         if(req.query.colorId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
@@ -146,9 +144,9 @@ module.exports = function (app) {
             res.send(color);
             res.status(color === null ? httpCodes.NOT_FOUND : httpCodes.OK);
         }
-    });
+    };
 
-    app.delete('/users/'+usuario+'/images/'+image+'/colorTags', async (req, res) => {
+    const delete_color = async (req, res) => {
         const db = firebaseRef.getDatabase();
         if(req.query.colorId !== undefined && Object.keys(req.query).length === 1){
             let colorDeleted = await deleteColor(req.query.colorId, db);
@@ -156,8 +154,6 @@ module.exports = function (app) {
             res.status(colorDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
         }
         res.send();
-    })
+    };
 
-
-
-}
+module.exports = {create_color, get_color, update_color, delete_color}

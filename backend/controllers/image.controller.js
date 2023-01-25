@@ -156,60 +156,58 @@ async function deleteImage(imageId, db) {
 }
 
 
-module.exports = function (app) {
+const create_image = async (req, res) => {
+    const db = firebaseRef.getDatabase();
 
-    app.post('/users/'+usuario, async (req, res) => {
-        const db = firebaseRef.getDatabase();
+    if(req.query.userId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
+        let imageCreated = await createImage(req.query.userId, req.body, db);
+        console.log(imageCreated);
+        res.status(imageCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
+        res.send();
+    }
+};
 
-        if(req.query.userId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-            let imageCreated = await createImage(req.query.userId, req.body, db);
-            console.log(imageCreated);
-            res.status(imageCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
-            res.send();
-        }
-    });
+const get_image = async (req, res) => {
+    const db = firebaseRef.ref(firebaseRef.getDatabase());
+    let image, allImages;
+    // console.log(req.query);
+    if(req.query.imageId !== undefined && Object.keys(req.query).length === 1){
+        image = await getImage(req.query.imageId, db);
+        console.log('image',image);
+        res.send(image);
+        res.status(image === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+    }
+    else{
+        allImages = await getImages(db);
+        // console.log(allImages["-NMZgK2YczaIQjnysRJF"]);
+        // console.log(allImages[Object.keys(allImages)[0]].name);
+        console.log('imagenes',allImages);
+        res.send(allImages);
+        res.status(allImages === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+    }
+};
 
-    app.get('/users/'+usuario+'/images', async (req, res) => {
-        const db = firebaseRef.ref(firebaseRef.getDatabase());
-        let image, allImages;
-        // console.log(req.query);
-        if(req.query.imageId !== undefined && Object.keys(req.query).length === 1){
-            image = await getImage(req.query.imageId, db);
-            console.log('image',image);
-            res.send(image);
-            res.status(image === null ? httpCodes.NOT_FOUND : httpCodes.OK);
-        }
-        else{
-            allImages = await getImages(db);
-            // console.log(allImages["-NMZgK2YczaIQjnysRJF"]);
-            // console.log(allImages[Object.keys(allImages)[0]].name);
-            console.log('imagenes',allImages);
-            res.send(allImages);
-            res.status(allImages === null ? httpCodes.NOT_FOUND : httpCodes.OK);
-        }
-    });
+// //cambiar la ruta por req.query.user y no pasársela por parámetro en createImage
 
-    //cambiar la ruta por req.query.user y no pasársela por parámetro en createImage
+const update_image = async (req, res) => {
+    const db = firebaseRef.getDatabase();
+    console.log(req.query.imageId);
+    console.log(req.body);
+    if(req.query.imageId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
+        imageUpdated = await updateImage(req.query.imageId, req.body, db);
+        console.log('image',imageUpdated);
+        res.send(imageUpdated);
+        res.status(imageUpdated === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+    }
+};
 
-    app.put('/users/'+usuario+'/images', async (req, res) => {
-        const db = firebaseRef.getDatabase();
-        console.log(req.query.imageId);
-        console.log(req.body);
-        if(req.query.imageId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-            imageUpdated = await updateImage(req.query.imageId, req.body, db);
-            console.log('image',imageUpdated);
-            res.send(imageUpdated);
-            res.status(imageUpdated === null ? httpCodes.NOT_FOUND : httpCodes.OK);
-        }
-    });
+const delete_image = async (req, res) => {
+    const db = firebaseRef.getDatabase();
+    if(req.query.imageId !== undefined && Object.keys(req.query).length === 1){
+        let imageDeleted = await deleteImage(req.query.imageId, db);
+        res.send();
+        res.status(imageDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+    }
+};
 
-
-    app.delete('/users/'+usuario+'/images', async (req, res) => {
-        const db = firebaseRef.getDatabase();
-        if(req.query.imageId !== undefined && Object.keys(req.query).length === 1){
-            let imageDeleted = await deleteImage(req.query.imageId, db);
-            res.send();
-            res.status(imageDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
-        }
-    })
-}
+module.exports = {create_image, get_image, update_image, delete_image}

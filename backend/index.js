@@ -19,6 +19,10 @@ app.listen(process.env.PORT, () => {
 
 
 //routes
-require('./controllers/user.controller')(app);
-require('./controllers/image.controller')(app);
-require('./controllers/color.controller')(app);
+app.use('/users', require('./routes/user.router'));
+app.use('/users', require('./routes/color.router'));
+app.use('/users', require('./routes/image.router'));
+
+// require('./controllers/user.controller')(app);
+// require('./controllers/image.controller')(app);
+// require('./controllers/color.controller')(app);

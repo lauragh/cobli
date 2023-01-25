@@ -4,8 +4,6 @@ const httpCodes = require('../database/httpCodes');
 const User = require('../entities/user');
 const bcrypt = require('bcrypt');
 
-const usuario = "-NMcYHxLY0F-yfnPx7b_";
-
 ////* CRUD FUNCTIONS *////
 
 
@@ -40,7 +38,7 @@ async function createUser(data, db) {
             images: user.images,
         }
 
-        const userRef = firebaseRef.ref(db, 'users/');
+        const userRef = firebaseRef.ref(db, 'users');
         const newUserRef = firebaseRef.push(userRef);
         await firebaseRef.set(
             newUserRef, userObject
@@ -75,7 +73,7 @@ async function getUsers(db) {
     return result;
 }
 
-async function getUser(db) {
+async function getUser(userId, db) {
     let result = null;
     //////*Otra forma de obtener datos*////////
 
@@ -86,7 +84,7 @@ async function getUser(db) {
     // }) 
 
     await firebaseRef.get(
-        firebaseRef.child(db, `users/${usuario}`)
+        firebaseRef.child(db, `users/${userId}`)
     )
     .then((snapshot) => {
         if(snapshot.exists()){
@@ -102,7 +100,7 @@ async function getUser(db) {
 
 
 //Modify one image in particular
-async function updateUser(data, db) {
+async function updateUser(userId, data, db) {
     try{
         const userDateLastAccess = new Date();
         let user = new User(
@@ -126,7 +124,7 @@ async function updateUser(data, db) {
             dateRegistration: user.dateRegistration,
         }
 
-        let locationRef = firebaseRef.ref(db, `users/${usuario}`);
+        let locationRef = firebaseRef.ref(db, `users/${userId}`);
         await firebaseRef.update(locationRef, userObject);
 
         return true;
@@ -137,16 +135,13 @@ async function updateUser(data, db) {
     }
 }
 
-async function deleteUser(db) {
-    let locationRef = firebaseRef.ref(db, `users/${usuario}`);
+async function deleteUser(userId, db) {
+    let locationRef = firebaseRef.ref(db, `users/${userId}`);
     await firebaseRef.set(locationRef, null);
 
 }
 
-// module.exports = { getUsers, createUsers}
-
-module.exports = function (app) {
-    app.post('/users', async (req, res) => {
+    const create_user = async (req, res) => {
         const db = firebaseRef.getDatabase();
 
         if(req.body !== undefined){
@@ -155,12 +150,11 @@ module.exports = function (app) {
             res.status(userCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
             res.send();
         }
-    });
+    };
 
-    app.get('/users', async (req, res) => {
+    const get_user = async (req, res) => {
         const db = firebaseRef.ref(firebaseRef.getDatabase());
         let user, allUsers;
-
         if(req.query.userId !== undefined && Object.keys(req.query).length === 1){
             user = await getUser(req.query.userId, db);
             console.log('usuario',user);
@@ -175,23 +169,27 @@ module.exports = function (app) {
             res.send(allUsers);
             res.status(allUsers === null ? httpCodes.NOT_FOUND : httpCodes.OK);
         }
-    });
+    };
 
-    app.put('/users/', async (req, res) => {
+    const update_user = async (req, res) => {
         const db = firebaseRef.getDatabase();
-        console.log(req.query.userId);
-        console.log(req.body);
+
         if(req.query.userId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-            userModified = await updateUser(req.body, db);
+            userModified = await updateUser(req.query.userId, req.body, db);
             console.log('userModified',userModified);
             res.send(userModified);
             res.status(userModified === null ? httpCodes.NOT_FOUND : httpCodes.OK);
         }
-    });
+    };
 
-    app.delete('/users', async (req, res) => {
+    const delete_user = async (req, res) => {
         const db = firebaseRef.getDatabase();
-        let userDeleted = await deleteUser(req.query.userId, db);
-        res.send();
-    })
-}
+
+        if(req.query.userId !== undefined && Object.keys(req.query).length === 1){
+            let userDeleted = await deleteUser(req.query.userId, db);
+            res.send();
+            res.status(userDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+        }
+    };
+
+    module.exports = {create_user, get_user, update_user, delete_user}
