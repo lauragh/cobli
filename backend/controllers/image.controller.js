@@ -4,11 +4,8 @@ const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
 const Image = require('../entities/image');
 
-const usuario = "-NMcYHxLY0F-yfnPx7b_";
 
-
-
-//validar imagen
+//Validate image
 function validatePicture(picture){
     let pattern = ".+(\\.jpg|\\.png|\\.jpeg)";
     let matcher = new RegExp(pattern);
@@ -186,8 +183,6 @@ const get_image = async (req, res) => {
         res.status(allImages === null ? httpCodes.NOT_FOUND : httpCodes.OK);
     }
 };
-
-// //cambiar la ruta por req.params.user y no pasársela por parámetro en createImage
 
 const update_image = async (req, res) => {
     const db = firebaseRef.getDatabase();

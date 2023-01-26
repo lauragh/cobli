@@ -16,7 +16,6 @@ async function createUser(data, db) {
         const userDateRegistration = new Date();
 
         let user = new User(
-            // id,
             userDateLastAccess.toLocaleString(),
             userDateRegistration.toLocaleString(),
             data.name,
@@ -52,15 +51,14 @@ async function createUser(data, db) {
     }
 }
 
+//Get all users
 
 async function getUsers(db) {
     let result = null;
 
     await firebaseRef.get(
-        //child we want to get information
         firebaseRef.child(db, "users")
     )
-    //promise resolved
     .then((snapshot) => {
         if(snapshot.exists()){
             result = snapshot.val();
@@ -73,15 +71,9 @@ async function getUsers(db) {
     return result;
 }
 
+//Get one user
 async function getUser(userId, db) {
     let result = null;
-    //////*Otra forma de obtener datos*////////
-
-    // const distanceRef = await firebaseRef.ref(db, 'users/' + userId );
-    // onValue(distanceRef, (snapshot) => {
-    //     result = snapshot.val();
-    //     console.log(result);
-    // }) 
 
     await firebaseRef.get(
         firebaseRef.child(db, `users/${userId}`)
