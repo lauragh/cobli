@@ -26,7 +26,7 @@ async function createImage(userId, data, db) {
         console.log(userId);
         
         if(!validatePicture(data.img)){
-            throw new Error("La imagen no es válida")
+            throw new Error("The image is not valid")
         }
         else{
             let image = new Image(
