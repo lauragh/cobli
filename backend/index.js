@@ -16,13 +16,12 @@ app.use(express.json());
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en el puerto ' + process.env.PORT);
 });
+const user_controller = require('./controllers/user.controller')
 
+const image_controller = require('./controllers/image.controller');
 
 //routes
-app.use('/users', require('./routes/user.router'));
-app.use('/users', require('./routes/color.router'));
-app.use('/users', require('./routes/image.router'));
 
-// require('./controllers/user.controller')(app);
-// require('./controllers/image.controller')(app);
-// require('./controllers/color.controller')(app);
+app.use('/api/users', require('./routes/user.router'));
+app.use('/api/users', require('./routes/image.router'));
+app.use('/api/users', require('./routes/color.router'));

@@ -5,8 +5,8 @@ class User {
         password,
         colorBlindness,
         occupation,
-        dateLastAccess,
         dateRegistration,
+        dateLastAccess,
         images
     ){
         this.name = name;
@@ -14,8 +14,8 @@ class User {
         this.password = password;
         this.colorBlindness = colorBlindness;
         this.occupation = occupation;
-        this.dateLastAccess = dateLastAccess;
         this.dateRegistration = dateRegistration;
+        this.dateLastAccess = dateLastAccess;
         this.images = images;
     }
 }

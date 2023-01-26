@@ -3,13 +3,10 @@ const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
 const Color = require('../entities/color');
 
-const usuario = "-NMcYHxLY0F-yfnPx7b_";
-const image = "-NMZgEPiehjrdVC68OpT";
-
 ////* CRUD FUNCTIONS *////
 
 //Create a color
-async function createColor(imageId, data, db) {
+async function createColor(imageId, userId, data, db) {
     try{
         let color = new Color(
             data.color_name,
@@ -31,7 +28,7 @@ async function createColor(imageId, data, db) {
             position: color.position
         }
 
-        const imageRef = firebaseRef.ref(db, `users/${usuario}/images/${imageId}/colorTags`);
+        const imageRef = firebaseRef.ref(db, `users/${userId}/images/${imageId}/colorTags`);
         const newColorRef = firebaseRef.push(imageRef);
         await firebaseRef.set(
             newColorRef, colorObject
@@ -46,10 +43,10 @@ async function createColor(imageId, data, db) {
 }
 
 //Get all the colors from one image
-async function getColors(db) {
+async function getColors(imageId, userId, db) {
     let result = null;
     await firebaseRef.get(
-        firebaseRef.child(db, `users/${usuario}/images/${image}/colorTags`)
+        firebaseRef.child(db, `users/${userId}/images/${imageId}/colorTags`)
     )
     .then((snapshot) => {
         if(snapshot.exists()){
@@ -64,7 +61,7 @@ async function getColors(db) {
 }
 
 //Modify one color in particular
-async function updateColor(colorId, data, db) {
+async function updateColor(colorId, imageId, userId, data, db) {
     try{
         let color = new Color(
             data.color_name,
@@ -86,7 +83,7 @@ async function updateColor(colorId, data, db) {
             position: color.position
         }
 
-        let locationRef = firebaseRef.ref(db, `users/${usuario}/images/${image}/colorTags/${colorId}`);
+        let locationRef = firebaseRef.ref(db, `users/${userId}/images/${imageId}/colorTags/${colorId}`);
         await firebaseRef.update(locationRef, colorObject);
 
         return true;
@@ -99,9 +96,9 @@ async function updateColor(colorId, data, db) {
 }
 
 //Delete color
-async function deleteColor(colorId, db) {
+async function deleteColor(colorId, imageId, userId, db) {
     try{
-        let locationRef = firebaseRef.ref(db, `users/${usuario}/images/${image}/colorTags/${colorId}`);
+        let locationRef = firebaseRef.ref(db, `users/${userId}/images/${imageId}/colorTags/${colorId}`);
         await firebaseRef.set(locationRef, null);
 
         return true;
@@ -116,8 +113,8 @@ async function deleteColor(colorId, db) {
 
     const create_color = async (req, res) => {
         const db = firebaseRef.getDatabase();
-        if(req.query.imageId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-            let colorCreated = await createColor(req.query.imageId, req.body, db);
+        if(req.params.imageId !== undefined && req.params.userId !== undefined && Object.keys(req.params).length === 2 && req.body !== undefined){
+            let colorCreated = await createColor(req.params.imageId, req.params.userId, req.body, db);
             console.log(colorCreated);
             res.status(colorCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
             res.send();
@@ -126,20 +123,21 @@ async function deleteColor(colorId, db) {
 
     const get_color = async (req, res) => {
         const db = firebaseRef.ref(firebaseRef.getDatabase());
-
-        let colors = await getColors(db);
-        // console.log(colors["-NMe6fqwdDOAU-MV_lp1"]);
-        // console.log(colors[Object.keys(colors)[0]].color_name);
-        console.log(colors);
-        res.send(colors);
-        res.status(colors === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+        if(req.params.imageId !== undefined && req.params.userId !== undefined && Object.keys(req.params).length === 2){
+            let colors = await getColors(req.params.imageId, req.params.userId, db);
+            // console.log(colors["-NMe6fqwdDOAU-MV_lp1"]);
+            // console.log(colors[Object.keys(colors)[0]].color_name);
+            console.log(colors);
+            res.send(colors);
+            res.status(colors === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+        }
     };
 
     const update_color = async (req, res) => {
         const db = firebaseRef.getDatabase();
 
-        if(req.query.colorId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-            color = await updateColor(req.query.colorId, req.body, db);
+        if(req.params.imageId !== undefined && req.params.userId !== undefined && req.params.colorId !== undefined && Object.keys(req.params).length === 3  && req.body !== undefined){
+            let color = await updateColor(req.params.colorId, req.params.imageId, req.params.userId, req.body, db);
             console.log('color',color);
             res.send(color);
             res.status(color === null ? httpCodes.NOT_FOUND : httpCodes.OK);
@@ -148,8 +146,8 @@ async function deleteColor(colorId, db) {
 
     const delete_color = async (req, res) => {
         const db = firebaseRef.getDatabase();
-        if(req.query.colorId !== undefined && Object.keys(req.query).length === 1){
-            let colorDeleted = await deleteColor(req.query.colorId, db);
+        if(req.params.imageId !== undefined && req.params.userId !== undefined && req.params.colorId !== undefined && Object.keys(req.params).length === 3){
+            let colorDeleted = await deleteColor(req.params.colorId, req.params.imageId, req.params.userId, db);
             res.send();
             res.status(colorDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
         }

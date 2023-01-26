@@ -87,12 +87,12 @@ async function getImages(db) {
 }
 
 //Get one image in particular from one user
-async function getImage(imageId, db) {
+async function getImage(imageId, userId, db) {
     let result = null;
     console.log(imageId);
     await firebaseRef.get(
         // console.log('key',firebaseRef.child(db, `users/${userId}`).key);
-        firebaseRef.child(db, `users/${usuario}/images/${imageId}`)
+        firebaseRef.child(db, `users/${userId}/images/${imageId}`)
     )
     .then((snapshot) => {
         if(snapshot.exists()){
@@ -159,8 +159,8 @@ async function deleteImage(imageId, db) {
 const create_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(req.query.userId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-        let imageCreated = await createImage(req.query.userId, req.body, db);
+    if(req.params.userId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined){
+        let imageCreated = await createImage(req.params.userId, req.body, db);
         console.log(imageCreated);
         res.status(imageCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
         res.send();
@@ -170,9 +170,9 @@ const create_image = async (req, res) => {
 const get_image = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
     let image, allImages;
-    // console.log(req.query);
-    if(req.query.imageId !== undefined && Object.keys(req.query).length === 1){
-        image = await getImage(req.query.imageId, db);
+    console.log(req.params);
+    if(req.params.imageId !== undefined  && req.params.userId !== undefined && Object.keys(req.params).length === 2){
+        image = await getImage(req.params.imageId, req.params.userId, db);
         console.log('image',image);
         res.send(image);
         res.status(image === null ? httpCodes.NOT_FOUND : httpCodes.OK);
@@ -187,14 +187,14 @@ const get_image = async (req, res) => {
     }
 };
 
-// //cambiar la ruta por req.query.user y no pasársela por parámetro en createImage
+// //cambiar la ruta por req.params.user y no pasársela por parámetro en createImage
 
 const update_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
-    console.log(req.query.imageId);
+    console.log(req.params.imageId);
     console.log(req.body);
-    if(req.query.imageId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-        imageUpdated = await updateImage(req.query.imageId, req.body, db);
+    if(req.params.imageId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined){
+        imageUpdated = await updateImage(req.params.imageId, req.body, db);
         console.log('image',imageUpdated);
         res.send(imageUpdated);
         res.status(imageUpdated === null ? httpCodes.NOT_FOUND : httpCodes.OK);
@@ -203,8 +203,8 @@ const update_image = async (req, res) => {
 
 const delete_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
-    if(req.query.imageId !== undefined && Object.keys(req.query).length === 1){
-        let imageDeleted = await deleteImage(req.query.imageId, db);
+    if(req.params.imageId !== undefined && Object.keys(req.params).length === 1){
+        let imageDeleted = await deleteImage(req.params.imageId, db);
         res.send();
         res.status(imageDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
     }

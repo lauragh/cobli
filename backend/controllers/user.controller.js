@@ -104,12 +104,12 @@ async function updateUser(userId, data, db) {
     try{
         const userDateLastAccess = new Date();
         let user = new User(
-            data.dateRegistration,
             data.name,
             data.email,
             data.password,
             data.colorBlindness,
             data.occupation,
+            data.dateRegistration,
             userDateLastAccess.toLocaleString(),
             null
         );
@@ -120,8 +120,8 @@ async function updateUser(userId, data, db) {
             password: user.password,
             colorBlindness: user.colorBlindness,
             occupation: user.occupation,
-            dateLastAccess: user.dateLastAccess,
             dateRegistration: user.dateRegistration,
+            dateLastAccess: user.dateLastAccess,
         }
 
         let locationRef = firebaseRef.ref(db, `users/${userId}`);
@@ -155,8 +155,8 @@ async function deleteUser(userId, db) {
     const get_user = async (req, res) => {
         const db = firebaseRef.ref(firebaseRef.getDatabase());
         let user, allUsers;
-        if(req.query.userId !== undefined && Object.keys(req.query).length === 1){
-            user = await getUser(req.query.userId, db);
+        if(req.params.userId !== undefined && Object.keys(req.params).length === 1){
+            user = await getUser(req.params.userId, db);
             console.log('usuario',user);
             res.send(user);
             res.status(user === null ? httpCodes.NOT_FOUND : httpCodes.OK);
@@ -174,8 +174,8 @@ async function deleteUser(userId, db) {
     const update_user = async (req, res) => {
         const db = firebaseRef.getDatabase();
 
-        if(req.query.userId !== undefined && Object.keys(req.query).length === 1 && req.body !== undefined){
-            userModified = await updateUser(req.query.userId, req.body, db);
+        if(req.params.userId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined){
+            userModified = await updateUser(req.params.userId, req.body, db);
             console.log('userModified',userModified);
             res.send(userModified);
             res.status(userModified === null ? httpCodes.NOT_FOUND : httpCodes.OK);
@@ -185,8 +185,8 @@ async function deleteUser(userId, db) {
     const delete_user = async (req, res) => {
         const db = firebaseRef.getDatabase();
 
-        if(req.query.userId !== undefined && Object.keys(req.query).length === 1){
-            let userDeleted = await deleteUser(req.query.userId, db);
+        if(req.params.userId !== undefined && Object.keys(req.params).length === 1){
+            let userDeleted = await deleteUser(req.params.userId, db);
             res.send();
             res.status(userDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
         }
