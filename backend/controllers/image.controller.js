@@ -4,60 +4,58 @@ const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
 const Image = require('../entities/image');
 
-
 //Validate image
-function validatePicture(picture){
-    let pattern = ".+(\\.jpg|\\.png|\\.jpeg)";
-    let matcher = new RegExp(pattern);
-    return matcher.test(picture)
+// function validatePicture(picture){
+//     let pattern = ".+(\\.jpg|\\.png|\\.jpeg|\\.JPG|\\.PNG|\\.JPEG)";
+//     let matcher = new RegExp(pattern);
+
+//     return matcher.test(picture)
+// }
+
+//Convert image to base64
+function bf2base64(file) {
+    // console.log(file.toString('base64'))
+    return file.toString('base64')
 }
 
 ////* CRUD FUNCTIONS *////
 
 //Create a image 
-async function createImage(userId, data, db) {
+async function createImage(userId, imagen, data, db) {
     try{
         const imageDateCreation = new Date();
         const imageDateUpdation = new Date();
 
-        console.log(userId);
-        
-        if(!validatePicture(data.img)){
-            throw new Error("The image is not valid")
+        let image = new Image(
+            imagen,
+            data.name,
+            data.brightness,
+            data.saturation,
+            data.contrast,
+            imageDateCreation.toLocaleString(),
+            imageDateUpdation.toLocaleString(),
+            null
+
+        );
+
+        let imageObject = {
+            img: image.img,
+            name: image.name,
+            brightness: image.brightness,
+            saturation: image.saturation,
+            contrast: image.contrast,
+            dateCreation: image.dateCreation,
+            dateUpdation: image.dateUpdation,
+            colorTags: image.colorTags
         }
-        else{
-            let image = new Image(
-                data.img,
-                data.name,
-                data.brightness,
-                data.saturation,
-                data.contrast,
-                imageDateCreation.toLocaleString(),
-                imageDateUpdation.toLocaleString(),
-                null
 
-            );
-    
-            let imageObject = {
-                img: image.img,
-                name: image.name,
-                brightness: image.brightness,
-                saturation: image.saturation,
-                contrast: image.contrast,
-                dateCreation: image.dateCreation,
-                dateUpdation: image.dateUpdation,
-                colorTags: image.colorTags
-            }
+        const userRef = firebaseRef.ref(db, 'users/' + userId + '/images');
+        const newImageRef = firebaseRef.push(userRef);
 
-            const userRef = firebaseRef.ref(db, 'users/' + userId + '/images');
-            const newImageRef = firebaseRef.push(userRef);
-
-            await firebaseRef.set(
-                newImageRef, imageObject
-            );
-            console.log(image)
-            return true;
-        }
+        await firebaseRef.set(
+            newImageRef, imageObject
+        );
+        return true;
     }
     catch(err){
         console.log("An error has occured:" + err);
@@ -155,9 +153,10 @@ async function deleteImage(imageId, db) {
 
 const create_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
-
-    if(req.params.userId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined){
-        let imageCreated = await createImage(req.params.userId, req.body, db);
+    console.log(req.files.image);
+    const imagen = bf2base64(req.files.image.data);
+    if(req.params.userId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined && req.files !== undefined){
+        let imageCreated = await createImage(req.params.userId, imagen, req.body, db);
         console.log(imageCreated);
         res.status(imageCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
         res.send();
