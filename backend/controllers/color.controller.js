@@ -1,7 +1,7 @@
 //Imports
 const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
-const Color = require('../entities/color');
+const Color = require('../models/color');
 
 ////* CRUD FUNCTIONS *////
 

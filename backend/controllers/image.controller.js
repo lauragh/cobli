@@ -2,7 +2,7 @@
 //Imports
 const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
-const Image = require('../entities/image');
+const Image = require('../models/image');
 
 //Validate image
 // function validatePicture(picture){

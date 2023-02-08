@@ -1,7 +1,7 @@
 //Imports
 const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
-const User = require('../entities/user');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const auth = require('../controllers/auth.controller');
 
