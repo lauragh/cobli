@@ -3,6 +3,7 @@ const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
 const User = require('../entities/user');
 const bcrypt = require('bcrypt');
+const auth = require('../controllers/auth.controller');
 
 ////* CRUD FUNCTIONS *////
 
@@ -16,33 +17,32 @@ async function createUser(data, db) {
         const userDateRegistration = new Date();
 
         let user = new User(
-            userDateLastAccess.toLocaleString(),
-            userDateRegistration.toLocaleString(),
             data.name,
             data.email,
             cpassword,
             data.colorBlindness,
             data.occupation,
+            userDateLastAccess.toLocaleString(),
+            userDateRegistration.toLocaleString(),
             null
         );
 
         let userObject = {
-            dateLastAccess: user.dateLastAccess,
-            dateRegistration: user.dateRegistration,
             name: user.name,
             email: user.email,
             password: user.password,
             colorBlindness: user.colorBlindness,
             occupation: user.occupation,
+            dateLastAccess: user.dateLastAccess,
+            dateRegistration: user.dateRegistration,
             images: user.images,
         }
+        let userUid;
+        userUid = await auth.registerUser(user.email, data.password)
 
-        const userRef = firebaseRef.ref(db, 'users');
-        const newUserRef = firebaseRef.push(userRef);
-        await firebaseRef.set(
-            newUserRef, userObject
-        );
-        console.log(user)
+        let locationRef = firebaseRef.ref(db, 'users/' + userUid);
+        firebaseRef.set(locationRef, userObject);
+
         return true;
     }
     catch(err){
@@ -56,24 +56,40 @@ async function createUser(data, db) {
 async function getUsers(db) {
     let result = null;
 
-    await firebaseRef.get(
-        firebaseRef.child(db, "users")
-    )
-    .then((snapshot) => {
-        if(snapshot.exists()){
-            result = snapshot.val();
-        }
-        else{
-            console.log("Not users found");
-        }
-    });
+    // let loginUser = await auth.getUserId();
+    // console.log('soy este usuario',loginUser);
 
+    let loginUser = await auth.loginUser('garcia.hdez.laura@gmail.com', 'cobli98.');
+    // let loginUser = await auth.loginUser('laura12@gmail.com', 'pepekiki98.');
+
+    let logged = false;
+
+    if(loginUser){
+        logged = true;
+    }
+    
+    if(logged){
+        await firebaseRef.get(
+            firebaseRef.child(db, "users")
+        )
+        .then((snapshot) => {
+            if(snapshot.exists()){
+                result = snapshot.val();
+            }
+            else{
+                console.log("Not users found");
+            }
+        });
+    
+    }
     return result;
 }
 
 //Get one user
 async function getUser(userId, db) {
     let result = null;
+    let loginUser = await auth.getUserId();
+    console.log(loginUser);
 
     await firebaseRef.get(
         firebaseRef.child(db, `users/${userId}`)

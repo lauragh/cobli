@@ -19,7 +19,7 @@ app.listen(process.env.PORT, () => {
 });
 
 //routes
-app.use('/api/users', require('./routes/user.router'));
+app.use('/', require('./routes/auth.router'));
 app.use('/api/users', require('./routes/user.router'));
 app.use('/api/users', require('./routes/image.router'));
 app.use('/api/users', require('./routes/color.router'));
