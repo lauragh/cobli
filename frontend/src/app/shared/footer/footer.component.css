@@ -1,0 +1,33 @@
+
+footer {
+  background-color: #6F7075;
+  padding: 10px;
+}
+
+li {
+  list-style-type: none;
+  color: white;
+}
+
+.texto{
+  margin-bottom: 0;
+  display: flex;
+  padding: 0;
+}
+
+.container {
+  max-width: 100%;
+}
+
+.images {
+  margin-bottom: 0;
+  display: flex;
+  padding: 0;
+  width: 200px;
+  justify-content: space-around;
+}
+
+.images img {
+  width: 28px;
+}
+
