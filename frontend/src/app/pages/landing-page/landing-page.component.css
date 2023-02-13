@@ -1,0 +1,18 @@
+.container-fluid {
+  max-width: 100%;
+  background-color: var(--blue-background-cobli);
+  padding: 50px;
+  /* padding: 15px 30px 15px; */
+}
+
+.bocadillo{
+  font-family: 'Poppins-Regular';
+}
+
+.bocadillo1{
+  font-family: 'Poppins-Semibold';
+}
+
+.bocadillo2{
+  font-family: 'Poppins-ExtraboldItalic';
+}

@@ -9,13 +9,13 @@ li {
   color: var(--bs-white);
 }
 
-.texto{
+.texto {
   margin-bottom: 0;
   display: flex;
   padding: 0;
 }
 
-.container {
+.container-fluid {
   max-width: 100%;
 }
 
