@@ -5,6 +5,93 @@
   --blue-background-cobli: #98BBFE;
 }
 
+
+/* Clases para asignar fuentes */
+
+.PoppinsThin {
+  font-family: 'Poppins-Thin';
+}
+
+.PoppinsThinItalic {
+  font-family: 'Poppins-ThinItalic';
+}
+
+.PoppinsExtraLight {
+  font-family: 'Poppins-ExtraLight';
+}
+
+.PoppinsExtraLightItalic {
+  font-family: 'Poppins-ExtraLightItalic';
+}
+
+.PoppinsLight {
+  font-family: 'Poppins-ExtraLight';
+}
+
+.PoppinsLightItalic {
+  font-family: 'Poppins-ExtraLightItalic';
+}
+
+.PoppinsRegular {
+  font-family: 'Poppins-Regular';
+}
+
+.PoppinsRegularItalic {
+  font-family: 'Poppins-RegularItalic';
+}
+
+.PoppinsMedium {
+  font-family: "Poppins-Medium";
+}
+
+.PoppinsMediumItalic {
+  font-family: "Poppins-MediumItalic";
+}
+
+.PoppinsBlack {
+  font-family: "Poppins-Black";
+}
+
+.PoppinsBlackItalic {
+  font-family: "Poppins-BlackItalic";
+}
+
+.PoppinsSemiBold {
+  font-family: "Poppins-Semibold";
+}
+
+.PoppinsSemiBoldItalic {
+  font-family: "Poppins-SemiboldItalic";
+}
+
+.PoppinsBold {
+  font-family: "Poppins-Bold";
+}
+
+.PoppinsBoldItalic {
+  font-family: "Poppins-BoldItalic";
+}
+
+.PoppinsExtraBold {
+  font-family: "Poppins-ExtraBold";
+}
+
+.PoppinsExtraBoldItalic {
+  font-family: "Poppins-ExtraBoldItalic";
+}
+.Emoji {
+  font-family: "NotoColorEmoji-Regular";
+
+}
+
+
+/* FUENTES */
+
+@font-face {
+  font-family: "NotoColorEmoji-Regular";
+  src: url('NotoColorEmoji-Regular.ttf')  format('truetype');
+}
+
 @font-face {
   font-family: "Poppins-Thin";
   src: url("assets/fonts/Poppins-Thin.ttf") format("truetype");
@@ -50,7 +137,7 @@
 }
 
 @font-face {
-  font-family: "Poppins-Medium";
+  font-family: "Poppins-MediumItalic";
   src: url("assets/fonts/Poppins-MediumItalic.ttf") format("truetype");
 }
 

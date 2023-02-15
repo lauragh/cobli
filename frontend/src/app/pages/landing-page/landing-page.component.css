@@ -2,17 +2,120 @@
   max-width: 100%;
   background-color: var(--blue-background-cobli);
   padding: 50px;
-  /* padding: 15px 30px 15px; */
+  height: auto;
+  min-height: 811px;
+}
+.bocadillo {
+  padding: 10px 20px;
+  width: max-content;
+  border-radius: 5px;
+  max-width: 335px;
+  font-size: medium;
 }
 
-.bocadillo{
-  font-family: 'Poppins-Regular';
+.fila {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
 }
 
-.bocadillo1{
-  font-family: 'Poppins-Semibold';
+.altura {
+  height: 700px;
 }
 
-.bocadillo2{
-  font-family: 'Poppins-ExtraboldItalic';
+.posicion {
+  position: absolute;
+  width: 582px;
+  top: 20%;
+  right: 20%;
 }
+
+.limit {
+  max-width: 770px;
+}
+
+.puntoBlanco {
+  background-color: white;
+}
+
+.puntoNegro {
+  background-color: #4E4E4E;
+}
+
+.punto {
+  border-radius: 3px;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  margin: 0px 5px 0px;
+}
+
+
+h1 {
+  font-size: -webkit-xxx-large;
+}
+
+img {
+  width: 450px;
+  display: block;
+  margin: auto;
+}
+
+button {
+  background-color: white;
+  border: white;
+  margin-left: 220px;
+}
+
+@media (max-width: 750px) {
+  img {
+    transform: scale(70%);
+    /* position: fixed; */
+    /* transform: translate(-50%, -50%); */
+  }
+
+  .bocadillo {
+    padding: 10px;
+    width: max-content;
+    border-radius: 5px;
+    max-width: 200px;
+    font-size: x-small;
+  }
+
+  .posicion {
+    width: 400px;
+    position: absolute;
+    top: 38%;
+    /* left: 280px; */
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+  }
+
+}
+
+@media (min-width: 1240px) and (max-width: 1530px) {
+  .posicion {
+    position: absolute;
+    width: 582px;
+    left: 0;
+    right: 0;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1240px) {
+  .posicion {
+    position: absolute;
+    width: 582px;
+    right: 0;
+  }
+}
+
+@media (min-width: 750px) and (max-width: 900px) {
+  .posicion {
+    position: absolute;
+    width: 582px;
+  }
+}
+
+
