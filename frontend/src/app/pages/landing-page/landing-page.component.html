@@ -1,53 +1,262 @@
-<div class="container-fluid">
-  <div class="col">
-    <div class="row altura">
-      <div class="col d-flex align-items-center maxWidth position-relative">
-        <img src="../../../assets/cabeza.svg">
-        <div class="posicion">
-          <div class="fila mb-3 ">
-            <div class="PoppinsSemiBold bocadillo" style="background-color: #B7ABFF;">
-              No sé si esto quedará bien
-            </div>
-            <div class="PoppinsSemiBold bocadillo" style="background-color: #ABE6FF;">
-              Esto es rojo o marrón?
-            </div>
-          </div>
-          <div class="fila mb-3 ">
-            <div class="PoppinsSemiBold bocadillo" style="background-color: #FF9E9E;">
-              De qué color es esto? <span class="Emoji">🤔</span>
-            </div>
-            <div class="PoppinsSemiBold bocadillo" style="background-color: #9FCCBF;">
-              No veo bien la paleta de colores <span class="Emoji">😔</span>
-            </div>
-          </div>
+<div id="carouselExampleCaptions" class="carousel carousel-dark slide" data-bs-interval="false" >
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="3" aria-label="Slide 4"></button>
 
-          <div class="PoppinsSemiBold bocadillo" style="background-color: #ACC774; float: none; margin: 0 auto;">
-            El fondo del banner tiene que ser azul claro y las hojas verde oscuro!
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active bgSlider1">
+      <div class="carousel-caption d-none d-md-block ">
+          <div class="row marginDiv">
+            <div class="col d-flex align-items-center maxWidth position-relative">
+              <img class="cabeza centrarImagen margin-auto" src="../../../assets/img/cabeza.svg">
+              <div class="posicion position-absolute">
+                <div class="fila mb-3">
+                  <div class="PoppinsSemiBold bocadillo" style="background-color: #B7ABFF;">
+                    No sé si esto quedará bien
+                  </div>
+                  <div class="PoppinsSemiBold bocadillo" style="background-color: #ABE6FF;">
+                    Esto es rojo o marrón?
+                  </div>
+                </div>
+                <div class="fila mb-3 ">
+                  <div class="PoppinsSemiBold bocadillo" style="background-color: #FF9E9E;">
+                    De qué color es esto? <span class="Emoji">🤔</span>
+                  </div>
+                  <div class="PoppinsSemiBold bocadillo" style="background-color: #9FCCBF;">
+                    No veo bien la paleta de colores <span class="Emoji">😔</span>
+                  </div>
+                </div>
+
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #ACC774; float: none; margin: 0 auto;">
+                  El fondo del banner tiene que ser azul claro y las hojas verde oscuro!
+                </div>
+              </div>
+            </div>
+            <div class="row max-content">
+              <div class="col d-flex align-items-center">
+                <div class="col limit">
+                  <h1 class="PoppinsBold mb-3">¡Acierta con los colores!</h1>
+                  <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores. Esta aplicación web es para ti</h3>
+                  <h5 class="PoppinsMedium mb-5">Deja atrás las confusiones y elige el color adecuado</h5>
+                    <button type="button" class="btn text-black" id="botonEmpezar">Empezar ahora</button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
       </div>
-      <div class="col d-flex align-items-center">
-        <div class="col limit">
-          <h1 class="PoppinsBold mb-3">¡Acierta con los colores!</h1>
-          <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores. Esta aplicación web es para ti</h3>
-          <h5 class="PoppinsRegular mb-5">Deja atrás las confusiones y elige el color adecudo</h5>
-          <!-- <div class="d-flex justify-content-center"> -->
-            <button type="button" class="btn btn-primary text-black">Empezar ahora</button>
-          <!-- </div> -->
+    </div>
+    <div class="carousel-item">
+      <img src="../../../assets/img/bgSlider2.svg" class="d-block position-absolute" alt="fondoSlider" style="z-index: 0;">
+      <div class="carousel-caption d-none d-md-block bgSlider2">
+        <div class="row marginDiv">
+          <div class="col d-flex align-items-center maxWidth position-relative">
+            <img id="ejemplo" class="centrarImagen" src="../../../assets/img/ejemplo.png">
+            <div class="nums position-absolute" id="num1">1</div>
+            <div class="nums position-absolute" id="num2">2</div>
+            <div class="nums position-absolute" id="num3">3</div>
+            <img class="position-absolute" id="flechaPin" src="../../../assets/img/flechapin.svg">
+            <div class="col position-absolute" id="tabla">
+              <div class="row d-flex mb-2">
+                <p class="PoppinsSemiBold caracteristica">Color</p>
+                <p class="PoppinsMedium valor">Azul</p>
+              </div>
+              <div class="row d-flex mb-2">
+                <p class="PoppinsSemiBold caracteristica">Claridad</p>
+                <p class="PoppinsMedium valor">Oscuro</p>
+              </div>
+              <div class="row d-flex mb-2">
+                <p class="PoppinsSemiBold caracteristica">Hex</p>
+                <p class="PoppinsMedium valor">#091837</p>
+              </div>
+              <div class="row d-flex mb-2">
+                <p class="PoppinsSemiBold caracteristica">RGB</p>
+                <p class="PoppinsMedium valor">rgb(9, 35, 55)</p>
+              </div>
+              <div class="row d-flex mb-2">
+                <p class="PoppinsSemiBold caracteristica">HSL</p>
+                <p class="PoppinsMedium valor">hsl(220, 72%, 13%)</p>
+              </div>
+              <div class="row d-flex">
+                <p class="PoppinsSemiBold caracteristica">HSV</p>
+                <p class="PoppinsMedium valor">hsv(50, 100, 100)</p>
+              </div>
+            </div>
+          </div>
+          <div class="row max-content">
+            <div class="col d-flex">
+              <div class="col">
+                <h3 class="PoppinsMedium mb-3">Escoge el color con precisión</h3>
+                <h5 class="PoppinsRegular mb-2 text-justify">El sistema ofrece múltiples opciones para obtener descripciones de colores, tanto en un lenguaje informal como técnico</h5>
+                <div class="row">
+                  <img src="../../../assets//img/checked.svg" class="tamIcono">
+                  <h6 class="PoppinsRegular">Sistema de nombres comunes</h6>
+                </div>
+                <div class="row">
+                  <img src="../../../assets//img/checked.svg" class="tamIcono">
+                  <h6 class="PoppinsRegular">Código hexadecimal</h6>
+                </div>
+                <div class="row">
+                  <img src="../../../assets//img/checked.svg" class="tamIcono">
+                  <h6 class="PoppinsRegular">Código RGB</h6>
+                </div>
+                <div class="row">
+                  <img src="../../../assets//img/checked.svg" class="tamIcono">
+                  <h6 class="PoppinsRegular">Código HSL</h6>
+                </div>
+                <div class="row">
+                  <img src="../../../assets//img/checked.svg" class="tamIcono">
+                  <h6 class="PoppinsRegular">Código HSV</h6>
+                </div>
+              </div>
+              <div class="position-absolute tags">
+                <h5>Etiquetas de colores</h5>
+                <div class="row">
+                  <div id="tagsContent"  style="max-width: max-content;">
+                    <div class="d-flex mb-3">
+                      <p class="PoppinsSemiBold d-flex align-items-center" id="color">Color</p>
+                      <p class="PoppinsMedium selector">Todos<img src="../../../assets//img/flechaPico.svg" class="tamFlecha" style="margin-left: 5px;"></p>
+                    </div>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Num</th>
+                            <th scope="col">Hexadecimal</th>
+                            <th scope="col"> </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">1</th>
+                            <td>#091837</td>
+                            <td>
+                              <img class="mr-2" src="../../../assets/img/copiar.svg">
+                              <img src="../../../assets/img/cruz.svg">
+                            </td>
+                          </tr>
+                          <tr>
+                            <th scope="row">2</th>
+                            <td>#361817</td>
+                            <td>
+                              <img class="mr-2" src="../../../assets/img/copiar.svg">
+                              <img src="../../../assets/img/cruz.svg">
+                            </td>
+                          </tr>
+                          <tr>
+                            <th scope="row">3</th>
+                            <td>#2B2B3E</td>
+                            <td>
+                              <img class="mr-2" src="../../../assets/img/copiar.svg">
+                              <img src="../../../assets/img/cruz.svg">
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                  </div>
+                  <div class="ml-2" style="max-width: 350px;">
+                    <p class="PoppinsRegular text-justify">Haciendo clic en cualquier punto la imagen, se generará una etiqueta de color que podrás copiar en formato hexadecimal o eliminar</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="row justify-content-center">
-      <div class="punto puntoNegro"></div>
-      <div class="punto puntoBlanco"></div>
-      <div class="punto puntoBlanco"></div>
-      <div class="punto puntoBlanco"></div>
+    <div class="carousel-item">
+      <img src="../../../assets/img/email.png" class="d-block w-100" alt="..." style="display: none !important;">
+      <div class="carousel-caption d-none d-md-block">
+        <div class="row marginDiv">
+          <div class="col d-flex align-items-center maxWidth position-relative">
+            <img class="cabeza margin-auto" src="../../../assets/img/cabeza.svg">
+            <div class="posicion">
+              <div class="fila mb-3">
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #B7ABFF;">
+                  No sé si esto quedará bien
+                </div>
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #ABE6FF;">
+                  Esto es rojo o marrón?
+                </div>
+              </div>
+              <div class="fila mb-3 ">
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #FF9E9E;">
+                  De qué color es esto? <span class="Emoji">🤔</span>
+                </div>
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #9FCCBF;">
+                  No veo bien la paleta de colores <span class="Emoji">😔</span>
+                </div>
+              </div>
+
+              <div class="PoppinsSemiBold bocadillo" style="background-color: #ACC774; float: none; margin: 0 auto;">
+                El fondo del banner tiene que ser azul claro y las hojas verde oscuro!
+              </div>
+            </div>
+          </div>
+          <div class="row max-content">
+            <div class="col d-flex align-items-center">
+              <div class="col limit">
+                <h1 class="PoppinsBold mb-3" style="color: blue">¡Acierta con los colores!</h1>
+                <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores. Esta aplicación web es para ti</h3>
+                <h5 class="PoppinsMedium mb-5">Deja atrás las confusiones y elige el color adecuado</h5>
+                  <button type="button" class="btn btn-primary botonEmpezar text-black">Empezar ahora</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="../../../assets/img/email.png" class="d-block w-100" alt="..." style="display: none !important;">
+      <div class="carousel-caption d-none d-md-block">
+        <div class="row marginDiv">
+          <div class="col d-flex align-items-center maxWidth position-relative">
+            <img class="cabeza margin-auto" src="../../../assets/img/cabeza.svg">
+            <div class="posicion">
+              <div class="fila mb-3">
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #B7ABFF;">
+                  No sé si esto quedará bien
+                </div>
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #ABE6FF;">
+                  Esto es rojo o marrón?
+                </div>
+              </div>
+              <div class="fila mb-3 ">
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #FF9E9E;">
+                  De qué color es esto? <span class="Emoji">🤔</span>
+                </div>
+                <div class="PoppinsSemiBold bocadillo" style="background-color: #9FCCBF;">
+                  No veo bien la paleta de colores <span class="Emoji">😔</span>
+                </div>
+              </div>
+
+              <div class="PoppinsSemiBold bocadillo" style="background-color: #ACC774; float: none; margin: 0 auto;">
+                El fondo del banner tiene que ser azul claro y las hojas verde oscuro!
+              </div>
+            </div>
+          </div>
+          <div class="row max-content">
+            <div class="col d-flex align-items-center">
+              <div class="col limit">
+                <h1 class="PoppinsBold mb-3" style="color: red">¡Acierta con los colores!</h1>
+                <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores. Esta aplicación web es para ti</h3>
+                <h5 class="PoppinsMedium mb-5">Deja atrás las confusiones y elige el color adecuado</h5>
+                  <button type="button" class="btn btn-primary botonEmpezar text-black">Empezar ahora</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <!-- <div class="bocadillo2">
-    No sé si esto quedará bien
-  </div> -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
 </div>
-
 <app-footer></app-footer>

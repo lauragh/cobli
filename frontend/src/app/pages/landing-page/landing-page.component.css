@@ -1,16 +1,35 @@
-.container-fluid {
-  max-width: 100%;
-  background-color: var(--blue-background-cobli);
-  padding: 50px;
-  height: auto;
-  min-height: 811px;
+.carousel-caption {
+  color: black;
+  width: 100%;
+  position: absolute;
+  left: 0%;
+  top: 0%;
+
 }
+
+.carousel-inner {
+  height: 100%;
+}
+
+.carousel-item.active {
+  height: 100%;
+  display: flex ;
+}
+
+#carouselExampleCaptions {
+  background-color: var(--blue-background-cobli);
+  height: 811px;
+}
+
 .bocadillo {
   padding: 10px 20px;
   width: max-content;
   border-radius: 5px;
   max-width: 335px;
   font-size: medium;
+  -webkit-box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+  -moz-box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+  box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
 }
 
 .fila {
@@ -19,103 +38,172 @@
   justify-content: space-evenly;
 }
 
-.altura {
-  height: 700px;
-}
 
 .posicion {
-  position: absolute;
   width: 582px;
   top: 20%;
-  right: 20%;
+  right: 22%;
 }
 
-.limit {
-  max-width: 770px;
+.max-content {
+  max-width: 700px;
+  text-align: start;
 }
 
-.puntoBlanco {
-  background-color: white;
+.marginDiv {
+  margin-top: 3%;
 }
 
-.puntoNegro {
-  background-color: #4E4E4E;
+.cabeza {
+  width: 430px;
 }
 
-.punto {
-  border-radius: 3px;
-  width: 10px;
-  height: 10px;
-  padding: 0;
-  margin: 0px 5px 0px;
-}
-
-
-h1 {
-  font-size: -webkit-xxx-large;
-}
-
-img {
-  width: 450px;
+.centrarImagen {
   display: block;
   margin: auto;
 }
 
-button {
+.maxWidth {
+  max-width: 1100px;
+}
+
+#botonEmpezar {
+  margin-left: 30%;
   background-color: white;
   border: white;
-  margin-left: 220px;
 }
 
-@media (max-width: 750px) {
-  img {
-    transform: scale(70%);
-    /* position: fixed; */
-    /* transform: translate(-50%, -50%); */
-  }
-
-  .bocadillo {
-    padding: 10px;
-    width: max-content;
-    border-radius: 5px;
-    max-width: 200px;
-    font-size: x-small;
-  }
-
-  .posicion {
-    width: 400px;
-    position: absolute;
-    top: 38%;
-    /* left: 280px; */
-    left: 50%;
-
-    transform: translate(-50%, -50%);
-  }
-
+.nums {
+  border-radius: 20px;
+  border: 2px solid white;
+  color: white;
+  width: 25px;
+  font-weight: 500;
+  height: 25px;
+  padding: 5px;
+  font-size: 14px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
-@media (min-width: 1240px) and (max-width: 1530px) {
-  .posicion {
-    position: absolute;
-    width: 582px;
-    left: 0;
-    right: 0;
-  }
+#num1 {
+  top: 158px;
+  right: 520px;
 }
 
-@media (min-width: 900px) and (max-width: 1240px) {
-  .posicion {
-    position: absolute;
-    width: 582px;
-    right: 0;
-  }
+#num2 {
+  top: 400px;
+  right: 300px;
 }
 
-@media (min-width: 750px) and (max-width: 900px) {
-  .posicion {
-    position: absolute;
-    width: 582px;
-  }
+#num3 {
+  top: 75px;
+  right: 574px;
 }
 
+#flechaPin {
+  top: 157px;
+  left: 478px;
+}
+
+.caracteristica {
+  min-width: 100px;
+  width: auto;
+  text-align: start;
+}
+
+#tabla {
+  top: 301px;
+  left: 250px;
+  background-color: white;
+  padding: 25px 45px 15px 30px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+  -moz-box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+  box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+}
+
+.valor {
+  min-width: 150px;
+  width: auto;
+  border: 1.5px solid var(--grey-border-cobli);
+  border-radius: 5px;
+  padding: 4px;
+  font-size: 14px;
+}
+
+.tamIcono {
+  width: 45px;
+  height: auto;
+}
+
+.tamFlecha {
+  width: 10px;
+  height: 10px;
+}
+
+
+h6 {
+  width: auto;
+  text-align: center;
+  margin: 0;
+  line-height: 30px;
+  font-size: 18px;
+}
+
+.tags {
+  top: 380px;
+}
+
+#tagsContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+  -moz-box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+  box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+}
+
+#color {
+  width: auto;
+  text-align: start;
+  margin-right: 10px;
+  margin-bottom: 0;
+}
+
+.selector {
+  width: auto;
+  border: 1.5px solid var(--grey-border-cobli);
+  border-radius: 5px;
+  padding: 4px;
+  font-size: 14px;
+  margin: 0;
+  background-color: white;
+  padding: 5px 15px;
+}
+
+thead {
+  background-color: var(--blue-background-cobli);
+}
+
+#tableContainer {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mr-2 {
+  margin-right: 20px;
+}
+.ml-2 {
+  margin-left: 20px;
+}
+
+tbody tr:nth-child(1) {
+  background-color: #E3ECFF;
+}
+
+.text-justify {
+  text-align: justify;
+}
 

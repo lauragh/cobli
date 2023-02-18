@@ -3,6 +3,7 @@
 :root {
   --blue-cobli: #3362C0;
   --blue-background-cobli: #98BBFE;
+  --grey-border-cobli: #8C8C8C;
 }
 
 
@@ -89,7 +90,7 @@
 
 @font-face {
   font-family: "NotoColorEmoji-Regular";
-  src: url('NotoColorEmoji-Regular.ttf')  format('truetype');
+  src: url('assets/fonts/NotoColorEmoji-Regular.ttf')  format('truetype');
 }
 
 @font-face {
