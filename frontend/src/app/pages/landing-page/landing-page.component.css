@@ -4,7 +4,10 @@
   position: absolute;
   left: 0%;
   top: 0%;
+}
 
+.bgAzulCobli {
+  background-color: var(--blue-background-cobli);
 }
 
 .carousel-inner {
@@ -89,22 +92,22 @@
 
 #num1 {
   top: 158px;
-  right: 520px;
+  right: 405px;
 }
 
 #num2 {
   top: 400px;
-  right: 300px;
+  right: 185px;
 }
 
 #num3 {
   top: 75px;
-  right: 574px;
+  right: 459px;
 }
 
 #flechaPin {
   top: 157px;
-  left: 478px;
+  left: 593px;
 }
 
 .caracteristica {
@@ -115,7 +118,7 @@
 
 #tabla {
   top: 301px;
-  left: 250px;
+  left: 365px;
   background-color: white;
   padding: 25px 45px 15px 30px;
   border-radius: 5px;
@@ -156,7 +159,7 @@ h6 {
   top: 380px;
 }
 
-#tagsContent {
+.tagsContent {
   background-color: white;
   padding: 20px;
   border-radius: 5px;
@@ -173,18 +176,33 @@ h6 {
 }
 
 .selector {
-  width: auto;
-  border: 1.5px solid var(--grey-border-cobli);
   border-radius: 5px;
   padding: 4px;
   font-size: 14px;
   margin: 0;
-  background-color: white;
   padding: 5px 15px;
 }
 
-thead {
-  background-color: var(--blue-background-cobli);
+#selectorColor {
+  border: 1.5px solid var(--grey-border-cobli);
+  width: auto;
+  background-color: white;
+}
+
+#selectorBl {
+  width: 150px;
+}
+
+.sliderFiltros {
+  width: 250px;
+}
+
+.labelFiltros {
+  width: 115px;
+  text-align: start;
+}
+.width-auto {
+  width: auto;
 }
 
 #tableContainer {
@@ -207,3 +225,12 @@ tbody tr:nth-child(1) {
   text-align: justify;
 }
 
+
+
+input[type='range']::-webkit-slider-thumb {
+  width: 15px;
+  appearance: none;
+  height: 15px;
+  border-radius:20px;
+  background: #434343;
+}

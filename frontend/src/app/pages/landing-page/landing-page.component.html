@@ -7,7 +7,7 @@
 
   </div>
   <div class="carousel-inner">
-    <div class="carousel-item active bgSlider1">
+    <div class="carousel-item active">
       <div class="carousel-caption d-none d-md-block ">
           <div class="row marginDiv">
             <div class="col d-flex align-items-center maxWidth position-relative">
@@ -50,10 +50,10 @@
     </div>
     <div class="carousel-item">
       <img src="../../../assets/img/bgSlider2.svg" class="d-block position-absolute" alt="fondoSlider" style="z-index: 0;">
-      <div class="carousel-caption d-none d-md-block bgSlider2">
+      <div class="carousel-caption d-none d-md-block">
         <div class="row marginDiv">
-          <div class="col d-flex align-items-center maxWidth position-relative">
-            <img id="ejemplo" class="centrarImagen" src="../../../assets/img/ejemplo.png">
+          <div class="col maxWidth position-relative" style="padding-left: 230px">
+            <img id="ejemplo" src="../../../assets/img/ejemplo.png" style="width: 500px;">
             <div class="nums position-absolute" id="num1">1</div>
             <div class="nums position-absolute" id="num2">2</div>
             <div class="nums position-absolute" id="num3">3</div>
@@ -114,13 +114,13 @@
               <div class="position-absolute tags">
                 <h5>Etiquetas de colores</h5>
                 <div class="row">
-                  <div id="tagsContent"  style="max-width: max-content;">
+                  <div class="tagsContent" style="max-width: max-content;">
                     <div class="d-flex mb-3">
                       <p class="PoppinsSemiBold d-flex align-items-center" id="color">Color</p>
-                      <p class="PoppinsMedium selector">Todos<img src="../../../assets//img/flechaPico.svg" class="tamFlecha" style="margin-left: 5px;"></p>
+                      <p class="PoppinsMedium selector" id="selectorColor">Todos<img src="../../../assets//img/flechaPico.svg" class="tamFlecha" style="margin-left: 5px;"></p>
                     </div>
                       <table class="table">
-                        <thead>
+                        <thead class="bgAzulCobli">
                           <tr>
                             <th scope="col">Num</th>
                             <th scope="col">Hexadecimal</th>
@@ -165,44 +165,38 @@
         </div>
       </div>
     </div>
-    <div class="carousel-item">
-      <img src="../../../assets/img/email.png" class="d-block w-100" alt="..." style="display: none !important;">
+   <div class="carousel-item">
+      <img src="../../../assets/img/bgSlider3.svg" class="d-block position-absolute" alt="fondoSlider" style="z-index: 0;">
       <div class="carousel-caption d-none d-md-block">
         <div class="row marginDiv">
-          <div class="col d-flex align-items-center maxWidth position-relative">
-            <img class="cabeza margin-auto" src="../../../assets/img/cabeza.svg">
-            <div class="posicion">
-              <div class="fila mb-3">
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #B7ABFF;">
-                  No sé si esto quedará bien
+          <div class="col" style="text-align: start; padding-left: 274px;">
+            <h3 class="PoppinsMedium mb-3" style="width: 600px;">Aplica filtros para ayudarte a distinguir los colores</h3>
+            <h5 class="PoppinsRegular text-justify" style="max-width: 550px; padding-bottom: 50px">Se han incorporado filtros para corregir diferentes tipos de daltonismo y se han incluido controles para que puedas ajustar la imagen según tus necesidades visuales</h5>
+            <div class="tagsContent" style="width: 430px">
+              <p class="PoppinsMedium selector bgAzulCobli mb-3" id="selectorBl">Trinomalía<img src="../../../assets//img/flechaPico.svg" class="tamFlecha" style="margin-left: 5px;"></p>
+              <div class="col">
+                <div class="row mb-2">
+                  <label for="luminosidad" class="form-label labelFiltros" style=>Luminosidad</label>
+                  <input type="range" disabled min="0" max="100" value="32" class="form-range sliderFiltros" id="luminosidad">
+                  <div class="width-auto">32</div>
                 </div>
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #ABE6FF;">
-                  Esto es rojo o marrón?
+                <div class="row mb-2">
+                  <label for="saturacion" class="form-label labelFiltros" style=>Saturación</label>
+                  <input type="range" disabled min="0" max="100" value="11" class="form-range sliderFiltros" id="saturacion">
+                  <div class="width-auto">11</div>
                 </div>
-              </div>
-              <div class="fila mb-3 ">
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #FF9E9E;">
-                  De qué color es esto? <span class="Emoji">🤔</span>
+                <div class="row mb-2">
+                  <label for="contraste" class="form-label labelFiltros" style=>Contraste</label>
+                  <input type="range" disabled min="0" max="100" value="80" class="form-range sliderFiltros" id="contraste">
+                  <div class="width-auto">80</div>
                 </div>
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #9FCCBF;">
-                  No veo bien la paleta de colores <span class="Emoji">😔</span>
-                </div>
-              </div>
-
-              <div class="PoppinsSemiBold bocadillo" style="background-color: #ACC774; float: none; margin: 0 auto;">
-                El fondo del banner tiene que ser azul claro y las hojas verde oscuro!
               </div>
             </div>
           </div>
-          <div class="row max-content">
-            <div class="col d-flex align-items-center">
-              <div class="col limit">
-                <h1 class="PoppinsBold mb-3" style="color: blue">¡Acierta con los colores!</h1>
-                <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores. Esta aplicación web es para ti</h3>
-                <h5 class="PoppinsMedium mb-5">Deja atrás las confusiones y elige el color adecuado</h5>
-                  <button type="button" class="btn btn-primary botonEmpezar text-black">Empezar ahora</button>
-              </div>
-            </div>
+          <div class="col d-flex position-relative">
+            <img id="ejemplo" class="position-absolute" src="../../../assets/img/ejemploTexto.svg" width="300px" style="left: -165px;">
+            <img id="ejemplo" class="position-absolute" src="../../../assets/img/dobleFlecha.svg" width="24px" style="top: 135px; left: 150px;">
+            <img id="ejemplo" class="position-absolute" src="../../../assets/img/ejemploFiltro.svg" width="400px" style="top: 80px; left: 180px;">
           </div>
         </div>
       </div>
