@@ -32,19 +32,28 @@ async function loginUser(data) {
     }
 }
 
-async function logoutUser(email, password) {
-    firebaseRef.signInWithEmailAndPassword(firebaseRef.auth, email, password);
+async function logoutUser() {
+    try {
+        await firebaseRef.auth.signOut();
+    }
+    catch(err){
+        console.log("An error has occured:" + err);
+    }
 }
 
-async function userState(){
+async function verifyToken(token){
     firebaseRef.auth.onAuthStateChanged(function(user) {
         if (user) {
-          var uid = user.uid;
-          console.log("User UID: ", uid);
-          return uid;
+          if(token === user.getIdToken()){
+            return true;
+          }
+          else{
+            return false;
+          }
         }
-      });
+    });
 }
+
 
 const login_user = async (req, res) => {
     // console.log(req.body);

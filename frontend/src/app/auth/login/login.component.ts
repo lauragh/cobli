@@ -10,20 +10,23 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class LoginComponent implements OnInit{
   errorLogin !: String;
-  user = {
-    email: '',
-    password: ''
-  };
+  user !: any;
+  savedEmail: boolean = false;
 
   constructor(
     private userService: UserService,
     private authService: AuthService,
-
     private router: Router,
   )
   {}
 
   ngOnInit(): void {
+    this.user = {
+      email: localStorage.getItem('remember') === 'true' ? localStorage.getItem('email') : '',
+      password: '',
+      remember: localStorage.getItem('remember') === 'true' ? true : false,
+      // autocomplete: localStorage.getItem('remember') ? "on" : "off"
+    };
   }
 
   login() {
@@ -32,6 +35,9 @@ export class LoginComponent implements OnInit{
         next: res => {
           localStorage.setItem('token', res.token);
           localStorage.setItem('uid', res.uid);
+          localStorage.setItem('remember', this.user.remember.toString());
+          localStorage.setItem('email', this.user.email);
+
           console.log('al hacer login', localStorage.getItem('token'));
           this.router.navigate(['/gallery']);
         },
@@ -39,6 +45,10 @@ export class LoginComponent implements OnInit{
           this.errorLogin = error.error;
         }
       });
+  }
+
+  saveEmail(value: boolean){
+    this.user.remember = value;
   }
 
 }
