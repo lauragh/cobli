@@ -1,1 +1,23 @@
-<p>login works!</p>
+<div class="container  d-flex justify-content-center align-items-center bgImage">
+  <div>
+    <h4 class="text-white text-center">Acceso al Configurador</h4>
+    <form (submit)="login()">
+      <div class="form-group mb-4">
+        <label for="email" class="form-label">Email de usuario</label>
+        <input type="text" [(ngModel)]="user.email" name="email" placeholder="Usuario" class="form-control" required autofocus>
+      </div>
+      <div class="form-group mb-2">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" [(ngModel)]="user.password" name="password" placeholder="Contraseña" class="form-control" required>
+      </div>
+      <div class="form-check mb-4">
+        <input type="checkbox" class="form-check-input" id="recordar" name="recordar" value="recordar">
+        <label class="form-check-label" for="recordar">Recordar</label>
+      </div>
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary active">Login</button>
+      </div>
+    </form>
+  </div>
+</div>
+

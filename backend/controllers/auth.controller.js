@@ -5,6 +5,7 @@ const httpCodes = require('../database/httpCodes');
 ////*FUNCTIONS *////
 async function registerUser(data) { 
     return new Promise(async(resolve, reject)=> {
+        console.log(data);
         await firebaseRef.createUserWithEmailAndPassword(firebaseRef.auth, data.email, data.password)
         let userUid = await getUserId();
         resolve(userUid);    
@@ -20,31 +21,10 @@ async function getUserId(){
 async function loginUser(data) {
     try{
         await firebaseRef.setPersistence(firebaseRef.auth, firebaseRef.browserSessionPersistence);
-
+        console.log(data);
         await firebaseRef.signInWithEmailAndPassword(firebaseRef.auth, data.email, data.password);
-        let userToken = await firebaseRef.auth.currentUser.getIdToken(true);
-
-
-        // .then(user => {
-        //     // Get the user's ID token as it is needed to exchange for a session cookie.
-        //     return user.getIdToken().then(idToken => {
-        //       // Session login endpoint is queried and the session cookie is set.
-        //       // CSRF protection should be taken into account.
-        //       // ...
-        //       const csrfToken = getCookie('csrfToken')
-        //       return postIdTokenToSessionLogin('/login', idToken, csrfToken);
-        //     });
-        // });
-        //   }).then(() => {
-        //     // A page redirect would suffice as the persistence is set to NONE.
-        //     return firebase.auth().signOut();
-        //   }).then(() => {
-        //     window.location.assign('/profile');
-        //   });
-
-        // await firebaseRef.signInWithEmailAndPassword(firebaseRef.auth, data.email, data.password);
-        // await getUserId();
-        return userToken
+       
+        return true
     }
     catch(err){
         console.log("An error has occured:" + err);
@@ -57,20 +37,39 @@ async function logoutUser(email, password) {
 }
 
 async function userState(){
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebaseRef.auth.onAuthStateChanged(function(user) {
         if (user) {
           var uid = user.uid;
           console.log("User UID: ", uid);
+          return uid;
         }
       });
 }
 
 const login_user = async (req, res) => {
+    // console.log(req.body);
+
     if(req.body !== undefined){
-        let userCreated = await loginUser(req.body);
-        console.log(userCreated);
-        res.status(userCreated === null ? httpCodes.BAD_REQUEST : httpCodes.OK);
-        res.send();
+        let logged = await loginUser(req.body);
+
+        if(logged){
+            firebaseRef.auth.onAuthStateChanged(async function(user) {
+                if (user) {
+                    let userToken = await user.getIdToken(true);
+                    let uid = user.uid;
+                    // console.log('hay token', userToken);
+                    // console.log(uid);
+                    return res.status(httpCodes.OK).json({
+                        token: userToken,
+                        uid: uid,
+                    });
+                } else {
+                    console.log('Error en el inicio de sesión, datos incorrectos');
+                }
+            });
+            
+        }
+
     }
 };
 
@@ -83,4 +82,4 @@ const register_user = async (req, res) => {
     }
 };
 
-module.exports = {registerUser, getUserId, logoutUser, login_user}
+module.exports = {registerUser, getUserId, logoutUser, login_user, loginUser}

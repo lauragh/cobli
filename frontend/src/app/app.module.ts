@@ -1,9 +1,13 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+
+
+import { AuthGuard } from './guards/auth.guard';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';import { GuardsComponent } from './guards/guards.component';
-import { InterfacesComponent } from './interfaces/interfaces.component';
+import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { RecoveryComponent } from './auth/recovery/recovery.component';
@@ -15,12 +19,12 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 import { Error404Component } from './components/errors/error404.component';
+import { HttpInterceptorService } from './services/http-interceptor.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GuardsComponent,
-    InterfacesComponent,
     LoginComponent,
     RegisterComponent,
     RecoveryComponent,
@@ -31,13 +35,23 @@ import { Error404Component } from './components/errors/error404.component';
     ProfileComponent,
     ChangePasswordComponent,
     LandingPageComponent,
-    Error404Component
+    Error404Component,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    AuthGuard,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptorService ,
+      multi: true
+    },
+
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -15,6 +15,7 @@ async function createUser(data, db) {
         const cpassword = bcrypt.hashSync(data.password, salt);
         const userDateLastAccess = new Date();
         const userDateRegistration = new Date();
+        let password = data.password;
 
         let user = new User(
             data.name,
@@ -37,8 +38,15 @@ async function createUser(data, db) {
             dateRegistration: user.dateRegistration,
             images: user.images,
         }
+
+
+        let userData = { 
+            email: user.email,
+            password: data.password
+        }
+
         let userUid;
-        userUid = await auth.registerUser(user.email, data.password)
+        userUid = await auth.registerUser(userData);
 
         let locationRef = firebaseRef.ref(db, 'users/' + userUid);
         firebaseRef.set(locationRef, userObject);
@@ -56,19 +64,18 @@ async function createUser(data, db) {
 async function getUsers(db) {
     let result = null;
 
-    // let loginUser = await auth.getUserId();
-    // console.log('soy este usuario',loginUser);
-
-    let loginUser = await auth.loginUser('garcia.hdez.laura@gmail.com', 'cobli98.');
-    // let loginUser = await auth.loginUser('laura12@gmail.com', 'pepekiki98.');
-
-    let logged = false;
-
-    if(loginUser){
-        logged = true;
+    let userData = { 
+        email: 'garcia.hdez.laura@gmail.com',
+        password: 'cobli123'
     }
+
+    // let userData = { 
+    //     email: 'taras@gmail.com',
+    //     password: 'hola123.'
+    // }
+    let loginUser = await auth.loginUser(userData);
     
-    if(logged){
+    if(loginUser !== false){
         await firebaseRef.get(
             firebaseRef.child(db, "users")
         )
