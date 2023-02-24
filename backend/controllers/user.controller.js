@@ -4,6 +4,7 @@ const httpCodes = require('../database/httpCodes');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const auth = require('../controllers/auth.controller');
+const { verifyToken } = require('../helpers/verifyToken');
 
 ////* CRUD FUNCTIONS *////
 
@@ -64,18 +65,18 @@ async function createUser(data, db) {
 async function getUsers(db) {
     let result = null;
 
-    let userData = { 
-        email: 'garcia.hdez.laura@gmail.com',
-        password: 'cobli123'
-    }
+    // let userData = { 
+    //     email: 'garcia.hdez.laura@gmail.com',
+    //     password: 'cobli123'
+    // }
 
     // let userData = { 
     //     email: 'taras@gmail.com',
     //     password: 'hola123.'
     // }
-    let loginUser = await auth.loginUser(userData);
+    // let loginUser = await auth.loginUser(userData);
     
-    if(loginUser !== false){
+    // if(loginUser !== false){
         await firebaseRef.get(
             firebaseRef.child(db, "users")
         )
@@ -88,15 +89,13 @@ async function getUsers(db) {
             }
         });
     
-    }
+    // }
     return result;
 }
 
 //Get one user
 async function getUser(userId, db) {
     let result = null;
-    let loginUser = await auth.getUserId();
-    console.log(loginUser);
 
     await firebaseRef.get(
         firebaseRef.child(db, `users/${userId}`)
@@ -151,60 +150,139 @@ async function updateUser(userId, data, db) {
 }
 
 async function deleteUser(userId, db) {
-    let locationRef = firebaseRef.ref(db, `users/${userId}`);
-    await firebaseRef.set(locationRef, null);
-
+    try{
+        let locationRef = firebaseRef.ref(db, `users/${userId}`);
+        await firebaseRef.set(locationRef, null);
+        return true;
+    }
+    catch(err){
+        console.log("An error has occured:" + err);
+        return false;
+    }
 }
 
 const create_user = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(req.body !== undefined){
+    try {
         let userCreated = await createUser(req.body, db);
         console.log(userCreated);
-        res.status(userCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
-        res.send();
+        return res.json({
+            ok: true,
+            msg: 'Usuario creado',
+            user: userCreated,
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error creando usuario '+ err
+        });
     }
 };
 
 const get_user = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
-    let user, allUsers;
-    if(req.params.userId !== undefined && Object.keys(req.params).length === 1){
-        user = await getUser(req.params.userId, db);
-        console.log('usuario',user);
-        res.send(user);
-        res.status(user === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+    // console.log(req.params);
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
     }
-    else{
-        allUsers = await getUsers(db);
-        // console.log(allUsers["7cd5db46-0d10-42ef-b7d1-2344f9fe8853"])
-        // console.log(allUsers[Object.keys(allUsers)[0]].dateLastAccess)
-        console.log('usuarios',allUsers);
-        res.send(allUsers);
-        res.status(allUsers === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+
+    try {
+        let user = await getUser(req.params.userId, db);
+        console.log(user);
+        return res.json({
+            ok: true,
+            msg: 'Usuario obtenido',
+            user: user,
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error obteniendo usuario'+ err
+        });
     }
 };
+
+const get_users = async (req, res) => {
+    const db = firebaseRef.ref(firebaseRef.getDatabase());
+    console.log(req.params);
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+
+    try {
+        let allUsers = await getUsers(db);
+        console.log(allUsers);
+        return res.json({
+            ok: true,
+            msg: 'Usuarios obtenidos',
+            images: allUsers,
+        })
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error obteniendo usuarios'+ err
+        });
+    }
+}
 
 const update_user = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(req.params.userId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined){
-        userModified = await updateUser(req.params.userId, req.body, db);
-        console.log('userModified',userModified);
-        res.send(userModified);
-        res.status(userModified === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+
+    try {
+        let userModified = await updateUser(req.params.userId, req.body, db);
+
+        console.log(userModified);
+        return res.json({
+            ok: true,
+            msg: 'Usuario actualizado',
+            images: userModified,
+        })
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error actualizando usuario'+ err
+        });
     }
 };
 
 const delete_user = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(req.params.userId !== undefined && Object.keys(req.params).length === 1){
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+
+    try {
         let userDeleted = await deleteUser(req.params.userId, db);
-        res.send();
-        res.status(userDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+
+        console.log(userDeleted);
+
+        if(userDeleted === false) {
+            return res.status(401).send("Sin autorización");
+        }
+
+        return res.json({
+            ok: true,
+            msg: 'Usuario eliminado',
+        })
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error eliminando usuario'+ err
+        });
     }
 };
 
-module.exports = {create_user, get_user, update_user, delete_user}
+module.exports = {create_user, get_user, get_users, update_user, delete_user}

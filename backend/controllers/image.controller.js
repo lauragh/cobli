@@ -3,6 +3,7 @@
 const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
 const Image = require('../models/image');
+const { verifyToken } = require('../helpers/verifyToken');
 
 //Validate image
 // function validatePicture(picture){
@@ -55,19 +56,19 @@ async function createImage(userId, imagen, data, db) {
         await firebaseRef.set(
             newImageRef, imageObject
         );
-        return true;
+        return imageObject;
     }
     catch(err){
         console.log("An error has occured:" + err);
-        return false;
+        return null;
     }
 }
 
 //Get all the images from one user
-async function getImages(db) {
+async function getImages(userId, db) {
     let result = null;
     await firebaseRef.get(
-        firebaseRef.child(db, `users/${usuario}/images/`)
+        firebaseRef.child(db, `users/${userId}/images/`)
     )
     .then((snapshot) => {
         if(snapshot.exists()){
@@ -102,40 +103,49 @@ async function getImage(imageId, userId, db) {
 }
 
 //Modify one image in particular
-async function updateImage(imageId, data, db) {
+async function updateImage(userId, imageId, data, db) {
     try{
         const imageUpdated = new Date();
 
-        if(!validatePicture(data.img)){
-            throw new Error("La imagen no es válida")
-        }
-        else{
-            let image = new Image(
-                data.img,
-                data.name,
-                data.brightness,
-                data.saturation,
-                data.contrast,
-                data.dateCreation,
-                imageUpdated.toLocaleString(),
-                null,
-            );
-    
-            let imageObject = {
-                img: image.img,
-                name: image.name,
-                brightness: image.brightness,
-                saturation: image.saturation,
-                contrast: image.contrast,
-                dateCreation: image.dateCreation,
-                dateUpdation: image.dateUpdation,
-            }
+        let image = new Image(
+            data.img,
+            data.name,
+            data.brightness,
+            data.saturation,
+            data.contrast,
+            data.dateCreation,
+            imageUpdated.toLocaleString(),
+            null,
+        );
 
-            let locationRef = firebaseRef.ref(db, `users/${usuario}/images/${imageId}`);
-            await firebaseRef.update(locationRef, imageObject);
-
-            return true;
+        let imageObject = {
+            img: image.img,
+            name: image.name,
+            brightness: image.brightness,
+            saturation: image.saturation,
+            contrast: image.contrast,
+            dateCreation: image.dateCreation,
+            dateUpdation: image.dateUpdation,
         }
+
+        let locationRef = firebaseRef.ref(db, `users/${userId}/images/${imageId}`);
+        await firebaseRef.update(locationRef, imageObject);
+
+        return imageObject;
+        
+    }
+    catch(err){
+        console.log("An error has occured:" + err);
+        return null;
+    }
+}
+
+//Delete image
+async function deleteImage(userId, imageId, db) {
+    try{
+        let locationRef = firebaseRef.ref(db, `users/${userId}/images/${imageId}`);
+        await firebaseRef.set(locationRef, null);
+        return true;
     }
     catch(err){
         console.log("An error has occured:" + err);
@@ -143,65 +153,156 @@ async function updateImage(imageId, data, db) {
     }
 }
 
-//Delete image
-async function deleteImage(imageId, db) {
-    let locationRef = firebaseRef.ref(db, `users/${usuario}/images/${imageId}`);
-    await firebaseRef.set(locationRef, null);
-
-}
-
 
 const create_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
     console.log(req.files.image);
     const imagen = bf2base64(req.files.image.data);
-    if(req.params.userId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined && req.files !== undefined){
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+    try {
         let imageCreated = await createImage(req.params.userId, imagen, req.body, db);
         console.log(imageCreated);
-        res.status(imageCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
-        res.send();
+
+        if(imageCreated === null) {
+            return res.status(401).send("Sin autorización");
+        }
+        return res.json({
+            ok: true,
+            msg: 'Imagen creada',
+            image: imageCreated,
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error creando imagen '+ err
+        });
     }
 };
 
 const get_image = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
-    let image, allImages;
     console.log(req.params);
-    if(req.params.imageId !== undefined  && req.params.userId !== undefined && Object.keys(req.params).length === 2){
-        image = await getImage(req.params.imageId, req.params.userId, db);
-        console.log('image',image);
-        res.send(image);
-        res.status(image === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
     }
-    else{
-        allImages = await getImages(db);
-        // console.log(allImages["-NMZgK2YczaIQjnysRJF"]);
-        // console.log(allImages[Object.keys(allImages)[0]].name);
-        console.log('imagenes',allImages);
-        res.send(allImages);
-        res.status(allImages === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+
+    try {
+        let image = await getImage(req.params.imageId, req.params.userId, db);
+        console.log(image);
+
+        if(image === null) {
+            return res.status(401).send("Sin autorización");
+        }
+        return res.json({
+            ok: true,
+            msg: 'Imagen obtenida',
+            image: image,
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error obteniendo imagen'+ err
+        });
     }
 };
 
+const get_images = async (req, res) => {
+    const db = firebaseRef.ref(firebaseRef.getDatabase());
+    console.log(req.params);
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+
+    try {
+        let allImages = await getImages(req.params.userId, db);
+
+        console.log(allImages);
+
+        if(allImages === null) {
+            return res.status(401).send("Sin autorización");
+        }
+
+        return res.json({
+            ok: true,
+            msg: 'Imagenes obtenidas',
+            images: allImages,
+        })
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error obteniendo imagenes'+ err
+        });
+    }
+}
+
+
 const update_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
-    console.log(req.params.imageId);
-    console.log(req.body);
-    if(req.params.imageId !== undefined && Object.keys(req.params).length === 1 && req.body !== undefined){
-        imageUpdated = await updateImage(req.params.imageId, req.body, db);
-        console.log('image',imageUpdated);
-        res.send(imageUpdated);
-        res.status(imageUpdated === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+    // console.log(req.params.imageId);
+    // console.log(req.body);
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+
+    try {
+        let imageUpdated = await updateImage(req.params.userId, req.params.imageId, req.body, db);
+        
+        console.log(imageUpdated);
+
+        if(imageUpdated === null) {
+            return res.status(401).send("Sin autorización");
+        }
+
+        return res.json({
+            ok: true,
+            msg: 'Imagen actualizada',
+            image: imageUpdated,
+        })
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error actualizando imagen'+ err
+        });
     }
 };
 
 const delete_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
-    if(req.params.imageId !== undefined && Object.keys(req.params).length === 1){
-        let imageDeleted = await deleteImage(req.params.imageId, db);
-        res.send();
-        res.status(imageDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+
+    try {
+        let imageDeleted = await deleteImage(req.params.userId, req.params.imageId, db);
+
+        console.log(imageDeleted);
+
+        if(imageDeleted === false) {
+            return res.status(401).send("Sin autorización");
+        }
+
+        return res.json({
+            ok: true,
+            msg: 'Imagen eliminada',
+        })
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error eliminando imagen'+ err
+        });
     }
 };
 
-module.exports = {create_image, get_image, update_image, delete_image}
+module.exports = {create_image, get_image, get_images,update_image, delete_image}

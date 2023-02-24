@@ -2,6 +2,7 @@
 const firebaseRef = require('../database/configdb');
 const httpCodes = require('../database/httpCodes');
 const Color = require('../models/color');
+const { verifyToken } = require('../helpers/verifyToken');
 
 ////* CRUD FUNCTIONS *////
 
@@ -34,11 +35,11 @@ async function createColor(imageId, userId, data, db) {
             newColorRef, colorObject
         );
         console.log(color)
-        return true;
+        return colorObject;
     }
     catch(err){
         console.log("An error has occured:" + err);
-        return false;
+        return null;
     }
 }
 
@@ -104,7 +105,7 @@ async function deleteColor(colorId, imageId, userId, db) {
         return true;
     }
     catch(err){
-        console.log("An error has occured deleting color:" + err);
+        console.log("An error has occured:" + err);
         return false;
     }
 }
@@ -113,23 +114,57 @@ async function deleteColor(colorId, imageId, userId, db) {
 
 const create_color = async (req, res) => {
     const db = firebaseRef.getDatabase();
-    if(req.params.imageId !== undefined && req.params.userId !== undefined && Object.keys(req.params).length === 2 && req.body !== undefined){
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+    try {
         let colorCreated = await createColor(req.params.imageId, req.params.userId, req.body, db);
         console.log(colorCreated);
-        res.status(colorCreated === null ? httpCodes.BAD_REQUEST : httpCodes.CREATED);
-        res.send();
+
+        if(colorCreated === null) {
+            return res.status(401).send("Sin autorización");
+        }
+
+        return res.json({
+            ok: true,
+            msg: 'Color creado',
+            color: colorCreated,
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error creando color '+ err
+        });
     }
 }
 
 const get_color = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
-    if(req.params.imageId !== undefined && req.params.userId !== undefined && Object.keys(req.params).length === 2){
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+    try {
         let colors = await getColors(req.params.imageId, req.params.userId, db);
-        // console.log(colors["-NMe6fqwdDOAU-MV_lp1"]);
-        // console.log(colors[Object.keys(colors)[0]].color_name);
         console.log(colors);
-        res.send(colors);
-        res.status(colors === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+
+        if(colors === null) {
+            return res.status(401).send("Sin autorización");
+        }
+        
+        return res.json({
+            ok: true,
+            msg: 'Color obtenido',
+            colors: colors,
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error obteniendo color '+ err
+        });
     }
 };
 
@@ -146,12 +181,29 @@ const get_color = async (req, res) => {
 
 const delete_color = async (req, res) => {
     const db = firebaseRef.getDatabase();
-    if(req.params.imageId !== undefined && req.params.userId !== undefined && req.params.colorId !== undefined && Object.keys(req.params).length === 3){
-        let colorDeleted = await deleteColor(req.params.colorId, req.params.imageId, req.params.userId, db);
-        res.send();
-        res.status(colorDeleted === null ? httpCodes.NOT_FOUND : httpCodes.OK);
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
     }
-    res.send();
+    try {
+        let colorDeleted = await deleteColor(req.params.colorId, req.params.imageId, req.params.userId, db);
+        console.log(colorDeleted);
+
+        if(colorDeleted === false) {
+            return res.status(401).send("Sin autorización");
+        }
+
+        return res.json({
+            ok: true,
+            msg: 'Color eliminado',
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error eliminando color '+ err
+        });
+    }
 };
 
 module.exports = {create_color, get_color, delete_color}

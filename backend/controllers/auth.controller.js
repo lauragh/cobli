@@ -23,12 +23,20 @@ async function loginUser(data) {
         await firebaseRef.setPersistence(firebaseRef.auth, firebaseRef.browserSessionPersistence);
         console.log(data);
         await firebaseRef.signInWithEmailAndPassword(firebaseRef.auth, data.email, data.password);
-       
-        return true
+        let user = firebaseRef.auth.currentUser;
+        let userToken = await user.getIdToken(true);
+        let uid = user.uid;
+        // console.log('hay token', userToken);
+        // console.log(uid);
+        let objeto = {
+            token: userToken,
+            uid: uid
+        }
+        return objeto
     }
     catch(err){
         console.log("An error has occured:" + err);
-        return false  
+        return null  
     }
 }
 
@@ -41,53 +49,22 @@ async function logoutUser() {
     }
 }
 
-async function verifyToken(token){
-    firebaseRef.auth.onAuthStateChanged(function(user) {
-        if (user) {
-          if(token === user.getIdToken()){
-            return true;
-          }
-          else{
-            return false;
-          }
-        }
-    });
-}
-
 
 const login_user = async (req, res) => {
     // console.log(req.body);
-
-    if(req.body !== undefined){
+    try {
         let logged = await loginUser(req.body);
 
-        if(logged){
-            firebaseRef.auth.onAuthStateChanged(async function(user) {
-                if (user) {
-                    let userToken = await user.getIdToken(true);
-                    let uid = user.uid;
-                    // console.log('hay token', userToken);
-                    // console.log(uid);
-                    return res.status(httpCodes.OK).json({
-                        token: userToken,
-                        uid: uid,
-                    });
-                } else {
-                    console.log('Error en el inicio de sesión, datos incorrectos');
-                }
-            });
-            
-        }
-
+        return res.status(httpCodes.OK).json({
+            token: logged.token,
+            uid: logged.uid,
+        });
     }
-};
-
-const register_user = async (req, res) => {
-    if(req.body !== undefined){
-        let userCreated = await registerUser(req.body);
-        console.log(userCreated);
-        res.status(userCreated === null ? httpCodes.BAD_REQUEST : httpCodes.OK);
-        res.send();
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error en el inicio de sesión, datos incorrectos'+ err
+        });
     }
 };
 
