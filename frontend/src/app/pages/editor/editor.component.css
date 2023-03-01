@@ -1,0 +1,73 @@
+#ventana {
+  background: #F8F8F8;
+  border: 2px dashed black;
+  border-radius: 5px;
+  width: 900px;
+  height: 770px;
+}
+
+.imgCentrada{
+  align-self: center;
+}
+
+.valor {
+  border: 1px solid black;
+  width: 175px;
+  height: 40px;
+  border-radius: 5px;
+}
+
+.info {
+  width: 100%;
+}
+
+.contenedor {
+  display: flex;
+}
+
+.contenedor > :first-child {
+
+  width: 55%;
+  flex-basis: 55%;
+}
+
+.contenedor > :last-child {
+  width: 45%;
+  flex-basis: 45%;
+}
+
+.descripcion {
+  width: 110px;
+}
+
+thead {
+  background-color: var(--blue-background-cobli);
+}
+
+select {
+  border-radius: 5px;
+  padding: 2px 5px;
+  text-align: center;
+}
+
+.seccion {
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.etiquetas {
+  height: 480px;
+}
+
+.hsl {
+  height: 400px;
+}
+
+#spectrum {
+  border:1px solid #d3d3d3;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

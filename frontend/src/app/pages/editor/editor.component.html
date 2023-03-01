@@ -1,1 +1,97 @@
-<p>editor works!</p>
+<div *ngIf="image" class="container-fluid p-5 contenedor">
+  <div id="ventana" class="d-flex justify-content-center pe-5">
+    <img class="imgCentrada" src="data:image/png;base64,{{image.img}}">
+  </div>
+  <div class="col">
+    <div class="info ps-5 row justify-content-between">
+      <div class="col-6">
+        <div class="row align-items-center mb-4">
+          <h6 class="me-2 PoppinsBold descripcion">
+            Color
+          </h6>
+          <div class="valor">
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <h6 class="me-2 PoppinsBold descripcion">
+            Claridad
+          </h6>
+          <div class="valor">
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="row align-items-center mb-4">
+          <h6 class="me-2 PoppinsBold descripcion">
+            Hex
+          </h6>
+          <div class="valor">
+          </div>
+        </div>
+        <div class="row align-items-center mb-4">
+          <h6 class="me-2 PoppinsBold descripcion">
+            RGB
+          </h6>
+          <div class="valor">
+          </div>
+        </div>
+        <div class="row align-items-center mb-4">
+          <h6 class="me-2 PoppinsBold descripcion">
+            HSL
+          </h6>
+          <div class="valor">
+          </div>
+        </div>
+        <div class="row align-items-center mb-4">
+          <h6 class="me-2 PoppinsBold descripcion">
+            HSV
+          </h6>
+          <div class="valor">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ps-5 row row justify-content-between">
+      <div class="col-6">
+        <h6 class="PoppinsBold mb-3">Etiquetas de colores</h6>
+        <div class="seccion etiquetas">
+          <div class="mb-3">
+            <label class="me-3" for="color">Color</label>
+            <select name="color">
+              <option value="rojo">Rojo</option>
+              <option value="azul">Azul</option>
+              <option value="azul">Marron</option>
+            </select>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Hexadecimal</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-6">
+        <h6 class="PoppinsBold mb-3">Sistema HSL</h6>
+        <div class="seccion hsl">
+          <div class="mb-3">
+            <label class="me-3" for="color">Color</label>
+            <input id="color" #color placeholder="Introduce un color" type="text" name="color">
+          </div>
+          <canvas #spectrum class="cursor-pointer" id="spectrum" width="200" height="30">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

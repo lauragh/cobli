@@ -27,20 +27,23 @@ export class NavBarComponent implements OnInit {
   }
 
   checkLogin(): void {
-    this.authService.checkLogin.subscribe(isAuthenticated => {
-      if (isAuthenticated) {
-        console.log('autentificado', isAuthenticated);
-        this.isLoggedIn = true;
-        setTimeout(() =>{
-          if(this.authService.checkSesion()){
-            this.cargarUsuario();
-          }
-      }, 500);
-      } else {
-        console.log('no autentificado', isAuthenticated);
-        this.isLoggedIn = false;
-      }
-    });
+    if(this.authService.checkSesion()){
+      this.cargarUsuario();
+    }
+    // this.authService.checkLogin.subscribe(isAuthenticated => {
+    //   if (isAuthenticated) {
+    //     console.log('autentificado', isAuthenticated);
+    //     this.isLoggedIn = true;
+    //     setTimeout(() =>{
+    //       // if(this.authService.checkSesion()){
+    //         this.cargarUsuario();
+    //       // }
+    //     }, 500);
+    //   } else {
+    //     console.log('no autentificado', isAuthenticated);
+    //     this.isLoggedIn = false;
+    //   }
+    // });
   }
 
   logout(): void {
@@ -57,8 +60,8 @@ export class NavBarComponent implements OnInit {
     console.log('uid',this.uid);
 
     this.userService.getUser(this.uid).subscribe(res => {
-      this.name = res['name'];
-      console.log(this.name);
+      this.name = res['user'].name;
+      console.log('nombreeeee',this.name);
     });
   }
 

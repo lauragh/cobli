@@ -25,8 +25,9 @@ function bf2base64(file) {
 async function createImage(userId, imagen, data, db) {
     try{
         const imageDateCreation = new Date();
-        const imageDateUpdation = new Date();
-
+        const imageDateUpdating = new Date();
+        console.log(data);
+        
         let image = new Image(
             imagen,
             data.name,
@@ -34,7 +35,7 @@ async function createImage(userId, imagen, data, db) {
             data.saturation,
             data.contrast,
             imageDateCreation.toLocaleString(),
-            imageDateUpdation.toLocaleString(),
+            imageDateUpdating.toLocaleString(),
             null
 
         );
@@ -46,7 +47,7 @@ async function createImage(userId, imagen, data, db) {
             saturation: image.saturation,
             contrast: image.contrast,
             dateCreation: image.dateCreation,
-            dateUpdation: image.dateUpdation,
+            dateUpdating: image.dateUpdating,
             colorTags: image.colorTags
         }
 
@@ -223,7 +224,7 @@ const get_images = async (req, res) => {
     try {
         let allImages = await getImages(req.params.userId, db);
 
-        console.log(allImages);
+        // console.log(allImages);
 
         if(allImages === null) {
             return res.status(401).send("Sin autorización");

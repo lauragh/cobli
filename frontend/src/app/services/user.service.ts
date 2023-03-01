@@ -26,14 +26,12 @@ export class UserService {
     return this.http.get<any>(this.URL + '/users/' + uid)
     .pipe(
       tap((res : any) => {
-        console.log('datos del usuario',res);
         this.user = res;
       })
     );
   }
 
   getId(){
-    console.log('id dentro de service', this.user.uid);
     return this.user.uid;
   }
 

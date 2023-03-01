@@ -6,7 +6,7 @@ class Image {
         saturation,
         contrast,
         dateCreation,
-        dateUpdation,
+        dateUpdating,
         colorTags,
     ){
         this.img = img;
@@ -15,7 +15,7 @@ class Image {
         this.saturation = saturation;
         this.contrast = contrast;
         this.dateCreation = dateCreation;
-        this.dateUpdation = dateUpdation;
+        this.dateUpdating = dateUpdating;
         this.colorTags = colorTags;
     }
 }

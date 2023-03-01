@@ -24,7 +24,7 @@
     </button>
     <div class="collapse navbar-collapse justify-content-between" id="navbarText">
       <ul class="navbar-nav mr-auto">
-        <li *ngIf="isLoggedIn">
+        <li *ngIf="name !== undefined">
           <a class="nav-link" routerLinkActive="active" routerLink="/gallery">Inicio</a>
         </li>
       </ul>

@@ -192,6 +192,7 @@ const get_user = async (req, res) => {
     try {
         let user = await getUser(req.params.userId, db);
         console.log(user);
+        user.images = [];
         return res.json({
             ok: true,
             msg: 'Usuario obtenido',

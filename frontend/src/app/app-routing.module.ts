@@ -15,8 +15,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent},
   { path: 'recovery', component: RecoveryComponent},
   { path: 'gallery', component: GalleryComponent},
-  { path: 'gallery/:id', component: GalleryComponent},
   { path: 'editor', component: EditorComponent},
+  { path: 'editor/:imageId', component: EditorComponent},
   { path: '404', component: Error404Component},
   { path: '', redirectTo: '/landing', pathMatch: 'full'},
 ];

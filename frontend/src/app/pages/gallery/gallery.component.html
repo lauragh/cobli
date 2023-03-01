@@ -1,7 +1,21 @@
 <div class="container-fluid">
-  <div class="row nuevaImagen shadow">
+  <div class="row nuevaImagen shadow mb-5 cursor-pointer">
     <img class="icono" src="../../../assets/img/imagen.svg">
     <p>Nueva imagen</p>
     <p>+</p>
+  </div>
+  <div [ngClass]="images.length > 4 ? 'justify-content-between': ''" class="row d-flex">
+    <div class="col" class="tarjeta shadow" *ngFor="let image of images; let i = index">
+      <img (click)="abrirEditor(imagesId[i])" class="foto cursor-pointer" src="data:image/png;base64,{{image.img}}">
+      <div class="info d-flex row" (mouseenter)="mostrarImagen(i)" (mouseleave)="ocultarImagen(i)">
+        <div class="texto">
+          <h6 class="PoppinsMedium">{{image.name}}</h6>
+          <p class="PoppinsLight">Editado {{imagesCopy[i].dateUpdating}}</p>
+        </div>
+        <div id="divImagen">
+          <img (click)="eliminarImagen(imagesId[i], image.name)" #imagenes class="ocultar" src="../../../assets/img/cruz.svg">
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -2,11 +2,11 @@ export class Image {
   constructor(
       public img: string,
       public name: string,
-      public brightness,
-      public saturation,
-      public contrast,
-      public dateCreation,
-      public dateUpdation,
-      public colorTags,
+      public brightness: string,
+      public saturation: string,
+      public contrast: string,
+      public dateCreation: string,
+      public dateUpdating: string,
+      public colorTags?: any[],
   ){}
 }
