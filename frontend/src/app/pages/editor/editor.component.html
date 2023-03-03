@@ -1,9 +1,22 @@
-<div *ngIf="image" class="container-fluid p-5 contenedor">
-  <div id="ventana" class="d-flex justify-content-center pe-5">
-    <img class="imgCentrada" src="data:image/png;base64,{{image.img}}">
+<div *ngIf="image" id="contenedor" class="container-fluid p-5">
+  <div class="pe-5">
+    <div class="row justify-content-between mb-2">
+      <div class="width-auto">
+        <img class="me-3" src="../../../assets/img/cruz.svg">
+        <img src="../../../assets/img/guardar.svg">
+      </div>
+      <div class="width-auto">
+        <img src="../../../assets/img/lupaMenos.svg">
+        <img class="ms-2" src="../../../assets/img/lupaMas.svg">
+        <img class="ms-2" src="../../../assets/img/filtros.svg">
+      </div>
+    </div>
+    <div id="ventana" class="d-flex justify-content-center">
+      <img class="imgCentrada" src="data:image/png;base64,{{image.img}}">
+    </div>
   </div>
   <div class="col">
-    <div class="info ps-5 row justify-content-between">
+    <div class="info row justify-content-between mb-4">
       <div class="col-6">
         <div class="row align-items-center mb-4">
           <h6 class="me-2 PoppinsBold descripcion">
@@ -51,8 +64,8 @@
         </div>
       </div>
     </div>
-    <div class="ps-5 row row justify-content-between">
-      <div class="col-6">
+    <div id="conten" class="row justify-content-between">
+      <div class="col">
         <h6 class="PoppinsBold mb-3">Etiquetas de colores</h6>
         <div class="seccion etiquetas">
           <div class="mb-3">
@@ -81,15 +94,28 @@
           </table>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col">
         <h6 class="PoppinsBold mb-3">Sistema HSL</h6>
         <div class="seccion hsl">
           <div class="mb-3">
             <label class="me-3" for="color">Color</label>
             <input id="color" #color placeholder="Introduce un color" type="text" name="color">
           </div>
-          <canvas #spectrum class="cursor-pointer" id="spectrum" width="200" height="30">
-          </canvas>
+          <canvas #spectrum class="cursor-pointer" id="spectrum" height="30"></canvas>
+          <div>
+            <div class="col">
+              <div class="row d-flex">
+                <label for="luminosidad" class="form-label tamLabel" style=>Luminosidad</label>
+                <input type="range" min="0" max="100" value="32" class="form-range sliderFiltros" id="luminosidad">
+                <div class="width-auto">32</div>
+              </div>
+              <div class="row d-flex">
+                <label for="saturacion" class="form-label tamLabel" style=>Saturación</label>
+                <input type="range" min="0" max="100" value="11" class="form-range sliderFiltros" id="saturacion">
+                <div class="width-auto">11</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

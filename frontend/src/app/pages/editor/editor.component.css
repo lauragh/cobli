@@ -2,8 +2,8 @@
   background: #F8F8F8;
   border: 2px dashed black;
   border-radius: 5px;
-  width: 900px;
-  height: 770px;
+  width: 100%;
+  height: 720px;
 }
 
 .imgCentrada{
@@ -21,20 +21,36 @@
   width: 100%;
 }
 
-.contenedor {
+#contenedor {
   display: flex;
 }
 
-.contenedor > :first-child {
+#contenedor > :first-child {
 
   width: 55%;
   flex-basis: 55%;
 }
 
-.contenedor > :last-child {
+#contenedor > :last-child {
   width: 45%;
   flex-basis: 45%;
 }
+
+#conten {
+  display: flex;
+}
+
+#conten > :first-child {
+
+  width: 47%;
+  flex-basis: 47%;
+}
+
+#conten > :last-child {
+  width: 52%;
+  flex-basis: 52%;
+}
+
 
 .descripcion {
   width: 110px;
@@ -53,11 +69,11 @@ select {
 .seccion {
   border-radius: 5px;
   border: 1px solid black;
-  padding: 10px;
+  padding: 12px;
 }
 
 .etiquetas {
-  height: 480px;
+  height: 440px;
 }
 
 .hsl {
@@ -70,4 +86,45 @@ select {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+input {
+  border: none;
+  border:solid 1px #ccc;
+  border-radius: 5px;
+  padding-left: 10px;
+}
+
+input:focus
+{
+  border: 1px solid #1670BE;
+  box-shadow: 0 0 3px #1670BE;
+  outline-offset: 0px;
+  outline: none;
+}
+
+canvas {
+  width: 100%;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  width: 15px;
+  appearance: none;
+  height: 15px;
+  border-radius:20px;
+  background: #434343;
+}
+
+.sliderFiltros {
+  width: 60%;
+}
+
+
+.width-auto {
+  width: auto;
+  padding-left: 10px;
+}
+
+.tamLabel {
+  width: 115px;
 }
