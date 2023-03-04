@@ -14,10 +14,20 @@ export class EditorComponent implements OnInit, AfterViewInit{
   imageId!: string;
   userId!: string;
   image!: Image;
-  // context!: CanvasRenderingContext2D;
+  offsetX!: number;
+  offsetY!: number;
+  colorPickerTop!: any;
+  colorPickerBottom!: any;
+  container!: any;
+  isDragging: boolean = false;
+  prevX: number = 0;
+  canvas!: any;
+  newX!: any;
 
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
+  @ViewChild('muestra') muestra!: ElementRef;
+  @ViewChild('hexadecimal') hexadecimal!: ElementRef;
 
   constructor(
     private imageService: ImageService,
@@ -30,6 +40,16 @@ export class EditorComponent implements OnInit, AfterViewInit{
     setTimeout(() => {
       this.createSpectrum();
     }, 200);
+    setTimeout(() => {
+      this.colorPickerTop = document.getElementById('pickerTop');
+      this.colorPickerBottom = document.getElementById('pickerBottom');
+      this.container = document.getElementById('colorPickerContainer');
+
+      console.log('colorpicker',this.colorPickerTop, this.colorPickerBottom);
+      this.container.addEventListener('mousedown', this.dragColorPicker.bind(this));
+      this.container.addEventListener('mousemove', this.moveColorPicker.bind(this));
+      this.container.addEventListener('mouseup', this.stopDrag.bind(this));
+    }, 1000);
   }
 
   ngOnInit() {
@@ -62,14 +82,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   createSpectrum() {
-    const canvas = document.getElementById('spectrum') as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d")!;
-
-    const width = canvas.width;
-    const height = canvas.height;
+    this.canvas = document.getElementById('spectrum') as HTMLCanvasElement;
+    const ctx = this.canvas.getContext("2d")!;
 
     // Dibujar el rectángulo de espectro de colores
-    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    const gradient = ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+
     gradient.addColorStop(0, "red");
     gradient.addColorStop(1/6, "orange");
     gradient.addColorStop(2/6, "yellow");
@@ -77,23 +95,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
     gradient.addColorStop(4/6, "blue");
     gradient.addColorStop(5/6, "indigo");
     gradient.addColorStop(1, "violet");
+
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-
-    canvas.addEventListener("click", function(event) {
-      // Obtener la posición del cursor en relación al borde izquierdo del rectángulo
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-
-      // Obtener el color de la posición del cursor
-      const pixel = ctx.getImageData(x, y, 1, 1);
-      const data = pixel.data;
-      const color = "rgb(" + data[0] + ", " + data[1] + ", " + data[2] + ")";
-
-      // Hacer algo con el color seleccionado
-      console.log("El color seleccionado es: " + color);
-    });
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     const colorFilter = document.getElementById("color")!;
     colorFilter.addEventListener("change", () => {
@@ -103,11 +107,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   colorFilter() {
-    const canvas = document.getElementById('spectrum') as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = this.canvas.getContext("2d")!;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    const width = this.canvas.width;
+    const height = this.canvas.height;
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
 
      if(this.color.nativeElement.value === "blue"){
@@ -148,6 +151,64 @@ export class EditorComponent implements OnInit, AfterViewInit{
      ctx.fillRect(0, 0, width, height);
   }
 
+  dragColorPicker(event: any){
+    this.isDragging = true;
+    this.prevX = event.clientX;
+    // console.log(this.colorPicker);
+    console.log('dragueo');
+  }
 
+  moveColorPicker(evento: any){
+    if (this.isDragging) {
+      const diffX = evento.clientX - this.prevX;
+      this.prevX = evento.clientX;
+      const rect = this.container.getBoundingClientRect();
+
+      console.log('tamaño rectangulo', rect.width);
+
+      console.log('pickerTop rectangulo', this.colorPickerTop.getBoundingClientRect().width);
+
+      const maxXTop = rect.width - this.colorPickerTop.getBoundingClientRect().width;
+      console.log('tamaño max', maxXTop);
+      this.newX = this.colorPickerTop.offsetLeft + diffX;
+      console.log('nueva pos x', this.newX);
+
+      if (this.newX < 0) {
+        console.log('limite');
+        this.newX = 0;
+      }
+      else if (this.newX > maxXTop) {
+        console.log('me muevo');
+        this.newX = maxXTop;
+      }
+
+      this.colorPickerTop.style.left = this.newX + 'px';
+      this.colorPickerBottom.style.left = this.newX + 'px';
+    }
+  }
+
+  stopDrag(event: any){
+    console.log('paro');
+    this.isDragging = false;
+
+    //Obtengo el color cuando paro de mover
+    const rect = this.canvas.getBoundingClientRect();
+    const x = this.newX;
+    const y = event.clientY - rect.top;
+    const ctx = this.canvas.getContext("2d")!;
+
+    const pixel = ctx.getImageData(x, y, 1, 1);
+    const data = pixel.data;
+    const color = "#" + ("000000" + ((data[0] << 16) | (data[1] << 8) | data[2]).toString(16)).slice(-6);
+    // const color = "rgb(" + data[0] + ", " + data[1] + ", " + data[2] + ")";
+
+    console.log("El color seleccionado es: " + color);
+    this.showColor(color);
+  }
+
+  showColor(color: string){
+    this.renderer2.setStyle(this.muestra.nativeElement, 'background-color', color);
+    this.hexadecimal.nativeElement.innerHTML = color;
+  }
 
 }

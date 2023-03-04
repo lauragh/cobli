@@ -101,18 +101,32 @@
             <label class="me-3" for="color">Color</label>
             <input id="color" #color placeholder="Introduce un color" type="text" name="color">
           </div>
-          <canvas #spectrum class="cursor-pointer" id="spectrum" height="30"></canvas>
+          <div id="colorPickerContainer" class="mb-3">
+            <canvas #spectrum class="cursor-pointer" id="spectrum" ></canvas>
+            <!-- <div id="colorPicker" #colorPicker> </div> -->
+            <p id="pickerTop">&#x25BC;</p>
+            <p id="pickerBottom">&#x25B2;</p>
+          </div>
           <div>
             <div class="col">
-              <div class="row d-flex">
+              <div class="row d-flex mb-2">
                 <label for="luminosidad" class="form-label tamLabel" style=>Luminosidad</label>
                 <input type="range" min="0" max="100" value="32" class="form-range sliderFiltros" id="luminosidad">
                 <div class="width-auto">32</div>
               </div>
-              <div class="row d-flex">
+              <div class="row d-flex mb-2">
                 <label for="saturacion" class="form-label tamLabel" style=>Saturación</label>
                 <input type="range" min="0" max="100" value="11" class="form-range sliderFiltros" id="saturacion">
                 <div class="width-auto">11</div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div #muestra id="muestra" class="mb-3 justify-content-center">
+            </div>
+            <div class="row">
+              <h6 class="width-auto">Hex</h6>
+              <div id="hexadecimal" #hexadecimal>
               </div>
             </div>
           </div>
