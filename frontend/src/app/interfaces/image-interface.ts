@@ -1,4 +1,4 @@
-export class Image {
+export class ImageUser {
   constructor(
       public img: string,
       public name: string,

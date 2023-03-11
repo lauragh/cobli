@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, QueryList, Renderer2, ViewChild, ViewChildren } from '@angular/core';
-import { Image } from 'src/app/interfaces/image-interface';
+import { ImageUser } from 'src/app/interfaces/image-interface';
 import { User } from 'src/app/interfaces/user-interface';
 import { AuthService } from 'src/app/services/auth.service';
 import { ImageService } from 'src/app/services/image-service';
@@ -15,8 +15,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./gallery.component.css']
 })
 export class GalleryComponent implements OnInit{
-  images: Image[] = [];
-  imagesCopy: Image [] = [];
+  images: ImageUser[] = [];
+  imagesCopy: ImageUser [] = [];
   imagesId: string[] = [];
   user!: User;
   userId!: string;

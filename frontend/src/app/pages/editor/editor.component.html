@@ -6,13 +6,15 @@
         <img src="../../../assets/img/guardar.svg">
       </div>
       <div class="width-auto">
-        <img src="../../../assets/img/lupaMenos.svg">
-        <img class="ms-2" src="../../../assets/img/lupaMas.svg">
+        <img id="lupaMenos" src="../../../assets/img/lupaMenos.svg">
+        <img id="lupaMas" class="ms-2" src="../../../assets/img/lupaMas.svg">
         <img class="ms-2" src="../../../assets/img/filtros.svg">
       </div>
     </div>
     <div id="ventana" class="d-flex justify-content-center">
-      <img class="imgCentrada" src="data:image/png;base64,{{image.img}}">
+      <div id="tagContainer"></div>
+      <canvas id="canvas"></canvas>
+      <!-- <div style="z-index: 4" width="400" height="400">HOLA</div> -->
     </div>
   </div>
   <div class="col">
@@ -101,11 +103,11 @@
             <label class="me-3" for="color">Color</label>
             <input id="color" #color placeholder="Introduce un color" type="text" name="color">
           </div>
+
           <div id="colorPickerContainer" class="mb-3">
-            <canvas #spectrum class="cursor-pointer" id="spectrum" ></canvas>
-            <!-- <div id="colorPicker" #colorPicker> </div> -->
-            <p id="pickerTop">&#x25BC;</p>
-            <p id="pickerBottom">&#x25B2;</p>
+            <div class="bgColors"></div>
+            <p class="cursor-pointer" id="pickerTop">&#x25BC;</p>
+            <p class="cursor-pointer" id="pickerBottom">&#x25B2;</p>
           </div>
           <div>
             <div class="col">
