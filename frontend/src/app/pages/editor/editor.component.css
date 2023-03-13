@@ -9,6 +9,9 @@
   width: 175px;
   height: 40px;
   border-radius: 5px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
 }
 
 .info {
@@ -178,7 +181,6 @@ input[type='range']::-webkit-slider-thumb {
   height: 100%; */
   image-rendering: auto;
 }
-
 
 .imgCanvas {
   object-fit: contain;
