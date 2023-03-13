@@ -33,6 +33,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   zoomNum: number = 1;
   numTag: number = 1;
   tagContainer!: any;
+  canvas2!: HTMLCanvasElement;
 
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
@@ -55,7 +56,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
       this.tagContainer = document.getElementById('tagContainer')!;
 
-      this.tagContainer.addEventListener("click", (event: any) => this.getPositionClicks(event));
+      this.renderer2.listen(this.tagContainer, 'click', (event) => this.getPositionClicks(event));
+      this.renderer2.listen(this.tagContainer, 'mousemove', (event) => {
+        const x = event.layerX;
+        const y = event.layerY;
+        this.drawZoomCanvas(x, y);
+      });
 
       this.zoomInBtn = document.getElementById("lupaMas");
       this.zoomOutBtn = document.getElementById("lupaMenos");
@@ -110,7 +116,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     // this.img.src = `data:image/png;base64,${this.image.img}`;
     this.img.src = '../../../assets/img/ejemplo.png';
-    this.img.src = '../../../assets/img/image.png';
+    // this.img.src = '../../../assets/img/image.png';
     // this.img.src = `https://media.discordapp.net/attachments/1052568195493548082/1083733464571986010/paisaje-e1549600034372.png`;
     this.img.style.imageRendering = 'auto';
     this.ctx = this.canvas.getContext("2d")!;
@@ -122,7 +128,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       // this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, this.canvas.width, this.canvas.height);
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
       // this.ctx.drawImage(this.img, 0, 0);
-
       console.log('ancho y alto al cargar', this.canvas.width, this.canvas.height);
     });
   }
@@ -174,9 +179,37 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const y = event.clientY - bounding.top;
     console.log(x,y);
     this.pickColorPoint(x,y);
-
-    return [x,y]
   }
+
+  drawZoomCanvas(x: number ,y: number){
+    console.log('entro a draw');
+    this.canvas2 = document.getElementById('canvas2')! as HTMLCanvasElement;
+    var ctx = this.canvas2.getContext("2d")!;
+    ctx.imageSmoothingEnabled = false;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = '../../../assets/img/ejemplo.png';
+
+    console.log(this.tagContainer.width, this.tagContainer.height);
+    const tamContainerX = this.tagContainer.offsetWidth;
+    const tamContainerY = this.tagContainer.offsetHeight;
+    const displX = Math.trunc((tamContainerX - this.canvas.width)/2);
+    const displY = Math.trunc((tamContainerY - this.canvas.height)/2);
+    console.log(x, displX, y, displY);
+
+    img.addEventListener("load", () => {
+
+      // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+
+      ctx.drawImage(img,
+        Math.min(Math.max(0, x - displX - 5), img.width - 10),
+        Math.min(Math.max(0, y - displY - 5), img.height - 10),
+        10, 10,
+        0, 0,
+        200, 200);
+    });
+  }
+
 
   createTag(x:number, y:number, darkness: string){
     this.numTag += 1;
