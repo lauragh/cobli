@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-landing-page',
@@ -13,6 +14,8 @@ export class LandingPageComponent implements OnInit{
 
   constructor(
     private renderer2: Renderer2,
+    private router: Router
+
    ) {}
 
   ngOnInit(): void {
@@ -25,21 +28,14 @@ export class LandingPageComponent implements OnInit{
     setTimeout(() => {
       this.renderer2.addClass(this.slider2.nativeElement,'oculto2');
     }, 500);
-
-
-
-    // setTimeout(() => {
-    //   this.renderer2.removeClass(this.slider1.nativeElement,'oculto')
-    // }, 2000);
-    // this.renderer2.setAttribute(this.slider1.nativeElement,'class','oculto');
-
   }
 
   mostrar(): void {
     console.log('hola');
     this.renderer2.removeClass(this.slider1.nativeElement,'oculto');
-    // this.renderer2.addClass(this.slider1.nativeElement,'mostrar')
+  }
 
-    // this.renderer2.removeAttribute(this.slider1.nativeElement,'class','oculto');
+  goEditor(){
+    this.router.navigate(['/editor']);
   }
 }

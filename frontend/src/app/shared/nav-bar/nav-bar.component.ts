@@ -12,7 +12,7 @@ export class NavBarComponent implements OnInit {
   isLoggedIn: boolean = false;
   name!: string;
   uid!: string;
-
+  session: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -27,32 +27,30 @@ export class NavBarComponent implements OnInit {
   }
 
   checkLogin(): void {
-    if(this.authService.checkSesion()){
-      this.cargarUsuario();
-    }
-    // this.authService.checkLogin.subscribe(isAuthenticated => {
-    //   if (isAuthenticated) {
-    //     console.log('autentificado', isAuthenticated);
-    //     this.isLoggedIn = true;
-    //     setTimeout(() =>{
-    //       // if(this.authService.checkSesion()){
-    //         this.cargarUsuario();
-    //       // }
-    //     }, 500);
-    //   } else {
-    //     console.log('no autentificado', isAuthenticated);
-    //     this.isLoggedIn = false;
-    //   }
-    // });
+    this.authService.checkLogin.subscribe(isAuthenticated => {
+      if (isAuthenticated) {
+        console.log('estoy autenticado');
+        this.isLoggedIn = true;
+        setTimeout(() =>{
+          if(this.authService.checkSesion()){
+            this.cargarUsuario();
+            this.session = true;
+          }
+      }, 500);
+      } else {
+        console.log('no estoy autenticado');
+
+        this.isLoggedIn = false;
+      }
+    });
+
   }
 
   logout(): void {
     this.authService.logout();
     this.isLoggedIn = false;
     this.router.navigate(['/login']);
-    console.log(this.isLoggedIn);
-    console.log(this.name);
-
+    console.log('que eres',this.isLoggedIn)
   }
 
   cargarUsuario(): void {
@@ -61,7 +59,6 @@ export class NavBarComponent implements OnInit {
 
     this.userService.getUser(this.uid).subscribe(res => {
       this.name = res['user'].name;
-      console.log('nombreeeee',this.name);
     });
   }
 

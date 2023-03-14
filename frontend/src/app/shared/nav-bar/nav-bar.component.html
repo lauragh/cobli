@@ -24,15 +24,15 @@
     </button>
     <div class="collapse navbar-collapse justify-content-between" id="navbarText">
       <ul class="navbar-nav mr-auto">
-        <li *ngIf="name !== undefined">
+        <li *ngIf="isLoggedIn">
           <a class="nav-link" routerLinkActive="active" routerLink="/gallery">Inicio</a>
         </li>
       </ul>
       <ul class="navbar-nav justify-content-end">
-        <li *ngIf="name !== undefined" class="nav-item active">
-          <a class="nav-link">{{name}}</a>
+        <li *ngIf="isLoggedIn" class="nav-item active">
+          <a (click)="logout()" class="nav-link">{{name}}</a>
         </li>
-        <button *ngIf="name === undefined" type="button" routerLinkActive="active" routerLink="/login" class="btn btn-primary">Iniciar sesión</button>
+        <button *ngIf="!isLoggedIn" type="button" routerLinkActive="active" routerLink="/login" class="btn btn-primary">Iniciar sesión</button>
       </ul>
     </div>
   </ng-container>

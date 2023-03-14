@@ -88,9 +88,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit() {
-    this.loadUser(() => {
-      this.getImage();
-    });
+    const logged = this.route.snapshot.paramMap.has('imageId');
+    if(logged){
+      this.loadUser(() => {
+        this.getImage();
+      });
+    }
+    else{
+
+    }
   }
 
   loadUser(callback: () => void): void {
