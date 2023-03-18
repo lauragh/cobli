@@ -1,9 +1,12 @@
-<div *ngIf="image" id="contenedor" class="container-fluid p-5">
+<div id="contenedor" class="container-fluid p-5">
   <div class="pe-5">
     <div class="row justify-content-between mb-2">
       <div class="width-auto">
-        <img class="me-3" src="../../../assets/img/cruz.svg">
-        <img src="../../../assets/img/guardar.svg">
+        <img (click)="clearCanvas()" class="me-3" src="../../../assets/img/cruz.svg">
+        <img (click)="saveProject()" src="../../../assets/img/guardar.svg">
+      </div>
+      <div class="width-auto">
+        <input #projectName placeholder="Nuevo Proyecto" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
       </div>
       <div class="width-auto">
         <img id="lupaMenos" src="../../../assets/img/lupaMenos.svg">
@@ -12,9 +15,12 @@
       </div>
     </div>
     <div id="ventana" class="d-flex justify-content-center">
+      <div *ngIf="!isLogged" id="inputFile" #inputFile>
+        <label for="upload"><img src="../../../assets/img/uploadImg.svg"></label>
+        <input #fileUpload (change)="uploadPic($event)" #imageUploaded type="file" name="photo" id="upload" />
+      </div>
       <div id="tagContainer"></div>
       <canvas id="canvas"></canvas>
-      <!-- <div style="z-index: 4" width="400" height="400">HOLA</div> -->
     </div>
   </div>
   <div class="col">
@@ -24,14 +30,14 @@
           <h6 class="me-2 PoppinsBold descripcion">
             Color
           </h6>
-          <div class="valor PoppinsRegular">
+          <div #colorName class="valor PoppinsRegular">
           </div>
         </div>
         <div class="row mb-3 align-items-center">
           <h6 class="me-2 PoppinsBold descripcion">
             Claridad
           </h6>
-          <div class="valor PoppinsRegular">
+          <div #brightness class="valor PoppinsRegular">
           </div>
         </div>
         <div>
@@ -71,7 +77,7 @@
     </div>
     <div id="conten" class="row justify-content-between">
       <div class="col">
-        <h6 class="PoppinsBold mb-3">Etiquetas de colores</h6>
+        <h6 id="posModal" class="PoppinsBold mb-3">Etiquetas de colores</h6>
         <div class="seccion etiquetas">
           <div class="mb-3">
             <label class="me-3" for="color">Color</label>
@@ -81,19 +87,24 @@
               <option value="azul">Marron</option>
             </select>
           </div>
-          <table class="table">
+          <table class="table table-hover">
             <thead>
               <tr>
                 <th scope="col">Id</th>
-                <th scope="col">Hexadecimal</th>
+                <th scope="col">Hex</th>
+                <th scope="col">Descripción</th>
                 <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
+              <tr class="cursor-pointer" (click)="showTagValues(i)" *ngFor="let tag of tagColors; let i = index" (mouseenter)="showImage(i)" (mouseleave)="hideImage(i)">
+                <th scope="row">{{tag.id}}</th>
+                <td>{{tag.hex}}</td>
+                <td><input #descriptionValue title="{{tag.description}}"type="text" id="description" (keydown)="onKeyDown($event)" (change)="updateDescription(i)" [value]="tag.description"></td>
+                <td id="divImagen">
+                  <img (click)="copyText(tag.hex); $event.stopPropagation()" #tagC class="ocultar me-2 cursor-pointer" src="../../../assets/img/copy.png">
+                  <img (click)="deleteTag(tag.id, i); $event.stopPropagation()" #tagD class="ocultar cursor-pointer" src="../../../assets/img/cruz.svg">
+                </td>
               </tr>
             </tbody>
           </table>

@@ -21,6 +21,7 @@ import { LandingPageComponent } from './pages/landing-page/landing-page.componen
 import { Error404Component } from './components/errors/error404.component';
 import { HttpInterceptorService } from './services/http-interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { UserService } from './services/user.service';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
   ],
   providers: [
     AuthGuard,
+    UserService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpInterceptorService ,

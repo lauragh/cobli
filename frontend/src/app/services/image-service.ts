@@ -26,4 +26,11 @@ export class ImageService {
     return this.http.get<any>(this.URL + '/users/' + userId + '/images/' + imageId)
   }
 
+  createImage(userId: string, data: any){
+    return this.http.post<any>(this.URL + '/users/' + userId, data)
+  }
+
+  updateImage(userId: string, imageId: string, data: any){
+    return this.http.put<any>(this.URL + '/users/' + userId + '/images/' + imageId, data)
+  }
 }

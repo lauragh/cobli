@@ -37,8 +37,7 @@ export class LoginComponent implements OnInit{
           localStorage.setItem('uid', res.uid);
           localStorage.setItem('remember', this.user.remember.toString());
           localStorage.setItem('email', this.user.email);
-
-          console.log('al hacer login', localStorage.getItem('token'));
+          // console.log('al hacer login', localStorage.getItem('token'));
           this.router.navigate(['/gallery']);
         },
         error: error => {

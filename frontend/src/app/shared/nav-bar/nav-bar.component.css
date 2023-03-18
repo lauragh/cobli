@@ -1,6 +1,11 @@
 
-img {
+#logo {
   width: 100px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
 }
 
 button {
@@ -17,4 +22,8 @@ button {
 
 .navbar {
   padding: 10px 40px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

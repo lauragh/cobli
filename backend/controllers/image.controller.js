@@ -37,7 +37,6 @@ async function createImage(userId, imagen, data, db) {
             imageDateCreation.toLocaleString(),
             imageDateUpdating.toLocaleString(),
             null
-
         );
 
         let imageObject = {
@@ -157,8 +156,6 @@ async function deleteImage(userId, imageId, db) {
 
 const create_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
-    console.log(req.files.image);
-    const imagen = bf2base64(req.files.image.data);
 
     if(!(await verifyToken(req.headers.token))){
         return res.status(401).send("Sin autorización");

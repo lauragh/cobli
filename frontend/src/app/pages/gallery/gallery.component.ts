@@ -40,16 +40,10 @@ export class GalleryComponent implements OnInit{
   loadUser() {
     this.userId = this.authService.getUid();
 
-    this.userService.getUser(this.userId)
-    .subscribe({
-      next: res => {
-        console.log('usuario', res);
-        this.user = res['user'];
-        this.loadImages();
-      },
-      error: error => {
-        console.log('Error obteniendo usuario');
-      }
+    this.userService.getUserData().subscribe(data => {
+      this.user = data;
+      console.log(this.user);
+      this.loadImages();
     });
   }
 

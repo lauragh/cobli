@@ -1,9 +1,10 @@
-import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ImageService } from 'src/app/services/image-service';
 import { UserService } from 'src/app/services/user.service';
 import { ImageUser } from 'src/app/interfaces/image-interface';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-editor',
@@ -11,9 +12,15 @@ import { ImageUser } from 'src/app/interfaces/image-interface';
   styleUrls: ['./editor.component.css']
 })
 export class EditorComponent implements OnInit, AfterViewInit{
-  imageId!: string;
   userId!: string;
+
+  //image
+  imageId!: string;
+  imageUrl!: string;
+  imageFile!: File;
   image!: ImageUser;
+
+  //Hsl color picker
   offsetX!: number;
   offsetY!: number;
   colorPickerTop!: any;
@@ -25,6 +32,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
   move: boolean = false;
   bgColors: any;
   gradientColors: any[] = [];
+
+  //canvas
   canvas!: HTMLCanvasElement;
   ctx!: any;
   zoomInBtn!: any;
@@ -37,6 +46,13 @@ export class EditorComponent implements OnInit, AfterViewInit{
   pixelX: number = 0;
   pixelY: number = 0;
 
+  //color tags
+  tagColors: any[] = [];
+  infoColors: any[] = [];
+
+
+  isLogged: boolean = false;
+
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
   @ViewChild('muestra') muestra!: ElementRef;
@@ -45,6 +61,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
   @ViewChild('rgb') rgb!: ElementRef;
   @ViewChild('hsl') hsl!: ElementRef;
   @ViewChild('hsv') hsv!: ElementRef;
+  @ViewChild('colorName') colorName!: ElementRef;
+  @ViewChild('brightness') brightness!: ElementRef;
+  @ViewChild('inputFile') inputFile!: ElementRef;
+  @ViewChild('fileUpload') fileUpload!: ElementRef;
+
+  @ViewChildren('tagD') tagD!: QueryList<any>;
+  @ViewChildren('tagC') tagC!: QueryList<any>;
+  @ViewChildren('descriptionValue') descriptionValue!: QueryList<any>;
+  @ViewChild('projectName') projectName!: ElementRef;
 
   constructor(
     private imageService: ImageService,
@@ -55,25 +80,18 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   ngAfterViewInit(): void {
     setTimeout(() => {
+      this.projectName.nativeElement.value = this.image.name;
+
       this.bgColors = document.querySelector('.bgColors');
       this.getColor();
       this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
-      this.loadCanvas();
-
       this.tagContainer = document.getElementById('tagContainer')!;
-
-      this.renderer2.listen(this.tagContainer, 'click', (event) => this.getPositionClicks(event));
-      this.renderer2.listen(this.tagContainer, 'mousemove', (event) => {
-        const x = event.layerX;
-        const y = event.layerY;
-        this.drawZoomCanvas(x, y);
-      });
-
       this.zoomInBtn = document.getElementById("lupaMas");
       this.zoomOutBtn = document.getElementById("lupaMenos");
-
-      this.renderer2.listen(this.zoomInBtn, 'click', (event) => this.zoomIn('in'));
-      this.renderer2.listen(this.zoomOutBtn, 'click', (event) => this.zoomIn('out'));
+      if(this.image){
+        this.loadCanvas();
+        this.activateFunctions();
+      }
 
     }, 200);
     setTimeout(() => {
@@ -90,19 +108,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
   ngOnInit() {
     const logged = this.route.snapshot.paramMap.has('imageId');
     if(logged){
+      this.isLogged = true;
       this.loadUser(() => {
         this.getImage();
       });
-    }
-    else{
-
     }
   }
 
   loadUser(callback: () => void): void {
     this.userId = this.authService.getUid();
-    console.log('usuario',this.userId);
-
     callback();
   }
 
@@ -113,7 +127,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       .subscribe({
         next: res => {
           this.image = res.image;
-          console.log(this.image);
         },
         error: error => {
           console.log(error);
@@ -122,11 +135,43 @@ export class EditorComponent implements OnInit, AfterViewInit{
     });
   }
 
+  uploadPic(event: any){
+    this.renderer2.removeClass(this.inputFile.nativeElement, 'ver');
+    this.renderer2.addClass(this.inputFile.nativeElement, 'ocultar');
+    this.imageFile = event.target.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.imageUrl = e.target.result;
+      this.loadCanvas();
+      this.activateFunctions();
+    };
+    reader.readAsDataURL(this.imageFile);
+
+    console.log('base64',this.imageUrl);
+  }
+
+  // convertBase64(){
+  //   const file = event.target.files[0];
+
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onload = () => {
+  //     this.imageBase64 = reader.result as string;
+  //   };
+  // }
+
   loadCanvas() {
     this.img = new Image();
     this.img.crossOrigin = "anonymous";
 
-    // this.img.src = `data:image/png;base64,${this.image.img}`;
+    if(this.imageUrl){
+      this.img.src = this.imageUrl;
+    }
+    else{
+      this.img.src = `data:image/png;base64,${this.image?.img}`;
+      // this.img.src = `data:image/jpeg;base64,${this.image.img}`;
+    }
     this.img.src = '../../../assets/img/ejemplo.png';
     // this.img.src = '../../../assets/img/image.png';
     // this.img.src = `https://media.discordapp.net/attachments/1052568195493548082/1083733464571986010/paisaje-e1549600034372.png`;
@@ -140,8 +185,67 @@ export class EditorComponent implements OnInit, AfterViewInit{
       // this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, this.canvas.width, this.canvas.height);
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
       // this.ctx.drawImage(this.img, 0, 0);
-      console.log('ancho y alto al cargar', this.canvas.width, this.canvas.height);
+      // console.log('ancho y alto al cargar', this.canvas.width, this.canvas.height);
     });
+  }
+
+  listenerClickPos!: () => void;
+  listenerZoomCanvas!: () => void;
+  listenerZoomIn!: () => void;
+  listenerZoomOut!: () => void;
+
+  activateFunctions () {
+    this.tagContainer.style.cursor = 'pointer';
+
+    this.listenerClickPos = this.renderer2.listen(this.tagContainer, 'click', (event) => this.getPositionClicks(event));
+    this.listenerZoomCanvas =  this.renderer2.listen(this.tagContainer, 'mousemove', (event) => {
+      const x = event.layerX;
+      const y = event.layerY;
+      this.drawZoomCanvas(x, y);
+    });
+    this.listenerZoomIn = this.renderer2.listen(this.zoomInBtn, 'click', (event) => this.zoomIn('in'));
+    this.listenerZoomOut = this.renderer2.listen(this.zoomOutBtn, 'click', (event) => this.zoomIn('out'));
+  }
+
+  deactivateFunctions () {
+    if (this.listenerClickPos) {
+      this.listenerClickPos();
+    }
+    if (this.listenerZoomCanvas) {
+      this.listenerZoomCanvas();
+    }
+    if (this.listenerZoomIn) {
+      this.listenerZoomIn();
+    }
+    if (this.listenerZoomOut) {
+      this.listenerZoomOut();
+    }
+  }
+
+  clearCanvas(){
+    if(this.img){
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      var ctx = this.canvas2.getContext("2d")!;
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      if(this.inputFile){
+        this.renderer2.removeClass(this.inputFile.nativeElement, 'ocultar');
+        this.renderer2.addClass(this.inputFile.nativeElement, 'ver');
+        this.fileUpload.nativeElement.value = '';
+      }
+      this.tagContainer.innerHTML = '';
+      this.deactivateFunctions();
+      this.clearValues();
+    }
+  }
+
+  clearValues(){
+    this.rgb.nativeElement.innerHTML = "";
+    this.hex.nativeElement.innerHTML = "";
+    this.hsl.nativeElement.innerHTML = "";
+    this.hsv.nativeElement.innerHTML = "";
+    this.colorName.nativeElement.innerHTML = "";
+    this.brightness.nativeElement.innerHTML = "";
   }
 
   zoomIn(tipo: string){
@@ -172,7 +276,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     ctx.imageSmoothingEnabled = false;
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.src = '../../../assets/img/ejemplo.png';
+    img.src = this.img.src;
 
     // console.log(this.tagContainer.width, this.tagContainer.height);
     const tamContainerX = this.tagContainer.offsetWidth;
@@ -197,16 +301,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
   pickColorPoint(x:number, y: number) {
     const tamContainerX = this.tagContainer.offsetWidth;
     const tamContainerY = this.tagContainer.offsetHeight;
-    // console.log(this.tagContainer.width, this.tagContainer.height);
     const displX = Math.trunc((tamContainerX - this.canvas.width)/2);
     const displY = Math.trunc((tamContainerY - this.canvas.height)/2);
-    // console.log(x, displX, y, displY);
     const pixel = this.ctx.getImageData(x - displX, y - displY, this.canvas.width, this.canvas.height);
     const data = pixel.data;
 
     const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
 
-    this.getZoomedPixels()
+    this.getZoomedPixelsColor();
 
     const darkness = this.checkDarkness(data[0], data[1], data[2], data[3]/255);
     this.createTag(x,y,darkness);
@@ -214,11 +316,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return rgba;
   }
 
-  getZoomedPixels() {
+  getZoomedPixelsColor() {
     const ctx = this.canvas2.getContext('2d')!;
     const pixelData = ctx.getImageData(0, 0, 150, 150).data; // seleccionar la región de 6 píxeles
-    let rgb = {r:0,g:0,b:0},
-        count = 0;
+    let rgb = {
+      r: 0,
+      g: 0,
+      b: 0},
+    count = 0;
 
     for (let i = 0; i < pixelData.length; i += 4) { // iterar sobre los valores de los píxeles
       ++count;
@@ -232,13 +337,101 @@ export class EditorComponent implements OnInit, AfterViewInit{
     rgb.b = ~~(rgb.b/count);
 
     this.rgb.nativeElement.innerHTML = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
-    console.log(this.rgb.nativeElement.innerHTML);
     this.hex.nativeElement.innerHTML = this.rgbToHex(this.rgb.nativeElement.innerHTML);
     const { h, s, l } = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
     this.hsl.nativeElement.innerHTML = "hsl(" + h + ", " + s + "%, " + l + "%)";
     const { h2, s2, v2 } = this.rgbToHsv(rgb.r, rgb.g, rgb.b);
     this.hsv.nativeElement.innerHTML = "hsv(" + h2 + ", " + s2 + ", " + v2 + ")";
+    const colorName = this.getColorName(h, s, l);
+    this.colorName.nativeElement.innerHTML = colorName;
+    const colorIntensity = this.getIntensity(rgb.r, rgb.g, rgb.b);
+    this.brightness.nativeElement.innerHTML = colorIntensity;
 
+    const colorInfo = {
+      rgb: this.rgb.nativeElement.innerHTML,
+      hex: this.hex.nativeElement.innerHTML ,
+      hsl: this.hsl.nativeElement.innerHTML,
+      hsv: this.hsv.nativeElement.innerHTML,
+      colorName: this.colorName.nativeElement.innerHTML,
+      brightness: this.brightness.nativeElement.innerHTML,
+      pixelData:  ctx.getImageData(0, 0, 150, 150)
+    };
+
+    this.infoColors.push(colorInfo);
+  }
+
+  getColorName(hValue: number, sValue: number, lValue: number){
+    let l = Math.floor(lValue);
+    let s = Math.floor(sValue);
+    let h = Math.floor(hValue);
+
+    if (s <= 10 && l >= 90) {
+      return ("Blanco")
+    }
+    else if (l <= 15) {
+      return ("Negro")
+    }
+     else if ((s <= 10 && l <= 70) || s === 0) {
+      return ("Gris")
+    }
+    else if ((h >= 0 && h <= 15) || h >= 346) {
+      return ("Rojo");
+    }
+    else if (h >= 16 && h <= 35) {
+      if (s < 90) {
+        return ("Marrón");
+      }
+      else {
+        return ("Naranja");
+      }
+    }
+    else if (h >= 36 && h <= 54) {
+      if (s < 90) {
+        return ("Marrón");
+      }
+      else {
+        return ("Amarillo");
+      }
+    }
+    else if (h >= 55 && h <= 165) {
+      return ("Verde");
+    }
+    else if (h >= 166 && h <= 260) {
+      return ("Azul")
+    }
+    else if (h >= 261 && h <= 290) {
+      return ("Morado")
+    }
+    else if (h >= 291 && h <= 345) {
+      return ("Rosa")
+    }
+    return
+  }
+
+  getIntensity(r: number, g: number, b: number){
+    const intensity = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+    // Definir los umbrales para cada categoría de intensidad
+    const thresholds = {
+      very_light: 230,
+      light: 170,
+      medium: 100,
+      dark: 50,
+      very_dark: 0
+    };
+
+    // Comparar la intensidad del color con los umbrales para determinar la categoría
+    if (intensity >= thresholds.very_light) {
+      return "Muy claro";
+    } else if (intensity >= thresholds.light) {
+      return "Claro";
+    } else if (intensity >= thresholds.medium) {
+      return "Medio";
+    } else if (intensity >= thresholds.dark) {
+      return "Oscuro";
+    } else {
+      return "Muy oscuro";
+    }
   }
 
   getPositionClicks(event: any){
@@ -257,9 +450,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const contenido = this.renderer2.createText(this.numTag.toString());
     this.renderer2.addClass(div, 'nums');
 
-    // this.renderer2.setStyle(div, 'color', 'red');
-    // this.renderer2.setStyle(div, 'border', '2px solid red');
-
     this.renderer2.setStyle(div, 'color', darkness);
     this.renderer2.setStyle(div, 'border', '2px solid'+ darkness);
 
@@ -269,10 +459,17 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     this.renderer2.setStyle(div, 'left', `${x}px`);
     this.renderer2.setStyle(div, 'top', `${y}px`);
-    // console.log('ancho y alto',tagContainer.style.width, tagContainer.style.height);
 
     this.renderer2.appendChild(div,contenido);
     this.renderer2.appendChild(tagContainer, div);
+
+    const tagModel = {
+      id: this.numTag,
+      hex: this.hex.nativeElement.innerHTML,
+      description: this.colorName.nativeElement.innerHTML,
+    }
+    console.log('voy a pushear',tagModel);
+    this.tagColors.push(tagModel);
   }
 
   checkDarkness(r: number, g: number, b: number, a: number){
@@ -281,7 +478,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   getColor(){
-    // Analizamos la cadena de texto del estilo para obtener los colores del gradiente
     const style = window.getComputedStyle(this.bgColors);
     const backgroundImage = style.backgroundImage;
     const regex = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g;
@@ -299,13 +495,191 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const percent = (event.clientX - rect.left) / rect.width;
     const index = Math.round(percent * (this.gradientColors.length - 1));
     const color = this.gradientColors[index];
-    console.log(color);
     this.showColor(this.rgbToHex(color));
   }
 
+  ////***** COLORTAGS FUNCTIONS *****////
+
+  showImage(pos: number) {
+    this.renderer2.removeClass(this.tagD.get(pos).nativeElement, 'ocultar');
+    this.renderer2.addClass(this.tagD.get(pos).nativeElement, 'ver');
+    this.renderer2.removeClass(this.tagC.get(pos).nativeElement, 'ocultar');
+    this.renderer2.addClass(this.tagC.get(pos).nativeElement, 'ver');
+  }
+
+  hideImage(pos: number) {
+    this.renderer2.removeClass(this.tagD.get(pos).nativeElement, 'ver');
+    this.renderer2.addClass(this.tagD.get(pos).nativeElement, 'ocultar');
+    this.renderer2.removeClass(this.tagC.get(pos).nativeElement, 'ver');
+    this.renderer2.addClass(this.tagC.get(pos).nativeElement, 'ocultar');
+  }
+
+  deleteTag(id: string, index: number){
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success',
+        cancelButton: 'btn btn-outline-secondary me-3'
+      },
+      buttonsStyling: false
+    })
+    swalWithBootstrapButtons.fire({
+      title: 'Eliminar etiqueta',
+      text: `Se va a eliminar la etiqueta ${id}. ¿Desea continuar?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const pos =  this.tagColors.findIndex(objeto => objeto.id === id);
+        if (pos !== -1) {
+          this.tagColors.splice(pos, 1);
+        }
+        const divs = this.tagContainer.getElementsByTagName('div');
+        for (let div of divs) {
+          if (div.innerHTML === id.toString()) {
+            this.tagContainer.removeChild(div);
+          }
+        }
+        this.infoColors.splice(index, 1);
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Se eliminado con éxito',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
+    });
+  }
+
+  copyText(text: string){
+    navigator.clipboard.writeText(text);
+
+    const elemento = document.getElementById("posModal")!;
+
+    const mensaje = document.createElement("div");
+    mensaje.innerText = "El texto se ha copiado correctamente";
+    mensaje.style.position = "fixed";
+    mensaje.style.top = `${elemento.offsetTop}px`;
+    mensaje.style.left = `${elemento.offsetLeft}px`;
+    // mensaje.style.transform = "translate(0%, 20%)";
+    mensaje.style.padding = "10px";
+    mensaje.style.background = "rgba(0, 0, 0, 0.8)";
+    mensaje.style.color = "#fff";
+    mensaje.style.borderRadius = "5px";
+    mensaje.style.zIndex = "9999";
+    document.body.appendChild(mensaje);
+    setTimeout(() => {
+      mensaje.remove();
+    }, 2000);
+  }
+
+  copyText2(){
+    document.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.key === "c") {
+        const mensaje = document.createElement("div");
+        mensaje.innerText = "El texto se ha copiado correctamente";
+        mensaje.style.position = "fixed";
+        mensaje.style.top = "50%";
+        mensaje.style.left = "50%";
+        mensaje.style.transform = "translate(-50%, -50%)";
+        mensaje.style.padding = "10px";
+        mensaje.style.background = "rgba(0, 0, 0, 0.8)";
+        mensaje.style.color = "#fff";
+        mensaje.style.borderRadius = "5px";
+        mensaje.style.zIndex = "9999";
+        document.body.appendChild(mensaje);
+        setTimeout(() => {
+          mensaje.remove();
+        }, 2000);
+      }
+    });
+  }
+
+  showTagValues(pos: number) {
+    this.rgb.nativeElement.innerHTML = this.infoColors[pos].rgb;
+    this.hex.nativeElement.innerHTML = this.infoColors[pos].hex;
+    this.hsl.nativeElement.innerHTML = this.infoColors[pos].hsl;
+    this.hsv.nativeElement.innerHTML = this.infoColors[pos].hsv;
+    this.colorName.nativeElement.innerHTML = this.infoColors[pos].colorName;
+    this.brightness.nativeElement.innerHTML = this.infoColors[pos].brightness;
+    const ctx = this.canvas2.getContext('2d')!;
+    ctx.putImageData(this.infoColors[pos].pixelData, 0, 0);
+  }
+
+  updateDescription(pos: number){
+    this.tagColors[pos].description = this.descriptionValue.get(pos).nativeElement.value;
+
+    console.log(this.tagColors[pos]);
+  }
+
+  onKeyDown(event: any){
+    if (event.key === "Enter") {
+      event.target.blur();
+    }
+  }
+
+  ////***** PROJECT FUNCTIONS *****////
+  saveProject(){
+    if(this.isLogged){
+      this.image.dateUpdating = new Date().toLocaleString();
+      this.imageService.updateImage(this.userId, this.imageId, this.image)
+      .subscribe({
+        next: res => {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Se guardado con éxito',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        },
+        error: error => {
+          console.log(error);
+        }
+      });
+    }
+    else{
+      this.image.brightness = 0;
+      this.image.contrast = 0;
+      this.image.dateCreation = new Date().toLocaleString();
+      this.image.dateUpdating = new Date().toLocaleString();
+      this.image.img = this.imageUrl;
+      if(this.projectName.nativeElement.value){
+        this.image.name = this.projectName.nativeElement.value;
+      }
+      else{
+        this.image.name = 'Nuevo proyecto';
+      }
+      this.image.saturation = 0;
+
+      this.imageService.createImage(this.userId, this.image)
+      .subscribe({
+        next: res => {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Se guardado con éxito',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        },
+        error: error => {
+          console.log(error);
+        }
+      });
+    }
+
+
+
+  }
+
+  ////***** COLOR CONVERTIONS *****////
+
   rgbToHex(rgb: string) {
     // Extrae los valores de r, g y b de la cadena rgb(r, g, b)
-    console.log(rgb);
     const match = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
     if (!match) {
       throw new Error('Formato de color incorrecto: ' + rgb);
@@ -387,11 +761,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return { h2, s2, v2 };
   }
 
+  ////***** HSL COLORPICKER EVENTS *****////
   dragColorPicker(event: any){
     this.isDragging = true;
     this.prevX = event.clientX;
-    console.log('dragueo');
-
   }
 
   moveColorPicker(evento: any){
@@ -419,14 +792,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.colorPickerBottom.style.left = this.newX + 'px';
 
       this.obtenerColor(evento);
-
     }
   }
 
-
-
   stopDrag(event: any){
-    console.log('paro');
     if(this.move){
         const color = this.muestra.nativeElement.style.backgroundColor;
         this.rgbToHex(color);
@@ -439,7 +808,5 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(this.muestra.nativeElement, 'background-color', color);
     this.hexadecimal.nativeElement.innerHTML = color;
   }
-
-
 
 }

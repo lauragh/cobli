@@ -1,22 +1,6 @@
-<!-- <div class="container-fluid shadow">
-  <div class="row justify-content-between">
-    <div  class="col">
-        <img routerLink="/landing" (click)="logout()" src="../../../assets/img/logotipo.svg">
-    </div>
-    <div  class="col">
-      <p routerLink="/gallery"> Inicio</p>
-  </div>
-    <div class="col-5 d-flex align-self-center justify-content-end">
-      <button *ngIf="name === undefined" type="button" routerLinkActive="active" routerLink="/login" class="btn btn-primary">Iniciar sesión</button>
-      <p *ngIf="name !== undefined">{{name}}</p>
-
-    </div>
-  </div>
-</div> -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
   <a routerLink="/landing" class="navbar-brand">
-    <img  src="../../../assets/img/logotipo.svg" alt="Logotipo de Prado Silos" width="100"
-        class="d-inline-block align-text-top">
+    <img id="logo" src="../../../assets/img/logotipo.svg" alt="Logotipo de Cobli" class="d-inline-block align-text-top cursor-pointer">
   </a>
   <ng-container>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,9 +14,14 @@
       </ul>
       <ul class="navbar-nav justify-content-end">
         <li *ngIf="isLoggedIn" class="nav-item active">
-          <a (click)="logout()" class="nav-link">{{name}}</a>
+          <a (click)="showProfile()" class="nav-link cursor-pointer">{{name}}</a>
         </li>
         <button *ngIf="!isLoggedIn" type="button" routerLinkActive="active" routerLink="/login" class="btn btn-primary">Iniciar sesión</button>
+        <li *ngIf="session" class="nav-item">
+          <a class="nav-link" (click)="logout()">
+            <img class="icon cursor-pointer" src="assets/img/exit.svg" alt="Icono de salir">
+          </a>
+        </li>
       </ul>
     </div>
   </ng-container>

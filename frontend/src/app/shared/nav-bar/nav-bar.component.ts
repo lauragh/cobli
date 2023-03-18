@@ -22,7 +22,7 @@ export class NavBarComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.authService.autentificar();
+    this.authService.autentificar();
     this.checkLogin();
   }
 
@@ -36,7 +36,7 @@ export class NavBarComponent implements OnInit {
             this.cargarUsuario();
             this.session = true;
           }
-      }, 500);
+        }, 500);
       } else {
         console.log('no estoy autenticado');
 
@@ -50,16 +50,17 @@ export class NavBarComponent implements OnInit {
     this.authService.logout();
     this.isLoggedIn = false;
     this.router.navigate(['/login']);
-    console.log('que eres',this.isLoggedIn)
   }
 
   cargarUsuario(): void {
     this.uid = this.authService.getUid();
-    console.log('uid',this.uid);
-
     this.userService.getUser(this.uid).subscribe(res => {
       this.name = res['user'].name;
     });
+  }
+
+  showProfile() {
+
   }
 
 }

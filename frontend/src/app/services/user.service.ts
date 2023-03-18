@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { environment } from 'src/environments/environment';
 import { tap, map, catchError } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { User } from '../interfaces/user-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,8 @@ import { BehaviorSubject } from 'rxjs';
 export class UserService {
 
   private URL = environment.apiURL;
-  private user: any;
   private isAuthenticated = new BehaviorSubject<boolean>(false);
+  private user = new BehaviorSubject<User>({uid: '', name: '', email: '', password: '', colorBlindness: '', occupation: '', dateRegistration: '', images: []});
 
   constructor(private http: HttpClient) { }
 
@@ -26,37 +27,54 @@ export class UserService {
     return this.http.get<any>(this.URL + '/users/' + uid)
     .pipe(
       tap((res : any) => {
-        this.user = res;
+        this.user.next(res.user);
       })
     );
   }
 
+  getUserData(){
+    return this.user;
+  }
+
   getId(){
-    return this.user.uid;
+    this.user.subscribe(u => {
+      return u.uid;
+    });
   }
 
   getName(){
-    return this.user.nombre;
+    this.user.subscribe(u => {
+      return u.name;
+    });
   }
 
   getEmail(){
-    return this.user.apellidos;
+    return this.user.pipe(
+      map(user => user.email)
+    );
   }
 
   getColorBlind(){
-    return this.user.colorBlindness;
+    this.user.subscribe(u => {
+      return u.colorBlindness;
+    });
   }
 
   getOcuppation(){
-    return this.user.occupation;
+    this.user.subscribe(u => {
+      return u.occupation;
+    });
   }
 
   getDateRegistration(){
-    return this.user.dateRegistration;
+    this.user.subscribe(u => {
+      return u.dateRegistration;
+    });
   }
 
   getImages(){
-    return this.user.images;
-
+    this.user.subscribe(u => {
+      return u.images;
+    });
   }
 }
