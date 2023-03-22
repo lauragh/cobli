@@ -11,22 +11,26 @@ async function createColor(imageId, userId, data, db) {
     try{
         let color = new Color(
             data.color_name,
-            data.clarity,
-            data.hexCod,
+            data.brightness,
+            data.hex,
             data.rgb,
             data.hsl,
             data.hsv,
-            data.position
+            data.position,
+            data.id,
+            data.description,
         );
 
         let colorObject = {
             color_name: color.color_name,
-            clarity: color.clarity,
-            hexCod: color.hexCod,
+            brightness: color.brightness,
+            hex: color.hex,
             rgb: color.rgb,
             hsl: color.hsl,
             hsv: color.hsv,
-            position: color.position
+            position: color.position,
+            id: color.id,
+            description: color.description
         }
 
         const imageRef = firebaseRef.ref(db, `users/${userId}/images/${imageId}/colorTags`);

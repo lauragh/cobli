@@ -43,8 +43,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
   numTag: number = 0;
   tagContainer!: any;
   canvas2!: HTMLCanvasElement;
-  pixelX: number = 0;
-  pixelY: number = 0;
+  zoomX: number = 0;
+  zoomY: number = 0;
 
   //color tags
   tagColors: any[] = [];
@@ -91,6 +91,25 @@ export class EditorComponent implements OnInit, AfterViewInit{
       if(this.image){
         this.loadCanvas();
         this.activateFunctions();
+
+        for(let [i ,tagColor] of this.tagColors.entries()){
+          const colorInfo = {
+            rgb: tagColor.rgb,
+            hex: tagColor.hex,
+            hsl: tagColor.hsl,
+            hsv: tagColor.hsv,
+            colorName: tagColor.colorName,
+            brightness: tagColor.brightness,
+            pixelDataX: tagColor.position.x,
+            pixelDataY: tagColor.position.y,
+          };
+          this.infoColors.push(colorInfo);
+          console.log('entro', i);
+          this.pickColorPoint(tagColor.position[0], tagColor.position[1]);
+          if(i === this.tagColors.length - 1){
+            this.numTag = tagColor.id
+          }
+        }
       }
 
     }, 200);
@@ -110,7 +129,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     if(logged){
       this.isLogged = true;
       this.loadUser(() => {
-        this.getImage();
+        this.getData();
       });
     }
   }
@@ -120,13 +139,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
     callback();
   }
 
-  getImage() {
+  getData() {
     this.route.paramMap.subscribe(params => {
       this.imageId = params.get('imageId')!;
       this.imageService.getImage(this.userId, this.imageId)
       .subscribe({
         next: res => {
-          this.image = res.image;
+          this.image = res.image.img;
+          console.log(res.image.colorTags);
+          this.tagColors = res.image.colorTags;
         },
         error: error => {
           console.log(error);
@@ -151,16 +172,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     console.log('base64',this.imageUrl);
   }
 
-  // convertBase64(){
-  //   const file = event.target.files[0];
-
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(file);
-  //   reader.onload = () => {
-  //     this.imageBase64 = reader.result as string;
-  //   };
-  // }
-
   loadCanvas() {
     this.img = new Image();
     this.img.crossOrigin = "anonymous";
@@ -169,6 +180,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.img.src = this.imageUrl;
     }
     else{
+      console.log('tengo imagen');
       this.img.src = `data:image/png;base64,${this.image?.img}`;
       // this.img.src = `data:image/jpeg;base64,${this.image.img}`;
     }
@@ -185,7 +197,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       // this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, this.canvas.width, this.canvas.height);
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
       // this.ctx.drawImage(this.img, 0, 0);
-      // console.log('ancho y alto al cargar', this.canvas.width, this.canvas.height);
+      console.log('ancho y alto al cargar', this.canvas.offsetWidth, this.canvas.offsetHeight);
     });
   }
 
@@ -197,7 +209,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
   activateFunctions () {
     this.tagContainer.style.cursor = 'pointer';
 
-    this.listenerClickPos = this.renderer2.listen(this.tagContainer, 'click', (event) => this.getPositionClicks(event));
+    this.listenerClickPos = this.renderer2.listen(this.tagContainer, 'click', (event) => {
+      const x = event.layerX;
+      const y = event.layerY;
+      this.getPositionClicks(x, y);
+    });
     this.listenerZoomCanvas =  this.renderer2.listen(this.tagContainer, 'mousemove', (event) => {
       const x = event.layerX;
       const y = event.layerY;
@@ -278,45 +294,41 @@ export class EditorComponent implements OnInit, AfterViewInit{
     img.crossOrigin = "anonymous";
     img.src = this.img.src;
 
-    // console.log(this.tagContainer.width, this.tagContainer.height);
-    const tamContainerX = this.tagContainer.offsetWidth;
-    const tamContainerY = this.tagContainer.offsetHeight;
-    const displX = Math.trunc((tamContainerX - this.canvas.width)/2);
-    const displY = Math.trunc((tamContainerY - this.canvas.height)/2);
-    // console.log(x, displX, y, displY);
+    let [posX, posY] = this.getPosicionCanvas(x,y);
 
     img.addEventListener("load", () => {
       // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
       ctx.drawImage(img,
-        Math.min(Math.max(0, x - displX - 5), img.width - 10),
-        Math.min(Math.max(0, y - displY - 5), img.height - 10),
+        Math.min(Math.max(0, posX), img.width),
+        Math.min(Math.max(0, posY), img.height),
         3, 3,
         0, 0,
         150, 150);
-        this.pixelX =  x - displX - 5;
-        this.pixelY = y - displY - 5;
     });
   }
 
-  pickColorPoint(x:number, y: number) {
-    const tamContainerX = this.tagContainer.offsetWidth;
-    const tamContainerY = this.tagContainer.offsetHeight;
-    const displX = Math.trunc((tamContainerX - this.canvas.width)/2);
-    const displY = Math.trunc((tamContainerY - this.canvas.height)/2);
-    const pixel = this.ctx.getImageData(x - displX, y - displY, this.canvas.width, this.canvas.height);
+  pickColorPoint(x: number, y: number, accion?: string, num?: number) {
+    // console.log('dentro de la funcion pickColorPoint', this.canvas.offsetWidth, this.canvas.offsetHeight);
+    console.log(this.ctx);
+    const pixel = this.ctx.getImageData(x, y, this.canvas.offsetWidth, this.canvas.offsetHeight);
     const data = pixel.data;
 
     const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
 
-    this.getZoomedPixelsColor();
+    // this.getZoomedPixelsColor(x, y);
 
     const darkness = this.checkDarkness(data[0], data[1], data[2], data[3]/255);
-    this.createTag(x,y,darkness);
+    if(accion){
+      this.createTag(x, y, darkness, num);
+    }
+    else{
+      this.createTag(x, y, darkness);
+    }
 
     return rgba;
   }
 
-  getZoomedPixelsColor() {
+  getZoomedPixelsColor(x: number, y: number) {
     const ctx = this.canvas2.getContext('2d')!;
     const pixelData = ctx.getImageData(0, 0, 150, 150).data; // seleccionar la región de 6 píxeles
     let rgb = {
@@ -354,8 +366,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
       hsv: this.hsv.nativeElement.innerHTML,
       colorName: this.colorName.nativeElement.innerHTML,
       brightness: this.brightness.nativeElement.innerHTML,
-      pixelData:  ctx.getImageData(0, 0, 150, 150)
+      pixelDataX: x,
+      pixelDataY: y
     };
+
+    // pixelData:  ctx.getImageData(0, 0, 150, 150)
 
     this.infoColors.push(colorInfo);
   }
@@ -434,20 +449,38 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
   }
 
-  getPositionClicks(event: any){
-    const bounding = this.tagContainer.getBoundingClientRect();
-    const x = event.clientX - bounding.left;
-    const y = event.clientY - bounding.top;
-    // console.log(x,y);
-    this.pickColorPoint(x,y);
+  getPositionClicks(x: number, y: number){
+
+    // let [posX, posY] = this.getPosicionCanvas(x,y);
+    // const bounding = this.tagContainer.getBoundingClientRect();
+    // const x = event.clientX - bounding.left;
+    // const y = event.clientY - bounding.top;
+
+    console.log('hago click', x, y);
+    this.pickColorPoint(x, y);
   }
 
-  createTag(x:number, y:number, darkness: string){
-    this.numTag += 1;
+  getPosicionCanvas(x: number, y: number){
+    const tamContainerX = this.tagContainer.offsetWidth;
+    const tamContainerY = this.tagContainer.offsetHeight;
+    const displX = Math.trunc((tamContainerX - this.canvas.width)/2);
+    const displY = Math.trunc((tamContainerY - this.canvas.height)/2);
+
+    return [x - displX - 5, y - displY - 5]
+  }
+
+  createTag(x: number, y: number, darkness: string, num?: number){
+    let contenido;
+    if(!num){
+      this.numTag += 1;
+      contenido = this.renderer2.createText(this.numTag.toString());
+    }
+    else{
+      contenido = this.renderer2.createText(num.toString());
+    }
     const tagContainer = document.getElementById('tagContainer')!;
 
     const div = this.renderer2.createElement('div');
-    const contenido = this.renderer2.createText(this.numTag.toString());
     this.renderer2.addClass(div, 'nums');
 
     this.renderer2.setStyle(div, 'color', darkness);
@@ -460,16 +493,24 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(div, 'left', `${x}px`);
     this.renderer2.setStyle(div, 'top', `${y}px`);
 
-    this.renderer2.appendChild(div,contenido);
-    this.renderer2.appendChild(tagContainer, div);
+    // this.renderer2.appendChild(div,contenido);
+    // this.renderer2.appendChild(tagContainer, div);
 
-    const tagModel = {
-      id: this.numTag,
-      hex: this.hex.nativeElement.innerHTML,
-      description: this.colorName.nativeElement.innerHTML,
+    if(!num){
+      const tagModel = {
+        id: this.numTag,
+        description: this.colorName.nativeElement.innerHTML,
+        colorName: this.colorName.nativeElement.innerHTML,
+        brightness: this.brightness.nativeElement.innerHTML,
+        rgb: this.rgb.nativeElement.innerHTML,
+        hex: this.hex.nativeElement.innerHTML,
+        hsl: this.hsl.nativeElement.innerHTML,
+        hsv: this.hsv.nativeElement.innerHTML,
+        position: [x, y],
+      }
+      console.log('voy a pushear',tagModel);
+      this.tagColors.push(tagModel);
     }
-    console.log('voy a pushear',tagModel);
-    this.tagColors.push(tagModel);
   }
 
   checkDarkness(r: number, g: number, b: number, a: number){
@@ -599,14 +640,18 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   showTagValues(pos: number) {
+    console.log(this.infoColors);
     this.rgb.nativeElement.innerHTML = this.infoColors[pos].rgb;
     this.hex.nativeElement.innerHTML = this.infoColors[pos].hex;
     this.hsl.nativeElement.innerHTML = this.infoColors[pos].hsl;
     this.hsv.nativeElement.innerHTML = this.infoColors[pos].hsv;
     this.colorName.nativeElement.innerHTML = this.infoColors[pos].colorName;
     this.brightness.nativeElement.innerHTML = this.infoColors[pos].brightness;
-    const ctx = this.canvas2.getContext('2d')!;
-    ctx.putImageData(this.infoColors[pos].pixelData, 0, 0);
+
+    this.drawZoomCanvas(this.infoColors[pos].pixelDataX, this.infoColors[pos].pixelDataY);
+
+    // const ctx = this.canvas2.getContext('2d')!;
+    // ctx.putImageData(this.infoColors[pos].pixelData, 0, 0);
   }
 
   updateDescription(pos: number){
@@ -624,7 +669,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
   ////***** PROJECT FUNCTIONS *****////
   saveProject(){
     if(this.isLogged){
+      this.image.colorTags = this.tagColors;
       this.image.dateUpdating = new Date().toLocaleString();
+      console.log('voy a mandar', this.userId, this.imageId, this.image);
       this.imageService.updateImage(this.userId, this.imageId, this.image)
       .subscribe({
         next: res => {

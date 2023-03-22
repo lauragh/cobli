@@ -2,20 +2,24 @@
 class Color {
     constructor(
         color_name,
-        clarity,
-        hexCod,
+        brightness,
+        hex,
         rgb,
         hsl,
         hsv,
-        position
+        position,
+        id,
+        description
     ){
         this.color_name = color_name;
-        this.clarity = clarity;
-        this.hexCod = hexCod;
+        this.brightness = brightness;
+        this.hex = hex;
         this.rgb = rgb;
         this.hsl = hsl;
         this.hsv = hsv;
         this.position = position;
+        this.id = id,
+        this.description = description
     }
 }
 

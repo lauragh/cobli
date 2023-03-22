@@ -115,7 +115,7 @@ async function updateImage(userId, imageId, data, db) {
             data.contrast,
             data.dateCreation,
             imageUpdated.toLocaleString(),
-            null,
+            data.colorTags,
         );
 
         let imageObject = {
@@ -125,7 +125,8 @@ async function updateImage(userId, imageId, data, db) {
             saturation: image.saturation,
             contrast: image.contrast,
             dateCreation: image.dateCreation,
-            dateUpdation: image.dateUpdation,
+            dateUpdating: image.dateUpdating,
+            colorTags: image.colorTags
         }
 
         let locationRef = firebaseRef.ref(db, `users/${userId}/images/${imageId}`);
