@@ -63,8 +63,13 @@ export class GalleryComponent implements OnInit{
     });
   }
 
-  abrirEditor(imageId: string) {
-    this.router.navigate(['/editor/' + imageId]);
+  abrirEditor(imageId?: string) {
+    if(imageId){
+      this.router.navigate(['/editor/' + imageId]);
+    }
+    else{
+      this.router.navigate(['/editor/']);
+    }
   }
 
   mostrarImagen(pos: number) {

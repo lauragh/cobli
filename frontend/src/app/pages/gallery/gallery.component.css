@@ -31,8 +31,8 @@ p {
 }
 
 .tarjeta {
-  width: 300px;
-  background-color: blue;
+  width: 360px;
+  background-color: #f2f2f2;
   margin-left: 20px;
   margin-right: 20px;
 }
@@ -40,6 +40,8 @@ p {
 .tarjeta img {
   display: block;
   margin: auto;
+  width: auto;
+  max-width: 335px;
 }
 
 .info {
@@ -48,7 +50,7 @@ p {
 }
 
 .texto {
-  max-width: 235px;
+  max-width: 305px;
   padding-right: 0;
 }
 

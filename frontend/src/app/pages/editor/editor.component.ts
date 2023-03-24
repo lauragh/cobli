@@ -51,7 +51,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   infoColors: any[] = [];
 
 
-  isLogged: boolean = false;
+  editar: boolean = false;
 
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
@@ -70,6 +70,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   @ViewChildren('tagC') tagC!: QueryList<any>;
   @ViewChildren('descriptionValue') descriptionValue!: QueryList<any>;
   @ViewChild('projectName') projectName!: ElementRef;
+  @ViewChild('colorAvg') colorAvg!: ElementRef;
 
   constructor(
     private imageService: ImageService,
@@ -80,7 +81,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.projectName.nativeElement.value = this.image.name;
 
       this.bgColors = document.querySelector('.bgColors');
       this.getColor();
@@ -89,6 +89,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.zoomInBtn = document.getElementById("lupaMas");
       this.zoomOutBtn = document.getElementById("lupaMenos");
       if(this.image){
+        this.projectName.nativeElement.value = this.image.name;
         this.loadCanvas();
         this.activateFunctions();
 
@@ -100,12 +101,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
             hsv: tagColor.hsv,
             colorName: tagColor.colorName,
             brightness: tagColor.brightness,
-            pixelDataX: tagColor.position.x,
-            pixelDataY: tagColor.position.y,
+            colorAvg: tagColor.colorAvg
           };
           this.infoColors.push(colorInfo);
-          console.log('entro', i);
-          this.pickColorPoint(tagColor.position[0], tagColor.position[1]);
+          this.pickColorPoint(tagColor.position[0], tagColor.position[1], 'cargar', tagColor.id);
           if(i === this.tagColors.length - 1){
             this.numTag = tagColor.id
           }
@@ -125,18 +124,20 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit() {
-    const logged = this.route.snapshot.paramMap.has('imageId');
-    if(logged){
-      this.isLogged = true;
-      this.loadUser(() => {
-        this.getData();
-      });
+    const edit = this.route.snapshot.paramMap.has('imageId');
+    if(edit){
+      this.editar = true;
     }
+    this.loadUser(() => {
+      this.getData();
+    });
   }
 
   loadUser(callback: () => void): void {
     this.userId = this.authService.getUid();
-    callback();
+    if(this.editar){
+      callback();
+    }
   }
 
   getData() {
@@ -145,9 +146,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.imageService.getImage(this.userId, this.imageId)
       .subscribe({
         next: res => {
-          this.image = res.image.img;
-          console.log(res.image.colorTags);
-          this.tagColors = res.image.colorTags;
+          this.image = res.image;
+          console.log(this.image);
+          console.log('imagenes',res.image.colorTags);
+          if(res.image.colorTags !== undefined){
+            this.tagColors = res.image.colorTags;
+          }
         },
         error: error => {
           console.log(error);
@@ -181,10 +185,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
     else{
       console.log('tengo imagen');
-      this.img.src = `data:image/png;base64,${this.image?.img}`;
+      this.img.src = this.image?.img;
       // this.img.src = `data:image/jpeg;base64,${this.image.img}`;
     }
-    this.img.src = '../../../assets/img/ejemplo.png';
+    // this.img.src = '../../../assets/img/ejemplo.png';
     // this.img.src = '../../../assets/img/image.png';
     // this.img.src = `https://media.discordapp.net/attachments/1052568195493548082/1083733464571986010/paisaje-e1549600034372.png`;
     this.img.style.imageRendering = 'auto';
@@ -218,6 +222,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       const x = event.layerX;
       const y = event.layerY;
       this.drawZoomCanvas(x, y);
+      this.getZoomedPixelsColor(x,y);
     });
     this.listenerZoomIn = this.renderer2.listen(this.zoomInBtn, 'click', (event) => this.zoomIn('in'));
     this.listenerZoomOut = this.renderer2.listen(this.zoomOutBtn, 'click', (event) => this.zoomIn('out'));
@@ -308,24 +313,55 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   pickColorPoint(x: number, y: number, accion?: string, num?: number) {
-    // console.log('dentro de la funcion pickColorPoint', this.canvas.offsetWidth, this.canvas.offsetHeight);
     console.log(this.ctx);
     const pixel = this.ctx.getImageData(x, y, this.canvas.offsetWidth, this.canvas.offsetHeight);
     const data = pixel.data;
 
     const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
 
-    // this.getZoomedPixelsColor(x, y);
-
     const darkness = this.checkDarkness(data[0], data[1], data[2], data[3]/255);
+    console.log(darkness);
     if(accion){
+      console.log('accion', accion, 'num', num);
       this.createTag(x, y, darkness, num);
     }
     else{
+      this.saveZoomedPixelsColor(x, y);
       this.createTag(x, y, darkness);
     }
 
     return rgba;
+  }
+
+  saveZoomedPixelsColor(x: number, y: number) {
+
+    const rgb = this.getZoomedPixelsColor(x,y);
+
+    this.rgb.nativeElement.innerHTML = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+    this.hex.nativeElement.innerHTML = this.rgbToHex(this.rgb.nativeElement.innerHTML);
+    const { h, s, l } = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
+    this.hsl.nativeElement.innerHTML = "hsl(" + h + ", " + s + "%, " + l + "%)";
+    const { h2, s2, v2 } = this.rgbToHsv(rgb.r, rgb.g, rgb.b);
+    this.hsv.nativeElement.innerHTML = "hsv(" + h2 + ", " + s2 + ", " + v2 + ")";
+    const colorName = this.getColorName(h, s, l);
+    this.colorName.nativeElement.innerHTML = colorName;
+    const colorIntensity = this.getIntensity(rgb.r, rgb.g, rgb.b);
+    this.brightness.nativeElement.innerHTML = colorIntensity;
+
+    this.renderer2.setStyle(this.colorAvg.nativeElement, 'background-color', this.hex.nativeElement.innerHTML);
+    const ctx = this.canvas2.getContext('2d')!;
+
+    const colorInfo = {
+      rgb: this.rgb.nativeElement.innerHTML,
+      hex: this.hex.nativeElement.innerHTML,
+      hsl: this.hsl.nativeElement.innerHTML,
+      hsv: this.hsv.nativeElement.innerHTML,
+      colorName: this.colorName.nativeElement.innerHTML,
+      brightness: this.brightness.nativeElement.innerHTML,
+      pixelData: ctx.getImageData(0, 0, 150, 150),
+      colorAvg: this.hex.nativeElement.innerHTML,
+    };
+    this.infoColors.push(colorInfo);
   }
 
   getZoomedPixelsColor(x: number, y: number) {
@@ -348,31 +384,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     rgb.g = ~~(rgb.g/count);
     rgb.b = ~~(rgb.b/count);
 
-    this.rgb.nativeElement.innerHTML = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
-    this.hex.nativeElement.innerHTML = this.rgbToHex(this.rgb.nativeElement.innerHTML);
-    const { h, s, l } = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
-    this.hsl.nativeElement.innerHTML = "hsl(" + h + ", " + s + "%, " + l + "%)";
-    const { h2, s2, v2 } = this.rgbToHsv(rgb.r, rgb.g, rgb.b);
-    this.hsv.nativeElement.innerHTML = "hsv(" + h2 + ", " + s2 + ", " + v2 + ")";
-    const colorName = this.getColorName(h, s, l);
-    this.colorName.nativeElement.innerHTML = colorName;
-    const colorIntensity = this.getIntensity(rgb.r, rgb.g, rgb.b);
-    this.brightness.nativeElement.innerHTML = colorIntensity;
+    const color = this.rgbToHex("rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
+    this.renderer2.setStyle(this.colorAvg.nativeElement, 'background-color', color);
 
-    const colorInfo = {
-      rgb: this.rgb.nativeElement.innerHTML,
-      hex: this.hex.nativeElement.innerHTML ,
-      hsl: this.hsl.nativeElement.innerHTML,
-      hsv: this.hsv.nativeElement.innerHTML,
-      colorName: this.colorName.nativeElement.innerHTML,
-      brightness: this.brightness.nativeElement.innerHTML,
-      pixelDataX: x,
-      pixelDataY: y
-    };
-
-    // pixelData:  ctx.getImageData(0, 0, 150, 150)
-
-    this.infoColors.push(colorInfo);
+    return rgb;
   }
 
   getColorName(hValue: number, sValue: number, lValue: number){
@@ -493,13 +508,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(div, 'left', `${x}px`);
     this.renderer2.setStyle(div, 'top', `${y}px`);
 
-    // this.renderer2.appendChild(div,contenido);
-    // this.renderer2.appendChild(tagContainer, div);
+    this.renderer2.appendChild(div,contenido);
+    this.renderer2.appendChild(tagContainer, div);
 
     if(!num){
       const tagModel = {
         id: this.numTag,
-        description: this.colorName.nativeElement.innerHTML,
+        tagColor: darkness,
+        description: '',
         colorName: this.colorName.nativeElement.innerHTML,
         brightness: this.brightness.nativeElement.innerHTML,
         rgb: this.rgb.nativeElement.innerHTML,
@@ -507,6 +523,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
         hsl: this.hsl.nativeElement.innerHTML,
         hsv: this.hsv.nativeElement.innerHTML,
         position: [x, y],
+        colorAvg: this.hex.nativeElement.innerHTML,
       }
       console.log('voy a pushear',tagModel);
       this.tagColors.push(tagModel);
@@ -647,11 +664,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.hsv.nativeElement.innerHTML = this.infoColors[pos].hsv;
     this.colorName.nativeElement.innerHTML = this.infoColors[pos].colorName;
     this.brightness.nativeElement.innerHTML = this.infoColors[pos].brightness;
-
-    this.drawZoomCanvas(this.infoColors[pos].pixelDataX, this.infoColors[pos].pixelDataY);
-
-    // const ctx = this.canvas2.getContext('2d')!;
-    // ctx.putImageData(this.infoColors[pos].pixelData, 0, 0);
+    this.renderer2.setStyle(this.colorAvg.nativeElement, 'background-color', this.infoColors[pos].colorAvg);
+    // this.drawZoomCanvas(this.infoColors[pos].pixelDataX, this.infoColors[pos].pixelDataY);
+    if(this.infoColors[pos].pixelData){
+      const ctx = this.canvas2.getContext('2d')!;
+      ctx.putImageData(this.infoColors[pos].pixelData, 0, 0);
+    }
   }
 
   updateDescription(pos: number){
@@ -668,7 +686,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   ////***** PROJECT FUNCTIONS *****////
   saveProject(){
-    if(this.isLogged){
+    if(this.editar){
+      console.log('colores',this.tagColors, this.image);
       this.image.colorTags = this.tagColors;
       this.image.dateUpdating = new Date().toLocaleString();
       console.log('voy a mandar', this.userId, this.imageId, this.image);
@@ -689,19 +708,18 @@ export class EditorComponent implements OnInit, AfterViewInit{
       });
     }
     else{
-      this.image.brightness = 0;
-      this.image.contrast = 0;
-      this.image.dateCreation = new Date().toLocaleString();
-      this.image.dateUpdating = new Date().toLocaleString();
-      this.image.img = this.imageUrl;
-      if(this.projectName.nativeElement.value){
-        this.image.name = this.projectName.nativeElement.value;
+      const image: ImageUser = {
+        img: this.imageUrl,
+        brightness: 0,
+        contrast: 0,
+        saturation: 0,
+        dateCreation: new Date().toLocaleString(),
+        dateUpdating: new Date().toLocaleString(),
+        name: this.projectName.nativeElement.value ? this.projectName.nativeElement.value : 'Nuevo proyecto',
+        colorTags: this.tagColors,
       }
-      else{
-        this.image.name = 'Nuevo proyecto';
-      }
-      this.image.saturation = 0;
-
+      this.image = image;
+      console.log(this.userId, this.image);
       this.imageService.createImage(this.userId, this.image)
       .subscribe({
         next: res => {
@@ -718,9 +736,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
         }
       });
     }
-
-
-
   }
 
   ////***** COLOR CONVERTIONS *****////

@@ -22,21 +22,21 @@ function bf2base64(file) {
 ////* CRUD FUNCTIONS *////
 
 //Create a image 
-async function createImage(userId, imagen, data, db) {
+async function createImage(userId, data, db) {
     try{
         const imageDateCreation = new Date();
         const imageDateUpdating = new Date();
         console.log(data);
         
         let image = new Image(
-            imagen,
+            data.img,
             data.name,
             data.brightness,
             data.saturation,
             data.contrast,
             imageDateCreation.toLocaleString(),
             imageDateUpdating.toLocaleString(),
-            null
+            data.colorTags,
         );
 
         let imageObject = {
@@ -158,11 +158,12 @@ async function deleteImage(userId, imageId, db) {
 const create_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
+    console.log()
     if(!(await verifyToken(req.headers.token))){
         return res.status(401).send("Sin autorización");
     }
     try {
-        let imageCreated = await createImage(req.params.userId, imagen, req.body, db);
+        let imageCreated = await createImage(req.params.userId, req.body, db);
         console.log(imageCreated);
 
         if(imageCreated === null) {

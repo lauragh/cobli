@@ -1,4 +1,4 @@
-<div id="contenedor" class="container-fluid p-5">
+<div id="contenedor" class="container-fluid pt-4 ps-5 pe-5">
   <div class="pe-5">
     <div class="row justify-content-between mb-2">
       <div class="width-auto">
@@ -15,7 +15,7 @@
       </div>
     </div>
     <div id="ventana" class="d-flex justify-content-center">
-      <div *ngIf="!isLogged" id="inputFile" #inputFile>
+      <div *ngIf="!editar" id="inputFile" #inputFile>
         <label for="upload"><img src="../../../assets/img/uploadImg.svg"></label>
         <input #fileUpload (change)="uploadPic($event)" #imageUploaded type="file" name="photo" id="upload" />
       </div>
@@ -26,26 +26,31 @@
   <div class="col">
     <div class="info row justify-content-between mb-4">
       <div class="col-6">
-        <div class="row align-items-center mb-4">
-          <h6 class="me-2 PoppinsBold descripcion">
-            Color
-          </h6>
-          <div #colorName class="valor PoppinsRegular">
-          </div>
-        </div>
-        <div class="row mb-3 align-items-center">
-          <h6 class="me-2 PoppinsBold descripcion">
-            Claridad
-          </h6>
-          <div #brightness class="valor PoppinsRegular">
-          </div>
+        <div>
+          <h5>Zoom</h5>
+          <canvas id="canvas2"></canvas>
         </div>
         <div>
-          <canvas id="canvas2"></canvas>
+          <h5>Color medio</h5>
+          <div id="colorAvg" #colorAvg style="width: 100px; height:100px"></div>
         </div>
       </div>
       <div class="col-6">
         <div class="row align-items-center mb-4">
+          <div class="row align-items-center mb-4">
+            <h6 class="me-2 PoppinsBold descripcion">
+              Color
+            </h6>
+            <div #colorName class="valor PoppinsRegular">
+            </div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <h6 class="me-2 PoppinsBold descripcion">
+              Claridad
+            </h6>
+            <div #brightness class="valor PoppinsRegular">
+            </div>
+          </div>
           <h6 class="me-2 PoppinsBold descripcion">
             Hex
           </h6>
@@ -91,7 +96,7 @@
             <thead>
               <tr>
                 <th scope="col">Id</th>
-                <th scope="col">Hex</th>
+                <th style="width: 75px" scope="col">Hex</th>
                 <th scope="col">Descripción</th>
                 <th scope="col"></th>
               </tr>
@@ -100,7 +105,7 @@
               <tr class="cursor-pointer" (click)="showTagValues(i)" *ngFor="let tag of tagColors; let i = index" (mouseenter)="showImage(i)" (mouseleave)="hideImage(i)">
                 <th scope="row">{{tag.id}}</th>
                 <td>{{tag.hex}}</td>
-                <td><input #descriptionValue title="{{tag.description}}"type="text" id="description" (keydown)="onKeyDown($event)" (change)="updateDescription(i)" [value]="tag.description"></td>
+                <td><input #descriptionValue title="{{tag.description}}"type="text" id="description" (keydown)="onKeyDown($event)" (change)="updateDescription(i)" placeholder="Escribe una descripción" [value]="tag.description"></td>
                 <td id="divImagen">
                   <img (click)="copyText(tag.hex); $event.stopPropagation()" #tagC class="ocultar me-2 cursor-pointer" src="../../../assets/img/copy.png">
                   <img (click)="deleteTag(tag.id, i); $event.stopPropagation()" #tagD class="ocultar cursor-pointer" src="../../../assets/img/cruz.svg">
