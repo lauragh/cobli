@@ -42,7 +42,6 @@ export class GalleryComponent implements OnInit{
 
     this.userService.getUserData().subscribe(data => {
       this.user = data;
-      console.log(this.user);
       this.loadImages();
     });
   }
@@ -51,10 +50,8 @@ export class GalleryComponent implements OnInit{
     this.imageService.getImages(this.userId)
     .subscribe({
       next: res => {
-        console.log('imagenes', res);
         this.imagesId = Object.keys(res['images']);
         this.images = Object.values(res['images']);
-        console.log('imagenes', this.images);
         this.convertDate();
       },
       error: error => {
@@ -73,14 +70,12 @@ export class GalleryComponent implements OnInit{
   }
 
   mostrarImagen(pos: number) {
-    console.log('muestro');
     this.renderer2.removeClass(this.imagenes.get(pos).nativeElement, 'ocultar');
     this.renderer2.addClass(this.imagenes.get(pos).nativeElement, 'ver');
     this.imagenVisible = true;
   }
 
   ocultarImagen(pos: number) {
-    console.log('oculto');
     this.renderer2.removeClass(this.imagenes.get(pos).nativeElement, 'ver');
     this.renderer2.addClass(this.imagenes.get(pos).nativeElement, 'ocultar');
     this.imagenVisible = false;
@@ -128,7 +123,6 @@ export class GalleryComponent implements OnInit{
   convertDate(){
     this.imagesCopy = this.images.slice();
 
-    console.log(this.imagesCopy);
     for(let image of this.imagesCopy){
 
       let fullDate = image.dateUpdating.split(",");
@@ -136,26 +130,19 @@ export class GalleryComponent implements OnInit{
       let hour = fullHour[0]+":"+fullHour[1];
 
       let date = fullDate[0].split("/");
-      console.log(date);
       let dateCasted = new Date(date[2]+"-"+date[1]+"-"+date[0]);
-
-      console.log(dateCasted);
 
       const today = new Date();
       today.setHours(0,0,0,0);
 
       const timeDiff = today.getTime() - dateCasted.getTime();
-      console.log(timeDiff);
       const diffInDays = timeDiff / (1000 * 3600 * 24);
-      console.log(diffInDays);
 
       if(dateCasted.getTime() == today.getTime()){
         image.dateUpdating = 'Hoy,'+ hour;
-        console.log("hoy");
       }
       else if(diffInDays === 1){
         image.dateUpdating = 'Ayer,'+ hour;
-        console.log("ayer")
       }
     }
 

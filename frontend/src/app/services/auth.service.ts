@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,12 @@ export class AuthService {
   private URL = environment.apiURL;
   private isAuthenticated = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    const isAuthenticated = localStorage.getItem('token');
+    if (isAuthenticated) {
+      this.isAuthenticated.next(true);
+    }
+  }
 
 
   login(user: any) {
@@ -21,31 +26,16 @@ export class AuthService {
   }
 
   logout() {
-    console.log('salgo');
     this.isAuthenticated.next(false);
     localStorage.removeItem('token');
     localStorage.removeItem('uid');
   }
 
-  get checkLogin() {
+  checkLogin(): Observable<boolean> {
     return this.isAuthenticated.asObservable();
   }
 
-  autentificar() {
-    this.isAuthenticated.next(true);
-  }
-
-  checkSesion() {
-    if(localStorage.getItem('token') != null){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
-
   getToken() {
-    // console.log('quiero el token', localStorage.getItem('token'));
     return localStorage.getItem('token') as any;
   }
 

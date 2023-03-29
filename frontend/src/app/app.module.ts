@@ -22,6 +22,7 @@ import { Error404Component } from './components/errors/error404.component';
 import { HttpInterceptorService } from './services/http-interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UserService } from './services/user.service';
+import { AuthService } from './services/auth.service';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { UserService } from './services/user.service';
   providers: [
     AuthGuard,
     UserService,
+    AuthService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpInterceptorService ,

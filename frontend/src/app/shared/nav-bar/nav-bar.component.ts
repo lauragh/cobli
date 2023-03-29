@@ -12,38 +12,28 @@ export class NavBarComponent implements OnInit {
   isLoggedIn: boolean = false;
   name!: string;
   uid!: string;
-  session: boolean = false;
 
   constructor(
     private authService: AuthService,
     private userService: UserService,
     private router: Router
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
-    this.authService.autentificar();
-    this.checkLogin();
+    this.checkLogin(() => {
+      this.cargarUsuario();
+    });
   }
 
-  checkLogin(): void {
-    this.authService.checkLogin.subscribe(isAuthenticated => {
+  checkLogin(callback: () => void): void {
+    this.authService.checkLogin().subscribe(isAuthenticated => {
       if (isAuthenticated) {
-        console.log('estoy autenticado');
         this.isLoggedIn = true;
-        setTimeout(() =>{
-          if(this.authService.checkSesion()){
-            this.cargarUsuario();
-            this.session = true;
-          }
-        }, 500);
+        callback();
       } else {
-        console.log('no estoy autenticado');
-
         this.isLoggedIn = false;
       }
     });
-
   }
 
   logout(): void {
@@ -54,9 +44,11 @@ export class NavBarComponent implements OnInit {
 
   cargarUsuario(): void {
     this.uid = this.authService.getUid();
-    this.userService.getUser(this.uid).subscribe(res => {
-      this.name = res['user'].name;
-    });
+    if(this.uid){
+      this.userService.getUser(this.uid).subscribe(res => {
+        this.name = res['user'].name;
+      });
+    }
   }
 
   showProfile() {

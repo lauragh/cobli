@@ -17,7 +17,7 @@
           <a (click)="showProfile()" class="nav-link cursor-pointer">{{name}}</a>
         </li>
         <button *ngIf="!isLoggedIn" type="button" routerLinkActive="active" routerLink="/login" class="btn btn-primary">Iniciar sesión</button>
-        <li *ngIf="session" class="nav-item">
+        <li *ngIf="isLoggedIn" class="nav-item">
           <a class="nav-link" (click)="logout()">
             <img class="icon cursor-pointer" src="assets/img/exit.svg" alt="Icono de salir">
           </a>
