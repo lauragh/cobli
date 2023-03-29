@@ -27,3 +27,16 @@ button {
 .cursor-pointer {
   cursor: pointer;
 }
+
+app-profile {
+  left: 50%;
+  transform: translate(-50%, 20%);
+}
+
+.ocultar {
+  visibility: hidden;
+}
+
+.ver {
+  visibility: visible;
+}

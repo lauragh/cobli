@@ -14,20 +14,18 @@ async function registerUser(data) {
 
 async function getUserId(){
     var user = firebaseRef.auth.currentUser.uid;
-    console.log('usuario', user);
     return user
 }
 
 async function loginUser(data) {
     try{
         await firebaseRef.setPersistence(firebaseRef.auth, firebaseRef.browserSessionPersistence);
-        console.log(data);
+        console.log('datos',data);
         await firebaseRef.signInWithEmailAndPassword(firebaseRef.auth, data.email, data.password);
         let user = firebaseRef.auth.currentUser;
         let userToken = await user.getIdToken(true);
         let uid = user.uid;
-        // console.log('hay token', userToken);
-        // console.log(uid);
+     
         let objeto = {
             token: userToken,
             uid: uid

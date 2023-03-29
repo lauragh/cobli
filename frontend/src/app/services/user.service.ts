@@ -27,6 +27,7 @@ export class UserService {
     return this.http.get<any>(this.URL + '/users/' + uid)
     .pipe(
       tap((res : any) => {
+        console.log(res);
         this.user.next(res.user);
       })
     );

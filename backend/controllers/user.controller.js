@@ -16,7 +16,6 @@ async function createUser(data, db) {
         const cpassword = bcrypt.hashSync(data.password, salt);
         const userDateLastAccess = new Date();
         const userDateRegistration = new Date();
-        let password = data.password;
 
         let user = new User(
             data.name,
@@ -64,32 +63,19 @@ async function createUser(data, db) {
 
 async function getUsers(db) {
     let result = null;
-
-    // let userData = { 
-    //     email: 'garcia.hdez.laura@gmail.com',
-    //     password: 'cobli123'
-    // }
-
-    // let userData = { 
-    //     email: 'taras@gmail.com',
-    //     password: 'hola123.'
-    // }
-    // let loginUser = await auth.loginUser(userData);
+    await firebaseRef.get(
+        firebaseRef.child(db, "users")
+    )
+    .then((snapshot) => {
+        if(snapshot.exists()){
+            result = snapshot.val();
+        }
+        else{
+            console.log("Not users found");
+        }
+    });
     
-    // if(loginUser !== false){
-        await firebaseRef.get(
-            firebaseRef.child(db, "users")
-        )
-        .then((snapshot) => {
-            if(snapshot.exists()){
-                result = snapshot.val();
-            }
-            else{
-                console.log("Not users found");
-            }
-        });
-    
-    // }
+
     return result;
 }
 
@@ -191,7 +177,7 @@ const get_user = async (req, res) => {
 
     try {
         let user = await getUser(req.params.userId, db);
-        console.log(user);
+        console.log('miro esto',user);
         user.images = [];
         return res.json({
             ok: true,
@@ -209,7 +195,7 @@ const get_user = async (req, res) => {
 
 const get_users = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
-    console.log(req.params);
+    // console.log(req.params);
 
     if(!(await verifyToken(req.headers.token))){
         return res.status(401).send("Sin autorización");
@@ -217,7 +203,7 @@ const get_users = async (req, res) => {
 
     try {
         let allUsers = await getUsers(db);
-        console.log(allUsers);
+        // console.log(allUsers);
         return res.json({
             ok: true,
             msg: 'Usuarios obtenidos',
@@ -266,8 +252,6 @@ const delete_user = async (req, res) => {
 
     try {
         let userDeleted = await deleteUser(req.params.userId, db);
-
-        console.log(userDeleted);
 
         if(userDeleted === false) {
             return res.status(401).send("Sin autorización");

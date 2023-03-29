@@ -158,7 +158,6 @@ async function deleteImage(userId, imageId, db) {
 const create_image = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    console.log()
     if(!(await verifyToken(req.headers.token))){
         return res.status(401).send("Sin autorización");
     }
@@ -185,7 +184,6 @@ const create_image = async (req, res) => {
 
 const get_image = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
-    console.log(req.params);
 
     if(!(await verifyToken(req.headers.token))){
         return res.status(401).send("Sin autorización");
@@ -214,7 +212,7 @@ const get_image = async (req, res) => {
 
 const get_images = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
-    console.log(req.params);
+    console.log('miro',req.params);
 
     if(!(await verifyToken(req.headers.token))){
         return res.status(401).send("Sin autorización");
