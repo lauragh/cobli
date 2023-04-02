@@ -24,8 +24,8 @@ export class NavBarComponent implements OnInit {
     private renderer2: Renderer2
   ) {}
 
-  ngOnInit() {
-    this.checkUid();
+  async ngOnInit() {
+    await this.checkUid();
     this.checkLogin(() => {
       this.cargarUsuario();
     });
@@ -49,9 +49,7 @@ export class NavBarComponent implements OnInit {
   }
 
   cargarUsuario(): void {
-    console.log('cargo usuario');
-    this.uid = this.authService.getUid();
-
+    console.log('cargo usuario', this.uid);
     if(this.uid){
       this.userService.getUser(this.uid).subscribe(res => {
         this.name = res['user'].name;
@@ -65,11 +63,13 @@ export class NavBarComponent implements OnInit {
       await new Promise(resolve => setTimeout(resolve, 1000));
       this.uid = this.authService.getUid();
     }
+    console.log('consigo uid', this.uid);
   }
 
   showProfile() {
     this.renderer2.removeClass(this.profile.nativeElement, 'ocultar');
     this.renderer2.addClass(this.profile.nativeElement, 'ver');
+
   }
 
 }
