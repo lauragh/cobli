@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 })
 export class EditorComponent implements OnInit, AfterViewInit{
   userId!: string;
+  isLogged: boolean = false;
 
   //image
   imageId!: string;
@@ -104,7 +105,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
             colorAvg: tagColor.colorAvg
           };
           this.infoColors.push(colorInfo);
-          this.pickColorPoint(tagColor.position[0], tagColor.position[1], 'cargar', tagColor.id);
+          this.pickColorPoint(tagColor.position[0], tagColor.position[1], 'cargar', tagColor.id, tagColor.tagColor);
           if(i === this.tagColors.length - 1){
             this.numTag = tagColor.id
           }
@@ -124,10 +125,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit() {
-    const edit = this.route.snapshot.paramMap.has('imageId');
-    if(edit){
-      this.editar = true;
-    }
+    this.route.paramMap.subscribe(params => {
+      if (params.has('imageId')) {
+        this.imageId = params.get('imageId')!;
+        this.editar = true;
+      }
+    });
     this.loadUser(() => {
       this.getData();
     });
@@ -135,28 +138,26 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   loadUser(callback: () => void): void {
     this.userId = this.authService.getUid();
-    if(this.editar){
+    if(this.userId && this.editar){
+      this.isLogged = true;
       callback();
     }
   }
 
   getData() {
-    this.route.paramMap.subscribe(params => {
-      this.imageId = params.get('imageId')!;
-      this.imageService.getImage(this.userId, this.imageId)
-      .subscribe({
-        next: res => {
-          this.image = res.image;
-          console.log(this.image);
-          console.log('imagenes',res.image.colorTags);
-          if(res.image.colorTags !== undefined){
-            this.tagColors = res.image.colorTags;
-          }
-        },
-        error: error => {
-          console.log(error);
+    this.imageService.getImage(this.userId, this.imageId)
+    .subscribe({
+      next: res => {
+        this.image = res.image;
+        console.log(this.image);
+        console.log('imagenes',res.image.colorTags);
+        if(res.image.colorTags !== undefined){
+          this.tagColors = res.image.colorTags;
         }
-      });
+      },
+      error: error => {
+        console.log(error);
+      }
     });
   }
 
@@ -186,7 +187,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     else{
       console.log('tengo imagen');
       this.img.src = this.image?.img;
-      // this.img.src = `data:image/jpeg;base64,${this.image.img}`;
     }
     // this.img.src = '../../../assets/img/ejemplo.png';
     // this.img.src = '../../../assets/img/image.png';
@@ -245,6 +245,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   clearCanvas(){
     if(this.img){
+      this.tagColors = [];
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       var ctx = this.canvas2.getContext("2d")!;
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -312,7 +313,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     });
   }
 
-  pickColorPoint(x: number, y: number, accion?: string, num?: number) {
+  pickColorPoint(x: number, y: number, accion?: string, num?: number, tagColor?: string) {
     console.log(this.ctx);
     const pixel = this.ctx.getImageData(x, y, this.canvas.offsetWidth, this.canvas.offsetHeight);
     const data = pixel.data;
@@ -323,7 +324,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     console.log(darkness);
     if(accion){
       console.log('accion', accion, 'num', num);
-      this.createTag(x, y, darkness, num);
+      this.createTag(x, y, tagColor, num);
     }
     else{
       this.saveZoomedPixelsColor(x, y);
@@ -334,7 +335,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   saveZoomedPixelsColor(x: number, y: number) {
-
     const rgb = this.getZoomedPixelsColor(x,y);
 
     this.rgb.nativeElement.innerHTML = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
@@ -484,7 +484,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return [x - displX - 5, y - displY - 5]
   }
 
-  createTag(x: number, y: number, darkness: string, num?: number){
+  createTag(x: number, y: number, darkness?: string, num?: number){
     let contenido;
     if(!num){
       this.numTag += 1;

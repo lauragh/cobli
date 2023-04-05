@@ -3,10 +3,10 @@
     <div class="row justify-content-between mb-2">
       <div class="width-auto">
         <img (click)="clearCanvas()" class="me-3" src="../../../assets/img/cruz.svg">
-        <img (click)="saveProject()" src="../../../assets/img/guardar.svg">
+        <img *ngIf="isLogged" (click)="saveProject()" src="../../../assets/img/guardar.svg">
       </div>
       <div class="width-auto">
-        <input #projectName placeholder="Nuevo Proyecto" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
+        <input *ngIf="isLogged" #projectName placeholder="Nuevo proyecto" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
       </div>
       <div class="width-auto">
         <img id="lupaMenos" src="../../../assets/img/lupaMenos.svg">
