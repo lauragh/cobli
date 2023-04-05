@@ -57,9 +57,9 @@ export class ProfileComponent implements OnInit, OnChanges {
 
     const uid = this.authService.getUid();
     this.userForm.get('uid')?.setValue(uid);
-    // this.userForm.patchValue({
+    this.userForm.patchValue({
 
-    // });
+    });
     console.log(user);
     console.log(this.userForm.value);
 
