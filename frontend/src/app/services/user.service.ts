@@ -12,7 +12,7 @@ export class UserService {
 
   private URL = environment.apiURL;
   private isAuthenticated = new BehaviorSubject<boolean>(false);
-  private user = new BehaviorSubject<User>({uid: '', name: '', email: '', password: '', colorBlindness: '', occupation: '', dateRegistration: '', images: []});
+  private user = new BehaviorSubject<User>({uid: '', name: '', email: '', password: '', colorBlindness: '', occupation: '', dateRegistration: '', numImages: 0, images: []});
 
   constructor(private http: HttpClient) { }
 
@@ -23,7 +23,6 @@ export class UserService {
   }
 
   getUser(uid: string){
-    console.log(this.URL, uid);
     return this.http.get<any>(this.URL + '/users/' + uid)
     .pipe(
       tap((res : any) => {
@@ -34,8 +33,11 @@ export class UserService {
   }
 
   changePassword(data: any){
-    console.log(data);
     return this.http.put<any>(this.URL + '/newPassword/', data)
+  }
+
+  updateNumImages(uid: string, data: any){
+    return this.http.put<any>(this.URL + '/users/' + uid + '/updateNumImages', data)
   }
 
   getUserData(){

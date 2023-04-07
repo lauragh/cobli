@@ -7,6 +7,7 @@ class User {
         occupation,
         dateRegistration,
         dateLastAccess,
+        numImages,
         images
     ){
         this.name = name;
@@ -16,6 +17,7 @@ class User {
         this.occupation = occupation;
         this.dateRegistration = dateRegistration;
         this.dateLastAccess = dateLastAccess;
+        this.numImages = numImages;
         this.images = images;
     }
 }

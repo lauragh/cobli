@@ -25,6 +25,7 @@ async function createUser(data, db) {
             data.occupation,
             userDateLastAccess.toLocaleString(),
             userDateRegistration.toLocaleString(),
+            0,
             null
         );
 
@@ -36,6 +37,7 @@ async function createUser(data, db) {
             occupation: user.occupation,
             dateLastAccess: user.dateLastAccess,
             dateRegistration: user.dateRegistration,
+            numImages: user.numImages,
             images: user.images,
         }
 
@@ -98,11 +100,32 @@ async function getUser(userId, db) {
     return result;
 }
 
+async function updateNumImages(userId, action, db){
+    try {
+        let locationRef = firebaseRef.ref(db, `users/${userId}`);
+    
+        if(action === 'add'){
+            await firebaseRef.update(locationRef, {
+                numImages: firebaseRef.increment(1)
+            });
+        }
+        else if(action === 'remove') {
+            await firebaseRef.update(locationRef, {
+                numImages: firebaseRef.increment(-1)
+            });
+        }
+    
+        return true;
+    }
+    catch(err){
+        console.log("An error has occured:" + err);
+        return false;
+    }
+}
 
-//Modify one image in particular
+//Modify one user in particular
 async function updateUser(userId, data, db) {
     try{
-        const userDateLastAccess = new Date();
         let user = new User(
             data.name,
             data.email,
@@ -110,8 +133,9 @@ async function updateUser(userId, data, db) {
             data.colorBlindness,
             data.occupation,
             data.dateRegistration,
-            userDateLastAccess.toLocaleString(),
-            null
+            data.dateLastAccess,
+            data.numImages,
+            data.images
         );
 
         let userObject = {
@@ -122,6 +146,8 @@ async function updateUser(userId, data, db) {
             occupation: user.occupation,
             dateRegistration: user.dateRegistration,
             dateLastAccess: user.dateLastAccess,
+            numImages: user.images,
+            images: user.images
         }
 
         let locationRef = firebaseRef.ref(db, `users/${userId}`);
@@ -243,6 +269,32 @@ const update_user = async (req, res) => {
     }
 };
 
+const update_numImages = async (req, res) => {
+    const db = firebaseRef.getDatabase();
+
+    if(!(await verifyToken(req.headers.token))){
+        return res.status(401).send("Sin autorización");
+    }
+
+    try {
+        let numImages = await updateNumImages(req.params.userId, req.body.action, db);
+
+        console.log(numImages);
+        return res.json({
+            ok: true,
+            msg: 'Número de imágenes actualizado',
+            images: numImages,
+        })
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error actualizando número de imágenes'+ err
+        });
+    }
+};
+
+
 const delete_user = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
@@ -270,4 +322,4 @@ const delete_user = async (req, res) => {
     }
 };
 
-module.exports = {create_user, get_user, get_users, update_user, delete_user}
+module.exports = {create_user, get_user, get_users, update_user, delete_user, update_numImages}

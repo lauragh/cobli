@@ -56,7 +56,7 @@ async function createImage(userId, data, db) {
         await firebaseRef.set(
             newImageRef, imageObject
         );
-        return imageObject;
+        return [imageObject, newImageRef.key];
     }
     catch(err){
         console.log("An error has occured:" + err);

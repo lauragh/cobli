@@ -34,6 +34,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   bgColors: any;
   gradientColors: any[] = [];
 
+
   //canvas
   canvas!: HTMLCanvasElement;
   ctx!: any;
@@ -77,18 +78,19 @@ export class EditorComponent implements OnInit, AfterViewInit{
     private imageService: ImageService,
     private route: ActivatedRoute,
     private authService: AuthService,
+    private userService: UserService,
     private renderer2: Renderer2
    ) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-
       this.bgColors = document.querySelector('.bgColors');
       this.getColor();
       this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
       this.tagContainer = document.getElementById('tagContainer')!;
       this.zoomInBtn = document.getElementById("lupaMas");
       this.zoomOutBtn = document.getElementById("lupaMenos");
+
       if(this.image){
         this.projectName.nativeElement.value = this.image.name;
         this.loadCanvas();
@@ -111,7 +113,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
           }
         }
       }
-
     }, 200);
     setTimeout(() => {
       this.colorPickerTop = document.getElementById('pickerTop');
@@ -125,23 +126,17 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit() {
+    this.userId = this.authService.getUid();
+    if(this.userId){
+      this.isLogged = true;
+    }
     this.route.paramMap.subscribe(params => {
       if (params.has('imageId')) {
         this.imageId = params.get('imageId')!;
         this.editar = true;
+        this.getData();
       }
     });
-    this.loadUser(() => {
-      this.getData();
-    });
-  }
-
-  loadUser(callback: () => void): void {
-    this.userId = this.authService.getUid();
-    if(this.userId && this.editar){
-      this.isLogged = true;
-      callback();
-    }
   }
 
   getData() {
@@ -527,6 +522,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
       }
       console.log('voy a pushear',tagModel);
       this.tagColors.push(tagModel);
+      setTimeout(() => {
+        this.descriptionValue.get(this.tagColors.length - 1).nativeElement.focus();
+      },100);
     }
   }
 
@@ -687,7 +685,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   ////***** PROJECT FUNCTIONS *****////
   saveProject(){
     if(this.editar){
-      console.log('colores',this.tagColors, this.image);
+      // console.log('colores',this.tagColors, this.image);
       this.image.colorTags = this.tagColors;
       this.image.dateUpdating = new Date().toLocaleString();
       console.log('voy a mandar', this.userId, this.imageId, this.image);
@@ -723,19 +721,37 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.imageService.createImage(this.userId, this.image)
       .subscribe({
         next: res => {
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Se guardado con éxito',
-            showConfirmButton: false,
-            timer: 1500
-          })
+          console.log('resultado de crear imagen', res);
+          this.imageId = res.image[1];
+          this.updateNumImages();
         },
         error: error => {
           console.log(error);
         }
       });
     }
+  }
+
+  updateNumImages() {
+    const body = {
+      action: 'add'
+    }
+    this.userService.updateNumImages(this.userId, body)
+    .subscribe({
+      next: res => {
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Se guardado con éxito',
+          showConfirmButton: false,
+          timer: 1500
+        })
+        this.editar = true;
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
   }
 
   ////***** COLOR CONVERTIONS *****////

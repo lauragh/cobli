@@ -42,7 +42,8 @@ export class GalleryComponent implements OnInit{
 
     this.userService.getUserData().subscribe(data => {
       this.user = data;
-      if(this.user.images.length > 0){
+      if(this.user.numImages > 0){
+        console.log('entro a loadUser');
         this.loadImages();
       }
     });
@@ -104,6 +105,7 @@ export class GalleryComponent implements OnInit{
         this.imageService.deleteImage(this.userId, id)
         .subscribe({
           next: res => {
+            this.updateNumImages();
             this.loadImages();
           },
           error: error => {
@@ -111,11 +113,27 @@ export class GalleryComponent implements OnInit{
             console.log('Error eliminando imagen');
           }
         });
-        swalWithBootstrapButtons.fire(
-          'Imagen eliminada',
-          'La imagen se ha eliminado correctamente',
-          'success'
-        )
+      }
+    });
+  }
+
+  updateNumImages() {
+    const body = {
+      action: 'remove'
+    }
+    this.userService.updateNumImages(this.userId, body)
+    .subscribe({
+      next: res => {
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'La imagen se ha eliminado correctamente',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      },
+      error: error => {
+        console.log(error);
       }
     });
   }

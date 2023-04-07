@@ -6,5 +6,6 @@ export interface User {
   colorBlindness: string,
   occupation: string,
   dateRegistration: string,
+  numImages: number,
   images: any[]
 }

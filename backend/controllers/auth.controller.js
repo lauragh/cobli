@@ -23,7 +23,7 @@ async function logoutUser() {
         await firebaseRef.auth.signOut();
     }
     catch(err){
-        console.log("No se ha podido cerrar sesión:" + err);
+        console.log("An error has occured:" + err);
     }
 }
 
@@ -32,7 +32,7 @@ async function updatePassword(email) {
         await firebaseRef.sendPasswordResetEmail(firebaseRef.auth, email)
     }   
     catch(err){
-        console.log("No se ha podido cambiar la contraseña:" + err);
+        console.log("An error has occured:" + err);
     }
 }
 
@@ -53,7 +53,7 @@ async function loginUserFirebase(data) {
         return objeto
     }
     catch(err){
-        console.log("No se ha podido iniciar sesión:" + err);
+        console.log("An error has occured:" + err);
         return null  
     }
 }
