@@ -32,3 +32,11 @@ form {
 button {
   padding: 5px 20px;
 }
+
+.ocultar {
+  visibility: hidden;
+}
+
+.ver {
+  visibility: visible;
+}

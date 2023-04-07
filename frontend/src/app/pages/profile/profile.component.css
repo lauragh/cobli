@@ -1,7 +1,12 @@
-#contenedor {
+.contenedor {
   width: 450px;
   background-color: white;
   box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+  border-radius: 5px;
+}
+
+.bgBlue {
+  background-color: var(--blue-background-cobli);
 }
 
 form {
@@ -62,8 +67,38 @@ p {
   color: #0029FF;
 }
 
-
 h5 {
-  background-color: var(--blue-background-cobli);
-  padding: 5px 10px;
+  padding: 10px;
+  flex: 1;
+  margin: 0;
+}
+
+.border-radius-top {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+img {
+  padding-right: 10px;
+}
+
+input {
+  padding-bottom: 0px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#cambiarPass {
+  top: 0;
+  left: 500px;
+}
+
+.ocultar {
+  visibility: hidden;
+}
+
+.ver {
+  visibility: visible;
 }

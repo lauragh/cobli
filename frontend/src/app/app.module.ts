@@ -13,7 +13,6 @@ import { FooterComponent } from './shared/footer/footer.component';
 import { GalleryComponent } from './pages/gallery/gallery.component';
 import { EditorComponent } from './pages/editor/editor.component';
 import { ProfileComponent } from './pages/profile/profile.component';
-import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 import { Error404Component } from './components/errors/error404.component';
 import { HttpInterceptorService } from './services/http-interceptor.service';
@@ -32,7 +31,6 @@ import { AuthService } from './services/auth.service';
     GalleryComponent,
     EditorComponent,
     ProfileComponent,
-    ChangePasswordComponent,
     LandingPageComponent,
     Error404Component,
   ],

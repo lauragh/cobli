@@ -13,6 +13,7 @@
       <div class="form-check mb-4">
         <input #rembember type="checkbox" [checked]="user.remember" (change)="saveEmail(rembember.checked)" class="form-check-input" id="recordar" name="recordar">
         <label class="form-check-label" for="recordar">Recordar</label>
+        <div #aviso class="text-danger ocultar">Usuario o contraseña incorrectos</div>
       </div>
       <div class="d-flex justify-content-center">
         <button type="submit" class="btn btn-primary active">Login</button>

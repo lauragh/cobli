@@ -28,6 +28,6 @@
     </ng-container>
   </nav>
   <div #profile class="position-relative ocultar">
-    <app-profile [userLoaded]="userLoaded" class="position-absolute"></app-profile>
+    <app-profile [userLoaded]="userLoaded" (buttonClicked)="closeProfile()" class="position-absolute"></app-profile>
   </div>
 </div>

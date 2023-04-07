@@ -1,46 +1,51 @@
-<div id="contenedor">
-  <h5 class="text-center PoppinsBold">Información de la cuenta</h5>
-  <form [formGroup]="userForm" (submit)="saveChanges()">
-    <div class="position-relative mb-3">
-      <h6 class="PoppinsBold position-absolute titulo">Cuenta</h6>
-      <div class="borde">
-        <div class="mb-3">
-          <label for="email" class="form-label PoppinsRegular">Email</label>
-          <input type="text" formControlName="email" placeholder="Email" class="form-control tamInput PoppinsRegular" required>
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label PoppinsRegular">Contraseña</label>
-          <input type="text" readonly [value]="'**********'" class="form-control tamInput PoppinsRegular" required>
-          <p id="pass">Cambiar contraseña</p>
+<div class="contenedor position-relative">
+  <div>
+    <div class="border-radius-top bgBlue mb-2 d-flex justify-content-center align-items-center">
+      <h5 class="text-center PoppinsBold">Información de la cuenta</h5>
+      <img class="cursor-pointer" (click)="closeModal()" src="../../../assets/img/cruz.svg">
+    </div>
+    <form [formGroup]="userForm" (submit)="saveChanges()">
+      <div class="position-relative mb-3">
+        <h6 class="PoppinsSemiBold position-absolute titulo">Cuenta</h6>
+        <div class="borde">
+          <div class="mb-3">
+            <label for="email" class="form-label PoppinsRegular">Email</label>
+            <input type="text" formControlName="email" placeholder="Email" class="form-control tamInput PoppinsRegular" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label PoppinsRegular">Contraseña</label>
+            <input type="text" readonly [value]="'**********'" class="form-control tamInput PoppinsRegular" required>
+            <p (click)="changePass()" id="pass">Reestablecer contraseña</p>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="position-relative mb-3">
-      <h6 class="PoppinsBold position-absolute titulo">Personal</h6>
-      <div class="borde">
-        <div class="mb-3">
-          <label for="name" class="form-label PoppinsRegular">Nombre de usuario</label>
-          <input type="text" formControlName="name" placeholder="Nombre de usuario" class="form-control tamInput PoppinsRegular" required>
-        </div>
-        <div class="mb-3">
-          <label for="colorBlindness" class="form-label PoppinsRegular">Tipo de daltonismo</label>
-          <select #colorBlindness class="form-control tamInput" required>
-            <option value="-">-</option>
-            <option value="">Deuteranopía (verde)</option>
-            <option value="">Deuternomalía (verde)</option>
-            <option value="">Protanopía (rojo)</option>
-            <option value="">Protanomalía (rojo)</option>
-            <option value="">Tritanopía (azul)</option>
-            <option value="">Tritanomalía (azul)</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label for="occupation" class="form-label PoppinsRegular">Ocupación</label>
-          <input type="text" formControlName="occupation" placeholder="Ocupación" class="form-control tamInput PoppinsRegular" required>
+      <div class="position-relative mb-3">
+        <h6 class="PoppinsSemiBold position-absolute titulo">Personal</h6>
+        <div class="borde">
+          <div class="mb-3">
+            <label for="name" class="form-label PoppinsRegular">Nombre de usuario</label>
+            <input type="text" formControlName="name" class="form-control tamInput PoppinsRegular" required>
+          </div>
+          <div class="mb-3">
+            <label for="colorBlindness" class="form-label PoppinsRegular">Tipo de daltonismo</label>
+            <select #colorBlindness class="form-control tamInput" required>
+              <option value="-">-</option>
+              <option value="deuteranopia">Deuteranopía (verde)</option>
+              <option value="deuternomalia">Deuternomalía (verde)</option>
+              <option value="protanopia">Protanopía (rojo)</option>
+              <option value="protanomalia">Protanomalía (rojo)</option>
+              <option value="tritanopia">Tritanopía (azul)</option>
+              <option value="tritanomalia">Tritanomalía (azul)</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="occupation" class="form-label PoppinsRegular">Ocupación</label>
+            <input type="text" formControlName="occupation" placeholder="Ej. Ilustrador, estudiante, etc" class="form-control tamInput PoppinsRegular" required>
+          </div>
         </div>
       </div>
-    </div>
-    <p>Darse de baja</p>
-  </form>
+      <p>Darse de baja</p>
+    </form>
+  </div>
 </div>
 

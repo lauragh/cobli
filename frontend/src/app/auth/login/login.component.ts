@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from 'src/app/services/user.service';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -13,10 +12,13 @@ export class LoginComponent implements OnInit{
   user !: any;
   savedEmail: boolean = false;
 
+  @ViewChild('aviso') aviso!: ElementRef;
+
   constructor(
-    private userService: UserService,
     private authService: AuthService,
     private router: Router,
+    private renderer2: Renderer2
+
   )
   {}
 
@@ -25,7 +27,6 @@ export class LoginComponent implements OnInit{
       email: localStorage.getItem('remember') === 'true' ? localStorage.getItem('email') : '',
       password: '',
       remember: localStorage.getItem('remember') === 'true' ? true : false,
-      // autocomplete: localStorage.getItem('remember') ? "on" : "off"
     };
   }
 
@@ -37,10 +38,11 @@ export class LoginComponent implements OnInit{
           localStorage.setItem('uid', res.uid);
           localStorage.setItem('remember', this.user.remember.toString());
           localStorage.setItem('email', this.user.email);
-          // console.log('al hacer login', localStorage.getItem('token'));
           this.router.navigate(['/gallery']);
         },
         error: error => {
+          this.renderer2.removeClass(this.aviso.nativeElement, 'ocultar');
+          this.renderer2.addClass(this.aviso.nativeElement, 'ver');
           this.errorLogin = error.error;
         }
       });

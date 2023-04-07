@@ -69,7 +69,11 @@ export class NavBarComponent implements OnInit {
   showProfile() {
     this.renderer2.removeClass(this.profile.nativeElement, 'ocultar');
     this.renderer2.addClass(this.profile.nativeElement, 'ver');
+  }
 
+  closeProfile(){
+    this.renderer2.removeClass(this.profile.nativeElement, 'ver');
+    this.renderer2.addClass(this.profile.nativeElement, 'ocultar');
   }
 
 }

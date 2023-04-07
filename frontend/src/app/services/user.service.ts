@@ -33,6 +33,11 @@ export class UserService {
     );
   }
 
+  changePassword(data: any){
+    console.log(data);
+    return this.http.put<any>(this.URL + '/newPassword/', data)
+  }
+
   getUserData(){
     return this.user;
   }
@@ -50,9 +55,9 @@ export class UserService {
   }
 
   getEmail(){
-    return this.user.pipe(
-      map(user => user.email)
-    );
+    this.user.subscribe(u => {
+      return u.email;
+    });
   }
 
   getColorBlind(){

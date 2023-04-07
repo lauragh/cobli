@@ -42,7 +42,9 @@ export class GalleryComponent implements OnInit{
 
     this.userService.getUserData().subscribe(data => {
       this.user = data;
-      this.loadImages();
+      if(this.user.images.length > 0){
+        this.loadImages();
+      }
     });
   }
 
