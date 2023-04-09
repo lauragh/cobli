@@ -40,7 +40,6 @@ export class ProfileComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.loadUser();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -103,27 +102,28 @@ export class ProfileComponent implements OnInit, OnChanges {
   }
 
   loadUser(){
-    let user: any = '';
-
-    this.userService.getUserData().subscribe(data => {
-      user = data;
-    });
-
     this.uid = this.authService.getUid();
-    this.userForm.get('uid')?.setValue(this.uid);
-    console.log(user.colorBlindness);
-    this.userForm.patchValue({
-      name: user.name,
-      email: user.email,
-      password: user.password,
-      colorBlindness: user.colorBlindness,
-      occupation: user.occupation,
-      dateRegistration: user.dateRegistration,
-      dateLastAccess: user.dateLastAccess,
-      images: user.images
+
+    this.userService.getUser(this.uid)
+    .subscribe({
+      next: res => {
+        this.userForm.get('uid')?.setValue(this.uid);
+        console.log(res.user.colorBlindness);
+        this.userForm.patchValue({
+          name: res.user.name,
+          email: res.user.email,
+          password: res.user.password,
+          colorBlindness: res.user.colorBlindness,
+          occupation: res.user.occupation,
+          dateRegistration: res.user.dateRegistration,
+          dateLastAccess: res.user.dateLastAccess,
+          images: res.user.images
+        });
+      },
+      error: error => {
+        console.log(error);
+      }
     });
-    console.log(user);
-    console.log(this.userForm.value);
   }
 
   changePass(){

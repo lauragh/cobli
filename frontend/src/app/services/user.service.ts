@@ -12,7 +12,6 @@ export class UserService {
 
   private URL = environment.apiURL;
   private isAuthenticated = new BehaviorSubject<boolean>(false);
-  private user = new BehaviorSubject<User>({uid: '', name: '', email: '', password: '', colorBlindness: '', occupation: '', dateRegistration: '', numImages: 0, images: []});
 
   constructor(private http: HttpClient) { }
 
@@ -24,12 +23,6 @@ export class UserService {
 
   getUser(uid: string){
     return this.http.get<any>(this.URL + '/users/' + uid)
-    .pipe(
-      tap((res : any) => {
-        console.log(res);
-        this.user.next(res.user);
-      })
-    );
   }
 
   changePassword(data: any){
@@ -42,51 +35,5 @@ export class UserService {
 
   updateUserProfile(uid: string, data: any){
     return this.http.put<any>(this.URL + '/users/' + uid, data)
-  }
-
-  getUserData(){
-    return this.user;
-  }
-
-  getId(){
-    this.user.subscribe(u => {
-      return u.uid;
-    });
-  }
-
-  getName(){
-    this.user.subscribe(u => {
-      return u.name;
-    });
-  }
-
-  getEmail(){
-    this.user.subscribe(u => {
-      return u.email;
-    });
-  }
-
-  getColorBlind(){
-    this.user.subscribe(u => {
-      return u.colorBlindness;
-    });
-  }
-
-  getOcuppation(){
-    this.user.subscribe(u => {
-      return u.occupation;
-    });
-  }
-
-  getDateRegistration(){
-    this.user.subscribe(u => {
-      return u.dateRegistration;
-    });
-  }
-
-  getImages(){
-    this.user.subscribe(u => {
-      return u.images;
-    });
   }
 }

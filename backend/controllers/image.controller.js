@@ -26,7 +26,6 @@ async function createImage(userId, data, db) {
     try{
         const imageDateCreation = new Date();
         const imageDateUpdating = new Date();
-        console.log(data);
         
         let image = new Image(
             data.img,
@@ -85,7 +84,7 @@ async function getImages(userId, db) {
 //Get one image in particular from one user
 async function getImage(imageId, userId, db) {
     let result = null;
-    console.log(imageId);
+    // console.log(imageId);
     await firebaseRef.get(
         // console.log('key',firebaseRef.child(db, `users/${userId}`).key);
         firebaseRef.child(db, `users/${userId}/images/${imageId}`)
@@ -163,7 +162,7 @@ const create_image = async (req, res) => {
     }
     try {
         let imageCreated = await createImage(req.params.userId, req.body, db);
-        console.log(imageCreated);
+        // console.log(imageCreated);
 
         if(imageCreated === null) {
             return res.status(401).send("Sin autorización");
@@ -191,7 +190,7 @@ const get_image = async (req, res) => {
 
     try {
         let image = await getImage(req.params.imageId, req.params.userId, db);
-        console.log(image);
+        // console.log(image);
 
         if(image === null) {
             return res.status(401).send("Sin autorización");
@@ -212,7 +211,7 @@ const get_image = async (req, res) => {
 
 const get_images = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
-    console.log('miro',req.params);
+    // console.log('miro',req.params);
 
     if(!(await verifyToken(req.headers.token))){
         return res.status(401).send("Sin autorización");

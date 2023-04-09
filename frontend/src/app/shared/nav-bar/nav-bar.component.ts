@@ -74,12 +74,11 @@ export class NavBarComponent implements OnInit {
           Swal.fire({icon: 'error', title: 'Oops...', text: 'No se pudo cargar el usuario',});
         }
       });
-
-      // this.userService.getUser(this.uid).subscribe(res => {
-      //   this.name = res['user'].name;
-      //   this.userLoaded = true;
-      // });
     }
+  }
+
+  goToLink(link: string){
+    this.router.navigate([`/${link}`]);
   }
 
   async checkUid(){

@@ -112,22 +112,29 @@ async function getUser(userId, db) {
 async function updateNumImages(userId, action, db){
     try {
         let locationRef = firebaseRef.ref(db, `users/${userId}`);
-    
-        if(action === 'add'){
-            await firebaseRef.update(locationRef, {
-                numImages: firebaseRef.increment(1)
-            });
-        }
-        else if(action === 'remove') {
-            await firebaseRef.update(locationRef, {
-                numImages: firebaseRef.increment(-1)
-            });
-        }
-    
-        return true;
+        let incrementValue = action === 'add' ? 1 : -1;
+
+        await firebaseRef.update(locationRef, {
+            numImages: firebaseRef.increment(incrementValue)
+        });
+
+        const dbRef = firebaseRef.ref(firebaseRef.getDatabase());
+        await firebaseRef.get(
+            firebaseRef.child(dbRef, `users/${userId}/numImages`)
+        )
+        .then((snapshot) => {
+            if(snapshot.exists()){
+                result = snapshot.val();
+            }
+            else{
+                console.log("Not users found");
+            }
+        });
+
+        return result;
     }
     catch(err){
-        console.log("An error has occured:" + err);
+        console.log("An error has occurred:" + err);
         return false;
     }
 }
@@ -220,7 +227,7 @@ const get_user = async (req, res) => {
 
     try {
         let user = await getUser(req.params.userId, db);
-        console.log('miro esto',user);
+        // console.log('miro esto',user);
         user.images = [];
         return res.json({
             ok: true,
@@ -271,7 +278,7 @@ const update_user = async (req, res) => {
     try {
         let userModified = await updateUser(req.params.userId, req.body, db);
 
-        console.log(userModified);
+        // console.log(userModified);
         return res.json({
             ok: true,
             msg: 'Usuario actualizado',
@@ -296,11 +303,11 @@ const update_numImages = async (req, res) => {
     try {
         let numImages = await updateNumImages(req.params.userId, req.body.action, db);
 
-        console.log(numImages);
+        // console.log(numImages);
         return res.json({
             ok: true,
             msg: 'Número de imágenes actualizado',
-            images: numImages,
+            data: numImages,
         })
     }
     catch(err){

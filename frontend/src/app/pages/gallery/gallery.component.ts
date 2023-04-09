@@ -5,7 +5,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ImageService } from 'src/app/services/image-service';
 import { UserService } from 'src/app/services/user.service';
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-gallery',
@@ -37,18 +38,22 @@ export class GalleryComponent implements OnInit{
 
   loadUser() {
     this.userId = this.authService.getUid();
-
-    this.userService.getUserData().subscribe(data => {
-      this.user = data;
-      console.log(this.user);
-      if(this.user.numImages > 0){
-        console.log('entro a loadUser');
-        this.loadImages();
+    this.userService.getUser(this.userId)
+    .subscribe({
+      next: res => {
+        this.user = res.user;
+        if(this.user.numImages > 0){
+          this.loadImages();
+        }
+      },
+      error: error => {
+        console.log(error);
       }
     });
   }
 
   loadImages() {
+    console.log(this.userId);
     this.imageService.getImages(this.userId)
     .subscribe({
       next: res => {
@@ -104,8 +109,9 @@ export class GalleryComponent implements OnInit{
         this.imageService.deleteImage(this.userId, id)
         .subscribe({
           next: res => {
-            this.updateNumImages();
-            this.loadImages();
+            this.updateNumImages(() => {
+                this.loadImages();
+            });
           },
           error: error => {
             Swal.fire({icon: 'error', title: 'Oops...', text: 'No se pudo completar la acción, vuelva a intentarlo',});
@@ -116,7 +122,7 @@ export class GalleryComponent implements OnInit{
     });
   }
 
-  updateNumImages() {
+  updateNumImages(callback: () => void): void {
     const body = {
       action: 'remove'
     }
@@ -129,7 +135,15 @@ export class GalleryComponent implements OnInit{
           title: 'La imagen se ha eliminado correctamente',
           showConfirmButton: false,
           timer: 1500
-        })
+        });
+        console.log(res);
+        if(res.data > 0){
+          console.log('tengo que volver a cargar');
+          callback();
+        }
+        else {
+          this.images = [];
+        }
       },
       error: error => {
         console.log(error);
