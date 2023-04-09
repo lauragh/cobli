@@ -96,3 +96,7 @@ img {
 .ver {
   visibility: visible;
 }
+
+.blueCoblie {
+  background-color: var(--blue-cobli);
+}

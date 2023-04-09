@@ -45,6 +45,7 @@ export class LoginComponent implements OnInit{
           localStorage.setItem('uid', res.uid);
           localStorage.setItem('remember', this.userForm.get('remember')!.value.toString());
           localStorage.setItem('email', this.userForm.get('email')!.value);
+          this.userForm.markAsPristine();
           this.router.navigate(['/gallery']);
         },
         error: error => {
@@ -70,13 +71,13 @@ export class LoginComponent implements OnInit{
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: 'Se ha enviado el reestablecimiento de la contraseña a su dirección de correo',
+          title: 'Se ha enviado el restablecimiento de la contraseña a su dirección de correo',
           showConfirmButton: false,
           timer: 4000
         })
       },
       error: error => {
-        console.log('Error reseteando la contraseña');
+        Swal.fire({icon: 'error', title: 'Oops...', text: 'No se ha podido restablecer la contraseña, vuelva a intentarlo',});
       }
     });
   }

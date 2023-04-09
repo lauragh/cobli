@@ -28,7 +28,7 @@
           </div>
           <div class="mb-3">
             <label for="colorBlindness" class="form-label PoppinsRegular">Tipo de daltonismo</label>
-            <select #colorBlindness class="form-control tamInput" required>
+            <select formControlName="colorBlindness" class="form-control tamInput" required>
               <option value="-">-</option>
               <option value="deuteranopia">Deuteranopía (verde)</option>
               <option value="deuternomalia">Deuternomalía (verde)</option>
@@ -45,6 +45,10 @@
         </div>
       </div>
       <p>Darse de baja</p>
+      <div class="justify-content-center  d-flex">
+        <button (click)="closeModal()" type="button" class="btn btn-secondary me-2">Cancelar</button>
+        <button [disabled]="!userForm.dirty" type="submit" class="btn blueCoblie text-white">Guardar cambios</button>
+      </div>
     </form>
   </div>
 </div>

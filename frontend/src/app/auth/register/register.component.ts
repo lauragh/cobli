@@ -50,7 +50,8 @@ export class RegisterComponent implements OnInit{
             title: 'Registro de usuario con éxito',
             showConfirmButton: false,
             timer: 1500
-          })
+          });
+          this.userForm.markAsPristine();
           this.router.navigate(['/login']);
         },
         error: error => {

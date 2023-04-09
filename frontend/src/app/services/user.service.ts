@@ -40,6 +40,10 @@ export class UserService {
     return this.http.put<any>(this.URL + '/users/' + uid + '/updateNumImages', data)
   }
 
+  updateUserProfile(uid: string, data: any){
+    return this.http.put<any>(this.URL + '/users/' + uid, data)
+  }
+
   getUserData(){
     return this.user;
   }
