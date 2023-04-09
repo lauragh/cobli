@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
-import { RecoveryComponent } from './auth/recovery/recovery.component';
 import { GalleryComponent } from './pages/gallery/gallery.component';
 import { EditorComponent } from './pages/editor/editor.component';
 import { ProfileComponent } from './pages/profile/profile.component';
@@ -13,7 +12,6 @@ const routes: Routes = [
   { path: 'landing', component: LandingPageComponent},
   { path: 'login', component: LoginComponent},
   { path: 'register', component: RegisterComponent},
-  { path: 'recovery', component: RecoveryComponent},
   { path: 'gallery', component: GalleryComponent},
   { path: 'editor', component: EditorComponent},
   { path: 'editor/:imageId', component: EditorComponent},

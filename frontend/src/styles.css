@@ -6,6 +6,15 @@
   --grey-border-cobli: #8C8C8C;
 }
 
+/* Clases para las páginas */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.width-auto {
+  width: auto;
+}
+
 
 /* Clases para asignar fuentes */
 

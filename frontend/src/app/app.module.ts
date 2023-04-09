@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
-import { RecoveryComponent } from './auth/recovery/recovery.component';
 import { NavBarComponent } from './shared/nav-bar/nav-bar.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { GalleryComponent } from './pages/gallery/gallery.component';
@@ -25,7 +24,6 @@ import { AuthService } from './services/auth.service';
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    RecoveryComponent,
     NavBarComponent,
     FooterComponent,
     GalleryComponent,

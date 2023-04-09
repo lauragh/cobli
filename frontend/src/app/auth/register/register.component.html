@@ -1,1 +1,137 @@
-<p>register works!</p>
+<div class="position-relative d-flex justify-content-center">
+  <div class="position-absolute container d-flex justify-content-center align-items-center bgImage">
+    <div class="contenedor d-flex justify-content-center align-items-center position-relative">
+      <img id="hombre1" class="position-absolute" src="../../../assets/img/hombre1.png">
+      <form [formGroup]="userForm" (submit)="register()">
+        <h4 class="PoppinsBold mb-4 text-center">Crea una cuenta</h4>
+        <div class="form-group mb-4">
+          <label for="email" class="form-label PoppinsRegular">Correo electrónico</label>
+          <input formControlName="email" type="text"  name="email" class="form-control PoppinsRegular" required autofocus>
+          <div *ngIf="userForm.controls['email'].invalid && (userForm.controls['email'].dirty || userForm.controls['email'].touched)">
+            <p class="text-danger" *ngIf="userForm.controls['email'].errors!['required']">El email es obligatorio</p>
+            <p class="text-danger" *ngIf="userForm.controls['email'].errors!['email']">Formato de email no válido</p>
+          </div>
+        </div>
+        <div class="form-group mb-2">
+          <label for="userName" class="form-label PoppinsRegular">Nombre de usuario</label>
+          <input formControlName="userName" type="text" name="userName" class="form-control PoppinsRegular" required>
+          <div *ngIf="userForm.controls['userName'].invalid && (userForm.controls['userName'].dirty || userForm.controls['userName'].touched)">
+            <p class="text-danger" *ngIf="userForm.controls['userName'].errors!['required']">El nombre de usuario es obligatorio</p>
+          </div>
+        </div>
+        <div class="form-group mb-2">
+          <label for="password" class="form-label PoppinsRegular">Contraseña</label>
+          <input formControlName="password" type="password" name="password" class="form-control PoppinsRegular" required>
+          <div *ngIf="userForm.controls['password'].invalid && (userForm.controls['password'].dirty || userForm.controls['password'].touched)">
+            <p class="text-danger" *ngIf="userForm.controls['password'].errors!['required']">La contraseña es obligatoria</p>
+            <p class="text-danger" *ngIf="userForm.controls['password'].errors!['invalidPassword']">La contraseña debe tener más de 6 caracteres, un número, una mayúscula y un carácter especial</p>
+          </div>
+        </div>
+        <div class="form-check mb-2">
+          <input #check (change)="acceptTerms()" type="checkbox" class="form-check-input blueCoblie" id="politicas" name="politicas">
+          <label class="form-check-label" for="politicas">He leído y acepto los
+            <a (click)="scrollToTermsAndConditions('termsAndConditions')" style="color: #0029FF" class="cursor-pointer">Términos y condiciones</a>
+             del Servicio y la
+            <a (click)="scrollToTermsAndConditions('privacyPolicy')" style="color: #0029FF" class="cursor-pointer"> Política de Privacidad </a>
+            de Clobi
+          </label>
+        </div>
+        <div *ngIf="emailExists" class="text-danger d-inline-block mb-3">El email introducido ya existe</div>
+        <div class="d-flex justify-content-center">
+          <button [disabled]="accept ? false : true" type="submit" class="btn blueCoblie text-white">Continuar</button>
+        </div>
+      </form>
+      <img id="hombre2" class="position-absolute" src="../../../assets/img/hombre2.png">
+    </div>
+  </div>
+  <div *ngIf="termsChecked" id="terms" class="position-absolute">
+    <h4 #termsAndConditions>Términos y condiciones de la aplicación</h4>
+    <p class="mb-2 PoppinsRegular">
+      Bienvenido a Cobli. Antes de comenzar a utilizarla, por favor, asegúrese de leer y aceptar nuestros términos y condiciones. Al utilizar nuestra aplicación,
+      usted acepta estar sujeto a los siguientes términos y condiciones:
+    </p>
+    <ol>
+      <li class="PoppinsSemiBold">Propiedad intelectual:</li>
+      <p>
+        Todo el contenido de la aplicación, incluyendo, pero no limitándose a, texto, gráficos, logotipos, imágenes, audio, video, software y
+        cualquier otro material contenido en la aplicación, es propiedad exclusiva de nuestra compañía. No se permite la reproducción, distribución, modificación,
+         exhibición, venta o explotación de cualquier parte de la aplicación sin nuestro consentimiento previo y por escrito.
+      </p>
+      <li class="PoppinsSemiBold">Imágenes cargadas por los usuarios:</li>
+      <p>
+        La aplicación permite a los usuarios cargar imágenes que serán analizadas para obtener información sobre los colores. Al subir una imagen,
+         usted acepta que tiene derecho a utilizar la imagen y que no viola ninguna ley o derechos de autor. Usted otorga a nuestra compañía el derecho
+          de utilizar y almacenar la imagen con el fin exclusivo de realizar el análisis de colores.
+      </p>
+      <li class="PoppinsSemiBold">Uso de la información:</li>
+      <p>
+        La información obtenida de la imagen cargada por el usuario se utilizará únicamente para el propósito de proporcionar información sobre los colores de la imagen
+         y no será compartida con terceros sin su consentimiento previo y por escrito.
+      </p>
+      <li class="PoppinsSemiBold">Responsabilidad:</li>
+      <p>
+        Usted acepta que el uso de nuestra aplicación es bajo su propio riesgo. No nos hacemos responsables de cualquier pérdida,
+        daño o perjuicio, incluyendo, pero no limitándose a, pérdida de datos, daños indirectos, especiales, incidentales, consecuentes
+        o punitivos que resulten del uso de nuestra aplicación.
+      </p>
+      <li class="PoppinsSemiBold">Cambios en los términos y condiciones:</li>
+      <p>
+        Nos reservamos el derecho de modificar estos términos y condiciones en cualquier momento. Los cambios se harán efectivos inmediatamente
+        después de publicar los términos y condiciones modificados en la aplicación. Al continuar utilizando la aplicación después de la publicación de los términos y condiciones modificados,
+        usted acepta estar sujeto a los términos y condiciones modificados.
+      </p>
+      <li class="PoppinsSemiBold">Ley aplicable:</li>
+      <p>
+        Estos términos y condiciones se regirán e interpretarán de acuerdo con las leyes del país en el que se encuentra nuestra compañía.
+      </p>
+    </ol>
+
+    <h4 #privacyPolicy>Política de Privacidad</h4>
+    <p>
+      En Cobli nos tomamos muy en serio la privacidad de nuestros usuarios. A continuación, se describen nuestras prácticas de privacidad en
+      relación con la subida de imágenes y el análisis de colores en nuestro sitio web.
+    </p>
+    <ol>
+      <li class="PoppinsSemiBold">Recopilación de información</li>
+      <p>
+        Cuando un usuario sube una imagen a [Nombre de la página web], recopilamos la imagen y cualquier información relacionada con ella, como los colores extraídos de la misma.
+        Esta información se almacena en nuestra base de datos para su posterior análisis.
+      </p>
+      <li class="PoppinsSemiBold">Uso de la información</li>
+      <p>
+        La información que recopilamos se utiliza únicamente con fines de análisis de colores y para mejorar la calidad de nuestros servicios.
+        No compartimos esta información con terceros, excepto cuando sea necesario para cumplir con la ley o cuando un usuario así lo solicite.
+      </p>
+      <li class="PoppinsSemiBold">Seguridad</li>
+      <p>
+        En Cobli tomamos medidas razonables para garantizar la seguridad de la información que recopilamos.
+        Utilizamos tecnologías de cifrado y contamos con medidas de seguridad físicas y electrónicas para proteger la información de accesos no autorizados y de posibles pérdidas, mal uso o alteración.
+      </p>
+      <li class="PoppinsSemiBold">Cookies</li>
+      <p>
+        Nuestro servicio utiliza cookies para personalizar la experiencia del usuario y para mejorar la calidad de nuestros servicios.
+        Las cookies son pequeños archivos de texto que se almacenan en el dispositivo del usuario y que contienen información sobre las preferencias y
+        la actividad del usuario en nuestro sitio web. Estas cookies pueden ser eliminadas o desactivadas en la configuración del navegador del usuario.
+      </p>
+      <li class="PoppinsSemiBold">Cambios en la política de privacidad</li>
+      <p>
+        Cobli se reserva el derecho de modificar esta política de privacidad en cualquier momento. Si realizamos cambios significativos en esta política, lo notificaremos
+        a los usuarios a través de nuestro sitio web o por correo electrónico.
+      </p>
+      <li class="PoppinsSemiBold">Contacto</li>
+      <p>
+        Si tienes preguntas o preocupaciones sobre nuestra política de privacidad o sobre el uso de tus datos personales, por favor,
+        contáctanos a través de garcia.hdez.laura@gmail.com
+      </p>
+    </ol>
+
+    <p class="mb-2 PoppinsRegular">
+      Al utilizar nuestra aplicación, usted acepta estos términos y condiciones en su totalidad, así como la política de privacidad. Si no está de acuerdo con alguno de estos términos y condiciones, por favor, no utilice nuestra aplicación.
+    </p>
+    <div class="d-flex justify-content-center">
+      <button (click)="closeTerms()" class="btn blueCoblie text-white">Aceptar</button>
+    </div>
+  </div>
+</div>
+<app-footer class="position-absolute footer"></app-footer>
+

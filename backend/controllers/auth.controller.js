@@ -6,9 +6,16 @@ const httpCodes = require('../database/httpCodes');
 async function registerUser(data) { 
     return new Promise(async(resolve, reject)=> {
         console.log(data);
-        await firebaseRef.createUserWithEmailAndPassword(firebaseRef.auth, data.email, data.password)
-        let userUid = await getUserId();
-        resolve(userUid);    
+        try {
+            await firebaseRef.createUserWithEmailAndPassword(firebaseRef.auth, data.email, data.password);
+            let userUid = await getUserId();
+            resolve(userUid);  
+        }
+        catch(err){
+            reject();
+            console.log("An error has occured:" + err);
+        }
+  
     }); 
 } 
 

@@ -80,10 +80,6 @@ select {
   border:1px solid #d3d3d3;
 }
 
-.cursor-pointer {
-  cursor: pointer;
-}
-
 input {
   border: none;
   border:solid 1px #ccc;

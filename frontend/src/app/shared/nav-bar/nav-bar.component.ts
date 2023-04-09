@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/co
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-nav-bar',
@@ -13,6 +14,7 @@ export class NavBarComponent implements OnInit {
   name!: string;
   uid!: string;
   userLoaded: boolean = false;
+  token!: string;
 
   @ViewChild('profile') profile!: ElementRef;
 
@@ -48,13 +50,34 @@ export class NavBarComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  cargarUsuario(): void {
+  async cargarUsuario(): Promise<void> {
+    while (this.authService.getToken() == null) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      this.token = this.authService.getToken();
+      this.uid = this.authService.getUid();
+    }
+
     console.log('cargo usuario', this.uid);
-    if(this.uid){
-      this.userService.getUser(this.uid).subscribe(res => {
-        this.name = res['user'].name;
-        this.userLoaded = true;
+    if(this.authService.getUid() && this.authService.getToken()){
+      this.uid = this.authService.getUid();
+
+      this.userService.getUser(this.uid)
+      .subscribe({
+        next: res => {
+          this.name = res.user.name;
+          this.userLoaded = true;
+
+        },
+        error: error => {
+          console.log(error);
+          Swal.fire({icon: 'error', title: 'Oops...', text: 'No se pudo cargar el usuario',});
+        }
       });
+
+      // this.userService.getUser(this.uid).subscribe(res => {
+      //   this.name = res['user'].name;
+      //   this.userLoaded = true;
+      // });
     }
   }
 

@@ -92,7 +92,7 @@ export class ProfileComponent implements OnInit, OnChanges {
           icon: 'success',
           title: 'Se ha enviado el reestablecimiento de la contraseña a su dirección de correo',
           showConfirmButton: false,
-          timer: 1500
+          timer: 4000
         })
       },
       error: error => {

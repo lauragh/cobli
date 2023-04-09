@@ -7,8 +7,6 @@ import { UserService } from 'src/app/services/user.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
-
-
 @Component({
   selector: 'app-gallery',
   templateUrl: './gallery.component.html',
@@ -42,6 +40,7 @@ export class GalleryComponent implements OnInit{
 
     this.userService.getUserData().subscribe(data => {
       this.user = data;
+      console.log(this.user);
       if(this.user.numImages > 0){
         console.log('entro a loadUser');
         this.loadImages();

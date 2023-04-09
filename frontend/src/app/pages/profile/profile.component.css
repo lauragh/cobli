@@ -29,6 +29,7 @@ input.form-control {
   box-shadow: none;
   font-size: 16px;
   color: black;
+  padding-bottom: 0px;
 }
 
 select {
@@ -47,6 +48,7 @@ input.form-control:focus {
 #pass {
   float: right;
   color: #0029FF;
+  font-size: 14px;
 }
 
 .borde {
@@ -80,14 +82,6 @@ h5 {
 
 img {
   padding-right: 10px;
-}
-
-input {
-  padding-bottom: 0px;
-}
-
-.cursor-pointer {
-  cursor: pointer;
 }
 
 #cambiarPass {

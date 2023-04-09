@@ -1,32 +1,20 @@
 .container {
-  height: 80%;
-}
-
-.bgAzulPrado, h4 {
-    background-color: var(--blueDarkPrado);
-}
-
-h4 {
-  margin-bottom: 0;
-  padding: 10px;
-  border-radius: 5px 5px 0 0;
-  font-weight: 700;
+  height: 86.5vh;
 }
 
 .bgImage {
-  background-image: url("../../../assets/img/fondo.png");
+  background-image: url("../../../assets/img/fondo.svg");
   background-repeat: no-repeat;
-  background-position: center;
   background-attachment: fixed;
-  background-size: 1000px;
+}
+
+.blueCoblie {
+  background-color: var(--blue-cobli);
 }
 
 form {
-  background-color: white;
   padding: 40px;
   width: 400px;
-  border-radius: 5px;
-  box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
 }
 
 button {
@@ -39,4 +27,62 @@ button {
 
 .ver {
   visibility: visible;
+}
+
+
+#formulario {
+  width: auto;
+  padding: 0;
+  background-color: white;
+
+}
+
+#decoracion {
+  width: 500px;
+  background-color: var(--blue-background-cobli);
+}
+
+.contenedor {
+  box-shadow: 0px 3px 5px 0px rgb(0 0 0 / 35%);
+}
+
+label {
+  color: #6F7075;
+  margin: 0;
+  font-size: 14px;
+}
+
+input.form-control {
+  border: none;
+  border-bottom: 1px solid #6F7075;
+  outline: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 16px;
+  color: black;
+  padding-bottom: 0px;
+}
+
+input.form-control:focus {
+  border-bottom: 2px solid var(--blue-cobli);
+  transition: border-bottom-color 0.1s ease-in-out;
+}
+
+#pass {
+  float: right;
+  color: #0029FF;
+  font-size: 14px;
+}
+
+.width-auto {
+  width: auto;
+}
+
+p {
+  font-size: 14px;
+}
+
+.form-group:focus-within label {
+  color: var(--blue-cobli);
+  font-weight: 600;
 }

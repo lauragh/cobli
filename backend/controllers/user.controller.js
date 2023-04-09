@@ -12,13 +12,14 @@ const { verifyToken } = require('../helpers/verifyToken');
 //Create a user
 async function createUser(data, db) {
     try{
+        console.log('recibo',data);
         const salt = bcrypt.genSaltSync();
         const cpassword = bcrypt.hashSync(data.password, salt);
         const userDateLastAccess = new Date();
         const userDateRegistration = new Date();
 
         let user = new User(
-            data.name,
+            data.userName,
             data.email,
             cpassword,
             data.colorBlindness,
@@ -33,8 +34,8 @@ async function createUser(data, db) {
             name: user.name,
             email: user.email,
             password: user.password,
-            colorBlindness: user.colorBlindness,
-            occupation: user.occupation,
+            colorBlindness: user.colorBlindness ? user.colorBlindness : null,
+            occupation: user.occupation ? user.colorBlindness : null,
             dateLastAccess: user.dateLastAccess,
             dateRegistration: user.dateRegistration,
             numImages: user.numImages,
@@ -48,15 +49,23 @@ async function createUser(data, db) {
         }
 
         let userUid;
-        userUid = await auth.registerUser(userData);
+        try {
+            userUid = await auth.registerUser(userData);
+            console.log(userUid);
+            let locationRef = firebaseRef.ref(db, 'users/' + userUid);
+            firebaseRef.set(locationRef, userObject);
 
-        let locationRef = firebaseRef.ref(db, 'users/' + userUid);
-        firebaseRef.set(locationRef, userObject);
+            return true;
+        }
+        catch (err) {
+            console.log('fallo', err);
+            return false;
+        }
 
-        return true;
+        
     }
     catch(err){
-        console.log("An error has occured:" + err);
+        console.log("An error has occured in createUser:" + err);
         return false;
     }
 }
@@ -178,12 +187,20 @@ const create_user = async (req, res) => {
 
     try {
         let userCreated = await createUser(req.body, db);
-        console.log(userCreated);
-        return res.json({
-            ok: true,
-            msg: 'Usuario creado',
-            user: userCreated,
-        });
+        if(userCreated){
+            return res.json({
+                ok: true,
+                msg: 'Usuario creado',
+                user: userCreated,
+            });
+        }
+        else {
+            return  res.status(httpCodes.BAD_REQUEST).json({
+                ok: false,
+                msg: 'Error creando usuario'
+            });
+        }
+
     }
     catch(err){
         return  res.status(httpCodes.BAD_REQUEST).json({
