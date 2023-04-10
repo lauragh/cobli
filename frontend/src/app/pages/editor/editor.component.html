@@ -14,7 +14,7 @@
         <img class="ms-2" src="../../../assets/img/filtros.svg">
       </div>
     </div>
-    <div id="ventana" class="d-flex justify-content-center">
+    <div id="ventana" class="d-flex justify-content-center align-items-center">
       <div *ngIf="!editar" id="inputFile" #inputFile>
         <label for="upload"><img src="../../../assets/img/uploadImg.svg"></label>
         <input #fileUpload (change)="uploadPic($event)" #imageUploaded type="file" name="photo" id="upload" />
@@ -120,7 +120,7 @@
         <div class="seccion hsl">
           <div class="mb-3">
             <label class="me-3" for="color">Color</label>
-            <input id="color" #color placeholder="Introduce un color" type="text" name="color">
+            <input (change)="colorFilter()" id="color" #color placeholder="Introduce un color" type="text" name="color">
           </div>
 
           <div id="colorPickerContainer" class="mb-3">

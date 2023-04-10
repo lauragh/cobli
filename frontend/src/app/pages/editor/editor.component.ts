@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, ElementRef, OnInit, AfterViewInit, Renderer2, ViewChild, ViewChildren, QueryList, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ImageService } from 'src/app/services/image-service';
@@ -51,7 +51,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
   //color tags
   tagColors: any[] = [];
   infoColors: any[] = [];
-
 
   editar: boolean = false;
 
@@ -139,6 +138,43 @@ export class EditorComponent implements OnInit, AfterViewInit{
     });
   }
 
+  @HostListener('window:resize', ['$event'])
+  getScreenSize() {
+    console.log(window.innerHeight, window.innerWidth);
+
+    const divs = this.tagContainer.getElementsByTagName('div');
+    this.tagColors.length;
+
+    for (const [index, tagColor] of this.tagColors.entries()) {
+      console.log('antes',tagColor.position[0], tagColor.position[1]);
+      let [x, y] = this.getPosicionVentana(tagColor.position[0], tagColor.position[1]);
+      console.log('despues',x,y);
+
+      divs[index].style.left = x + 'px';
+      divs[index].style.top = y + 'px';
+
+      console.log('resultado',divs[index].style.left, divs[index].style.top);
+
+    }
+
+    // for (let div of divs) {
+    //   this.tagColors[divs[div]]
+    //   let [x, y] = this.getPosicionVentana(div.style.left , div.style.right);
+
+    //   console.log('miro', div.style.left )
+    // }
+
+    // for(let tagColor of this.tagColors){
+    //   console.log('antes',tagColor.position[0], tagColor.position[1]);
+    //   let [x, y] = this.getPosicionVentana(tagColor.position[0], tagColor.position[1]);
+    //   console.log('despues',x,y);
+    //   tagColor.position[0] = x;
+    //   tagColor.position[1] = y;
+    //   console.log('resultado',tagColor.position[0], tagColor.position[1])
+    // }
+  }
+
+
   getData() {
     this.imageService.getImage(this.userId, this.imageId)
     .subscribe({
@@ -186,16 +222,21 @@ export class EditorComponent implements OnInit, AfterViewInit{
     // this.img.src = '../../../assets/img/ejemplo.png';
     // this.img.src = '../../../assets/img/image.png';
     // this.img.src = `https://media.discordapp.net/attachments/1052568195493548082/1083733464571986010/paisaje-e1549600034372.png`;
-    this.img.style.imageRendering = 'auto';
+    // this.img.style.imageRendering = 'auto';
     this.ctx = this.canvas.getContext("2d")!;
 
     this.img.addEventListener("load", () => {
+      console.log(this.img.width, this.img.height);
       this.canvas.width = this.img.width;
       this.canvas.height = this.img.height;
-      this.canvas.style.overflow = "auto";
+      // this.canvas.style.overflow = "auto";
       // this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, this.canvas.width, this.canvas.height);
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
       // this.ctx.drawImage(this.img, 0, 0);
+
+      const ratioX = this.img.width/this.canvas.offsetWidth;
+      const ratioY = this.img.width/this.canvas.offsetWidth;
+
       console.log('ancho y alto al cargar', this.canvas.offsetWidth, this.canvas.offsetHeight);
     });
   }
@@ -296,20 +337,24 @@ export class EditorComponent implements OnInit, AfterViewInit{
     img.src = this.img.src;
 
     let [posX, posY] = this.getPosicionCanvas(x,y);
-
     img.addEventListener("load", () => {
       // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
       ctx.drawImage(img,
-        Math.min(Math.max(0, posX), img.width),
-        Math.min(Math.max(0, posY), img.height),
+        Math.min(posX, img.width ),
+        Math.min(posY, img.height ),
         3, 3,
         0, 0,
         150, 150);
     });
   }
 
-  pickColorPoint(x: number, y: number, accion?: string, num?: number, tagColor?: string) {
-    console.log(this.ctx);
+  pickColorPoint(pointX: number, pointY: number, accion?: string, num?: number, tagColor?: string) {
+    console.log('lo que quiero ver',pointX, pointY);
+    let [x, y] = this.getPosicionCanvas(pointX, pointY);
+    console.log('veo la posVentana', this.getPosicionVentana(x, y));
+
+    console.log('veo en pickColorPoint', x, y);
+
     const pixel = this.ctx.getImageData(x, y, this.canvas.offsetWidth, this.canvas.offsetHeight);
     const data = pixel.data;
 
@@ -470,13 +515,34 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.pickColorPoint(x, y);
   }
 
+  //Dada una posición de la ventana devuelve un pixel (aspect ratio considerado)
   getPosicionCanvas(x: number, y: number){
     const tamContainerX = this.tagContainer.offsetWidth;
     const tamContainerY = this.tagContainer.offsetHeight;
-    const displX = Math.trunc((tamContainerX - this.canvas.width)/2);
-    const displY = Math.trunc((tamContainerY - this.canvas.height)/2);
+    const displX = Math.trunc((tamContainerX - this.canvas.offsetWidth)/2);
+    const displY = Math.trunc((tamContainerY - this.canvas.offsetHeight)/2);
 
-    return [x - displX - 5, y - displY - 5]
+
+    const ratioX = this.img.width/this.canvas.offsetWidth;
+    const ratioY = this.img.height/this.canvas.offsetHeight;
+
+    return [(x - displX - 5) * ratioX, (y - displY - 5) * ratioY]
+  }
+
+  //Dado un pixel, devuelve la posición de la vetana
+  getPosicionVentana(posX: number, posY: number) {
+    const tamContainerX = this.tagContainer.offsetWidth;
+    const tamContainerY = this.tagContainer.offsetHeight;
+    const displX = Math.trunc((tamContainerX - this.canvas.offsetWidth) / 2);
+    const displY = Math.trunc((tamContainerY - this.canvas.offsetHeight) / 2);
+
+    const ratioX = this.img.width / this.canvas.offsetWidth;
+    const ratioY = this.img.height / this.canvas.offsetHeight;
+
+    const x = Math.trunc(posX / ratioX + displX + 5);
+    const y = Math.trunc(posY / ratioY + displY + 5);
+
+    return [x, y];
   }
 
   createTag(x: number, y: number, darkness?: string, num?: number){
@@ -491,6 +557,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const tagContainer = document.getElementById('tagContainer')!;
 
     const div = this.renderer2.createElement('div');
+    this.renderer2.setAttribute(div, 'name', 'colorTag');
     this.renderer2.addClass(div, 'nums');
 
     this.renderer2.setStyle(div, 'color', darkness);
@@ -500,8 +567,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(div, 'position', 'absolute');
     this.renderer2.setStyle(div, 'z-index', '3');
 
-    this.renderer2.setStyle(div, 'left', `${x}px`);
-    this.renderer2.setStyle(div, 'top', `${y}px`);
+    let [posx, posy] = this.getPosicionVentana(x, y);
+
+
+    this.renderer2.setStyle(div, 'left', `${posx}px`);
+    this.renderer2.setStyle(div, 'top', `${posy}px`);
 
     this.renderer2.appendChild(div,contenido);
     this.renderer2.appendChild(tagContainer, div);
@@ -531,27 +601,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
   checkDarkness(r: number, g: number, b: number, a: number){
     const brightness = r * 0.299 + g * 0.587 + b * 0.114 + (1 - a) * 255;
     return brightness > 186 ? "#000000" : "#FFFFFF";
-  }
-
-  getColor(){
-    const style = window.getComputedStyle(this.bgColors);
-    const backgroundImage = style.backgroundImage;
-    const regex = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g;
-    let match = regex.exec(backgroundImage);
-
-    while (match) {
-      const color = `rgb(${match[1]},${match[2]},${match[3]})`;
-      this.gradientColors.push(color);
-      match = regex.exec(backgroundImage);
-    }
-  }
-
-  obtenerColor(event: any){
-    const rect = this.container.getBoundingClientRect();
-    const percent = (event.clientX - rect.left) / rect.width;
-    const index = Math.round(percent * (this.gradientColors.length - 1));
-    const color = this.gradientColors[index];
-    this.showColor(this.rgbToHex(color));
   }
 
   ////***** COLORTAGS FUNCTIONS *****////
@@ -840,6 +889,50 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   ////***** HSL COLORPICKER EVENTS *****////
+
+  colorFilter(){
+    console.log('entro');
+    // this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 10% ,rgb(0, 0, 0) 20%, rgb(0, 0, 0) 30%, rgb(0, 0, 0) 40%, rgb(0, 0, 0) 50% ,rgb(0, 0, 0) 60%, rgb(0, 0, 0) 70%, rgb(0, 0, 0) 80%, rgb(0, 0, 0) 90%, rgb(0, 0, 0) 100%)';
+
+    if(this.color.nativeElement.value === "azul"){
+      console.log('entro de azul');
+      this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 255, 250) 0%, rgb(0, 203, 255) 10% ,rgb(0, 174, 255) 20%, rgb(0, 131, 255) 30%, rgb(0, 101, 255) 40%, rgb(0, 93, 255) 50% ,rgb(0, 67, 255) 60%, rgb(0, 51, 255) 70%, rgb(0, 8, 255) 80%, rgb(38, 0, 255) 90%, rgb(67, 0, 255) 100%)';
+    }
+    else if(this.color.nativeElement.value === "verde"){
+      this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 255, 119) 0%, rgb(0, 226, 90) 10% ,rgb(0, 198, 79) 20%, rgb(0, 168, 67) 30%, rgb(0, 147, 59) 40%, rgb(0, 127, 50) 50% ,rgb(0, 114, 45) 60%, rgb(0, 91, 36) 70%, rgb(0, 68, 27) 80%, rgb(0, 53, 21) 90%, rgb(0, 33, 13) 100%)';
+    }
+    else if(this.color.nativeElement.value === "amarillo"){
+      this.bgColors.style.background = 'linear-gradient(to right, rgb(255, 246, 0) 0%, rgb(237, 229, 0) 10% ,rgb(216, 209, 0) 20%, rgb(196, 189, 0) 30%, rgb(181, 175, 0) 40%, rgb(163, 157, 0) 50% ,rgb(137, 133, 0) 60%, rgb(119, 115, 0) 70%, rgb(102, 98, 0) 80%, rgb(84, 81, 0) 90%, rgb(63, 61, 0) 100%)';
+    }
+    else if(this.color.nativeElement.value === "rojo"){
+    // this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 10% ,rgb(0, 0, 0) 20%, rgb(0, 0, 0) 30%, rgb(0, 0, 0) 40%, rgb(0, 0, 0) 50% ,rgb(0, 0, 0) 60%, rgb(0, 0, 0) 70%, rgb(0, 0, 0) 80%, rgb(0, 0, 0) 90%, rgb(0, 0, 0) 100%)';
+    }
+    this.getColor();
+  }
+
+  obtenerColor(event: any){
+    const rect = this.container.getBoundingClientRect();
+    const percent = (event.clientX - rect.left) / rect.width;
+    const index = Math.round(percent * (this.gradientColors.length - 1));
+    const color = this.gradientColors[index];
+    this.showColor(this.rgbToHex(color));
+  }
+
+
+  getColor(){
+    this.gradientColors = [];
+    const style = window.getComputedStyle(this.bgColors);
+    const backgroundImage = style.backgroundImage;
+    const regex = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g;
+    let match = regex.exec(backgroundImage);
+
+    while (match) {
+      const color = `rgb(${match[1]},${match[2]},${match[3]})`;
+      this.gradientColors.push(color);
+      match = regex.exec(backgroundImage);
+    }
+  }
+
   dragColorPicker(event: any){
     this.isDragging = true;
     this.prevX = event.clientX;
