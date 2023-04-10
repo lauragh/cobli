@@ -44,11 +44,20 @@ export class NavBarComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.userLoaded = false;
-    this.isLoggedIn = false;
-    this.name = '';
-    this.router.navigate(['/login']);
+    this.authService.logout()
+    .subscribe({
+      next: res => {
+        this.userLoaded = false;
+        this.isLoggedIn = false;
+        this.name = '';
+        this.router.navigate(['/login']);
+      },
+      error: error => {
+        console.log(error);
+        Swal.fire({icon: 'error', title: 'Oops...', text: 'No se pudo cargar el usuario',});
+      }
+    });
+
   }
 
   async cargarUsuario(): Promise<void> {

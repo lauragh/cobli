@@ -33,6 +33,7 @@ export class AuthService {
     this.isAuthenticated.next(false);
     localStorage.removeItem('token');
     localStorage.removeItem('uid');
+    return this.http.get<any>(this.URL + '/logout');
   }
 
   checkLogin(): Observable<boolean> {

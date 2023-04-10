@@ -38,7 +38,6 @@ async function createColor(imageId, userId, data, db) {
         await firebaseRef.set(
             newColorRef, colorObject
         );
-        console.log(color)
         return colorObject;
     }
     catch(err){
@@ -119,7 +118,7 @@ async function deleteColor(colorId, imageId, userId, db) {
 const create_color = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
     try {
@@ -147,7 +146,7 @@ const create_color = async (req, res) => {
 const get_color = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
     try {
@@ -186,7 +185,7 @@ const get_color = async (req, res) => {
 const delete_color = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
     try {

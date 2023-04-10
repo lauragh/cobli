@@ -221,7 +221,7 @@ const get_user = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
     // console.log(req.params);
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
 
@@ -247,7 +247,7 @@ const get_users = async (req, res) => {
     const db = firebaseRef.ref(firebaseRef.getDatabase());
     // console.log(req.params);
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
 
@@ -271,7 +271,7 @@ const get_users = async (req, res) => {
 const update_user = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
 
@@ -296,7 +296,7 @@ const update_user = async (req, res) => {
 const update_numImages = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
 
@@ -322,7 +322,7 @@ const update_numImages = async (req, res) => {
 const delete_user = async (req, res) => {
     const db = firebaseRef.getDatabase();
 
-    if(!(await verifyToken(req.headers.token))){
+    if(!(await verifyToken())){
         return res.status(401).send("Sin autorización");
     }
 

@@ -100,4 +100,20 @@ const update_password = async (req, res) => {
         }
 }
 
-module.exports = {registerUser, getUserId, logoutUser, login_user, update_password}
+const logout_user = async (req, res) => {
+    // console.log(req.body);
+    try {
+        await logoutUser();
+
+        return res.status(httpCodes.OK).json({
+          ok: true
+        });
+    }
+    catch(err){
+        return  res.status(httpCodes.BAD_REQUEST).json({
+            ok: false,
+            msg: 'Error cambiando haciendo logout'+ err
+        });
+    }
+}
+module.exports = {registerUser, getUserId, logoutUser, logout_user, login_user, update_password}

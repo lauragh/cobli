@@ -18,17 +18,25 @@ export class HttpInterceptorService {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     request = request.clone({
       setHeaders: {
-        token: `${this.authService.getToken()}`,
         uid: `${this.authService.getUid()}`,
         'Content-Type': 'application/json'
       }
     });
+    console.log(request);
     return next.handle(request).pipe(
       catchError(
         (err) => {
           if (err.status === 401) {
-            this.router.navigate(['/login']);
-            return of(err);
+            this.authService.logout()
+            .subscribe({
+            next: res => {
+              this.router.navigate(['/login']);
+              return of(err);
+            },
+            error: error => {
+            }
+          });
+
           }
           throw err;
         }
