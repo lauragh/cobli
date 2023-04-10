@@ -36,4 +36,8 @@ export class UserService {
   updateUserProfile(uid: string, data: any){
     return this.http.put<any>(this.URL + '/users/' + uid, data)
   }
+
+  deleteUser(uid: string){
+    return this.http.delete<any>(this.URL + '/users/' + uid)
+  }
 }

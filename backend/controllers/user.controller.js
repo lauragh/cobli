@@ -181,6 +181,8 @@ async function deleteUser(userId, db) {
     try{
         let locationRef = firebaseRef.ref(db, `users/${userId}`);
         await firebaseRef.set(locationRef, null);
+        await auth.deleteUser();
+
         return true;
     }
     catch(err){

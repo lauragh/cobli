@@ -282,6 +282,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
   clearCanvas(){
     if(this.img){
       this.tagColors = [];
+      this.infoColors = [];
+      this.numTag = 0;
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       var ctx = this.canvas2.getContext("2d")!;
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -349,11 +351,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   pickColorPoint(pointX: number, pointY: number, accion?: string, num?: number, tagColor?: string) {
-    console.log('lo que quiero ver',pointX, pointY);
     let [x, y] = this.getPosicionCanvas(pointX, pointY);
-    console.log('veo la posVentana', this.getPosicionVentana(x, y));
 
-    console.log('veo en pickColorPoint', x, y);
+    if ((x < 0 || x > this.img.width) || (y < 0 || y > this.img.height)){
+      return;
+    }
 
     const pixel = this.ctx.getImageData(x, y, this.canvas.offsetWidth, this.canvas.offsetHeight);
     const data = pixel.data;
@@ -363,7 +365,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const darkness = this.checkDarkness(data[0], data[1], data[2], data[3]/255);
     console.log(darkness);
     if(accion){
-      console.log('accion', accion, 'num', num);
       this.createTag(x, y, tagColor, num);
     }
     else{

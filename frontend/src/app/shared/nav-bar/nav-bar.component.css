@@ -25,6 +25,7 @@ button {
 app-profile {
   left: 50%;
   transform: translate(-50%, 20%);
+  z-index: 4;
 }
 
 .ocultar {

@@ -34,6 +34,15 @@ async function logoutUser() {
     }
 }
 
+async function deleteUser() {
+    try {
+        await firebaseRef.deleteUser(firebaseRef.auth.currentUser);
+    }
+    catch(err){
+        console.log("An error has occured:" + err);
+    }
+}
+
 async function updatePassword(email) {
     try {
         await firebaseRef.sendPasswordResetEmail(firebaseRef.auth, email)
@@ -116,4 +125,5 @@ const logout_user = async (req, res) => {
         });
     }
 }
-module.exports = {registerUser, getUserId, logoutUser, logout_user, login_user, update_password}
+
+module.exports = {registerUser, getUserId, logoutUser, logout_user, login_user, update_password, deleteUser}

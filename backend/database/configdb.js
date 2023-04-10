@@ -3,7 +3,7 @@
 const initializeApp = require('firebase/app').initializeApp;
 //Add SDKs for the firebase products
 const { getDatabase, ref, set, onValue, get, child, push, update, increment} = require('firebase/database');
-const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
+const { getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
   setPersistence, sendPasswordResetEmail, on, FirebaseAuthException, browserSessionPersistence } = require('firebase/auth');
 
 const firebaseConfig = {
@@ -39,6 +39,7 @@ module.exports = {
     signOut,
     setPersistence,
     sendPasswordResetEmail,
+    deleteUser,
     on,
     FirebaseAuthException,
     browserSessionPersistence,

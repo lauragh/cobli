@@ -27,7 +27,7 @@
       </div>
     </ng-container>
   </nav>
-  <div #profile class="position-relative ocultar">
+  <div *ngIf="profileShow" class="position-relative ocultar">
     <app-profile [userLoaded]="userLoaded" (buttonClicked)="closeProfile()" class="position-absolute"></app-profile>
   </div>
 </div>

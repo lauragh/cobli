@@ -15,6 +15,7 @@ export class NavBarComponent implements OnInit {
   uid!: string;
   userLoaded: boolean = false;
   token!: string;
+  profileShow: boolean = false;
 
   @ViewChild('profile') profile!: ElementRef;
 
@@ -54,7 +55,7 @@ export class NavBarComponent implements OnInit {
       },
       error: error => {
         console.log(error);
-        Swal.fire({icon: 'error', title: 'Oops...', text: 'No se pudo cargar el usuario',});
+        Swal.fire({icon: 'error', title: 'Oops...', text: 'No se pudo hacer logout',});
       }
     });
 
@@ -90,13 +91,12 @@ export class NavBarComponent implements OnInit {
 
 
   showProfile() {
-    this.renderer2.removeClass(this.profile.nativeElement, 'ocultar');
-    this.renderer2.addClass(this.profile.nativeElement, 'ver');
+    this.profileShow = true;
+
   }
 
   closeProfile(){
-    this.renderer2.removeClass(this.profile.nativeElement, 'ver');
-    this.renderer2.addClass(this.profile.nativeElement, 'ocultar');
+    this.profileShow = false;
   }
 
 }

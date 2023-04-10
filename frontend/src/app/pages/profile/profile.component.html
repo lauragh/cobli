@@ -15,7 +15,7 @@
           <div class="mb-3">
             <label for="password" class="form-label PoppinsRegular">Contraseña</label>
             <input type="text" readonly [value]="'**********'" class="form-control tamInput PoppinsRegular" required>
-            <p (click)="changePass()" id="pass">Reestablecer contraseña</p>
+            <p class="cursor-pointer" (click)="changePass()" id="pass">Reestablecer contraseña</p>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@
           </div>
         </div>
       </div>
-      <p>Darse de baja</p>
+      <p (click)="dropOutUser()">Darse de baja</p>
       <div class="justify-content-center  d-flex">
         <button (click)="closeModal()" type="button" class="btn btn-secondary me-2">Cancelar</button>
         <button [disabled]="!userForm.dirty" type="submit" class="btn blueCoblie text-white">Guardar cambios</button>

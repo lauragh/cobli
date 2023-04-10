@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { User } from 'src/app/interfaces/user-interface';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
@@ -24,6 +25,7 @@ export class ProfileComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private userService: UserService,
     private authService: AuthService,
+    private router: Router,
   ) {
     this.userForm = this.fb.group({
       uid: ['', Validators.required],
@@ -122,6 +124,34 @@ export class ProfileComponent implements OnInit, OnChanges {
       },
       error: error => {
         console.log(error);
+      }
+    });
+  }
+
+  dropOutUser(){
+    this.userService.deleteUser(this.uid)
+    .subscribe({
+      next: res => {
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Se ha dado de baja correctamente',
+          showConfirmButton: false,
+          timer: 4000
+        });
+        this.authService.logout()
+        .subscribe({
+          next: res => {
+            this.router.navigate(['/login']);
+          },
+          error: error => {
+            console.log(error);
+            Swal.fire({icon: 'error', title: 'Oops...', text: 'No se pudo hacer logout',});
+          }
+        });
+      },
+      error: error => {
+        Swal.fire({icon: 'error', title: 'Oops...', text: 'No se ha podido dar de baja al usuario'});
       }
     });
   }
