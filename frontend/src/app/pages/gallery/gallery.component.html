@@ -4,7 +4,7 @@
     <p>Nueva imagen</p>
     <p class="ms-1 add">+</p>
   </div>
-  <div [ngClass]="images.length > 4 ? 'justify-content-between': ''" class="row d-flex">
+  <div [ngClass]="images.length >= 4 ? 'justify-content-between': ''" class="row d-flex tarjetaDiv">
     <div class="col" class="tarjeta shadow" *ngFor="let image of images; let i = index">
       <img (click)="abrirEditor(imagesId[i])" class="foto cursor-pointer" src="{{image.img}}">
       <div class="info d-flex row" (mouseenter)="mostrarImagen(i)" (mouseleave)="ocultarImagen(i)">

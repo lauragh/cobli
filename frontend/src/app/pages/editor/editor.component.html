@@ -15,7 +15,7 @@
       </div>
     </div>
     <div id="ventana" class="d-flex justify-content-center align-items-center">
-      <div *ngIf="!editar" id="inputFile" #inputFile>
+      <div *ngIf="!editar || clear" id="inputFile" #inputFile>
         <label for="upload"><img src="../../../assets/img/uploadImg.svg"></label>
         <input #fileUpload (change)="uploadPic($event)" #imageUploaded type="file" name="photo" id="upload" />
       </div>

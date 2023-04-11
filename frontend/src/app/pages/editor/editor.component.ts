@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 export class EditorComponent implements OnInit, AfterViewInit{
   userId!: string;
   isLogged: boolean = false;
+  clear: boolean = false;
 
   //image
   imageId!: string;
@@ -33,7 +34,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
   move: boolean = false;
   bgColors: any;
   gradientColors: any[] = [];
-
 
   //canvas
   canvas!: HTMLCanvasElement;
@@ -92,25 +92,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
       if(this.image){
         this.projectName.nativeElement.value = this.image.name;
-        this.loadCanvas();
+
+        this.loadCanvas(() => {
+          setTimeout(() => {
+            this.loadTags();
+          },100);
+        });
+
         this.activateFunctions();
 
-        for(let [i ,tagColor] of this.tagColors.entries()){
-          const colorInfo = {
-            rgb: tagColor.rgb,
-            hex: tagColor.hex,
-            hsl: tagColor.hsl,
-            hsv: tagColor.hsv,
-            colorName: tagColor.colorName,
-            brightness: tagColor.brightness,
-            colorAvg: tagColor.colorAvg
-          };
-          this.infoColors.push(colorInfo);
-          this.pickColorPoint(tagColor.position[0], tagColor.position[1], 'cargar', tagColor.id, tagColor.tagColor);
-          if(i === this.tagColors.length - 1){
-            this.numTag = tagColor.id
-          }
-        }
       }
     }, 200);
     setTimeout(() => {
@@ -140,38 +130,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   @HostListener('window:resize', ['$event'])
   getScreenSize() {
-    console.log(window.innerHeight, window.innerWidth);
-
     const divs = this.tagContainer.getElementsByTagName('div');
     this.tagColors.length;
 
     for (const [index, tagColor] of this.tagColors.entries()) {
-      console.log('antes',tagColor.position[0], tagColor.position[1]);
       let [x, y] = this.getPosicionVentana(tagColor.position[0], tagColor.position[1]);
-      console.log('despues',x,y);
-
       divs[index].style.left = x + 'px';
       divs[index].style.top = y + 'px';
-
-      console.log('resultado',divs[index].style.left, divs[index].style.top);
-
     }
-
-    // for (let div of divs) {
-    //   this.tagColors[divs[div]]
-    //   let [x, y] = this.getPosicionVentana(div.style.left , div.style.right);
-
-    //   console.log('miro', div.style.left )
-    // }
-
-    // for(let tagColor of this.tagColors){
-    //   console.log('antes',tagColor.position[0], tagColor.position[1]);
-    //   let [x, y] = this.getPosicionVentana(tagColor.position[0], tagColor.position[1]);
-    //   console.log('despues',x,y);
-    //   tagColor.position[0] = x;
-    //   tagColor.position[1] = y;
-    //   console.log('resultado',tagColor.position[0], tagColor.position[1])
-    // }
   }
 
 
@@ -200,18 +166,38 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.imageUrl = e.target.result;
-      this.loadCanvas();
+      this.loadCanvas(() => {
+
+      });
       this.activateFunctions();
     };
     reader.readAsDataURL(this.imageFile);
-
-    console.log('base64',this.imageUrl);
   }
 
-  loadCanvas() {
+  loadTags(){
+    for(const [i ,tagColor] of this.tagColors.entries()){
+      const colorInfo = {
+        rgb: tagColor.rgb,
+        hex: tagColor.hex,
+        hsl: tagColor.hsl,
+        hsv: tagColor.hsv,
+        colorName: tagColor.colorName,
+        brightness: tagColor.brightness,
+        colorAvg: tagColor.colorAvg
+      };
+      this.infoColors.push(colorInfo);
+      this.createTag(tagColor.position[0], tagColor.position[1], tagColor.tagColor, tagColor.id);
+
+      if(i === this.tagColors.length - 1){
+        this.numTag = tagColor.id
+      }
+    }
+  }
+
+  loadCanvas(callback: () => void): void {
     this.img = new Image();
     this.img.crossOrigin = "anonymous";
-
+    console.log('entro a loadCanvas');
     if(this.imageUrl){
       this.img.src = this.imageUrl;
     }
@@ -233,12 +219,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
       // this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, this.canvas.width, this.canvas.height);
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
       // this.ctx.drawImage(this.img, 0, 0);
-
-      const ratioX = this.img.width/this.canvas.offsetWidth;
-      const ratioY = this.img.width/this.canvas.offsetWidth;
-
       console.log('ancho y alto al cargar', this.canvas.offsetWidth, this.canvas.offsetHeight);
     });
+
+    callback();
+
   }
 
   listenerClickPos!: () => void;
@@ -287,6 +272,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       var ctx = this.canvas2.getContext("2d")!;
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.clear = true;
 
       if(this.inputFile){
         this.renderer2.removeClass(this.inputFile.nativeElement, 'ocultar');
@@ -353,9 +339,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
   pickColorPoint(pointX: number, pointY: number, accion?: string, num?: number, tagColor?: string) {
     let [x, y] = this.getPosicionCanvas(pointX, pointY);
 
-    if ((x < 0 || x > this.img.width) || (y < 0 || y > this.img.height)){
-      return;
-    }
+    // if ((x < 0 || x > this.img.width) || (y < 0 || y > this.img.height)){
+    //   return;
+    // }
 
     const pixel = this.ctx.getImageData(x, y, this.canvas.offsetWidth, this.canvas.offsetHeight);
     const data = pixel.data;
@@ -456,15 +442,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
         return ("Naranja");
       }
     }
-    else if (h >= 36 && h <= 54) {
-      if (s < 90) {
+    else if (h >= 36 && h <= 63) {
+      if (s < 82) {
         return ("Marrón");
       }
       else {
         return ("Amarillo");
       }
     }
-    else if (h >= 55 && h <= 165) {
+    else if (h >= 64 && h <= 165) {
       return ("Verde");
     }
     else if (h >= 166 && h <= 260) {
@@ -534,6 +520,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   getPosicionVentana(posX: number, posY: number) {
     const tamContainerX = this.tagContainer.offsetWidth;
     const tamContainerY = this.tagContainer.offsetHeight;
+
     const displX = Math.trunc((tamContainerX - this.canvas.offsetWidth) / 2);
     const displY = Math.trunc((tamContainerY - this.canvas.offsetHeight) / 2);
 
@@ -569,7 +556,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(div, 'z-index', '3');
 
     let [posx, posy] = this.getPosicionVentana(x, y);
-
 
     this.renderer2.setStyle(div, 'left', `${posx}px`);
     this.renderer2.setStyle(div, 'top', `${posy}px`);
@@ -656,6 +642,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
           showConfirmButton: false,
           timer: 1500
         })
+
+        if(!this.tagContainer.innerHTML){
+          this.numTag = 0;
+        }
       }
     });
   }

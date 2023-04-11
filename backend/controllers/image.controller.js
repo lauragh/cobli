@@ -162,7 +162,7 @@ const create_image = async (req, res) => {
     }
     try {
         let imageCreated = await createImage(req.params.userId, req.body, db);
-        // console.log(imageCreated);
+        console.log('he creado imagen', imageCreated);
 
         if(imageCreated === null) {
             return res.status(401).send("Usuario no autorizado");
