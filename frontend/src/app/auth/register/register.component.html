@@ -27,7 +27,7 @@
             <p class="text-danger" *ngIf="userForm.controls['password'].errors!['invalidPassword']">La contraseña debe tener más de 6 caracteres, un número, una mayúscula y un carácter especial</p>
           </div>
         </div>
-        <div class="form-check mb-2">
+        <div class="form-check mb-4">
           <input #check (change)="acceptTerms()" type="checkbox" class="form-check-input blueCoblie" id="politicas" name="politicas">
           <label class="form-check-label" for="politicas">He leído y acepto los
             <a (click)="scrollToTermsAndConditions('termsAndConditions')" style="color: #0029FF" class="cursor-pointer">Términos y condiciones</a>
@@ -37,8 +37,11 @@
           </label>
         </div>
         <div *ngIf="emailExists" class="text-danger d-inline-block mb-3">El email introducido ya existe</div>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center  mb-3">
           <button [disabled]="accept ? false : true" type="submit" class="btn blueCoblie text-white">Continuar</button>
+        </div>
+        <div class="d-flex row justify-content-center">
+          <p routerLink="/login" class="width-auto PoppinsSemiBold cursor-pointer" style="color: #0029FF">Ya tengo cuenta</p>
         </div>
       </form>
       <img id="hombre2" class="position-absolute" src="../../../assets/img/hombre2.png">

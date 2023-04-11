@@ -1,8 +1,10 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, RouterStateSnapshot } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import Swal from 'sweetalert2';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-nav-bar',
@@ -16,6 +18,7 @@ export class NavBarComponent implements OnInit {
   userLoaded: boolean = false;
   token!: string;
   profileShow: boolean = false;
+  hidden: boolean = false;
 
   @ViewChild('profile') profile!: ElementRef;
 
@@ -24,10 +27,23 @@ export class NavBarComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private router: Router,
+    private route: ActivatedRoute,
     private renderer2: Renderer2
   ) {}
 
   ngOnInit() {
+    this.router.events
+    .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+    .subscribe((ev: NavigationEnd) => {
+      let url = ev.url;
+      if (url.includes('login') || url.includes('register')) {
+        this.hidden = true;
+      } else {
+        console.log('Entro en', url);
+        this.hidden = false;
+      }
+    });
+
     this.checkLogin(() => {
       this.cargarUsuario();
     });
@@ -36,7 +52,6 @@ export class NavBarComponent implements OnInit {
   checkLogin(callback: () => void): void {
     this.authService.checkLogin().subscribe(isAuthenticated => {
       if (isAuthenticated) {
-        this.isLoggedIn = true;
         callback();
       } else {
         this.isLoggedIn = false;
@@ -76,6 +91,7 @@ export class NavBarComponent implements OnInit {
         next: res => {
           this.name = res.user.name;
           this.userLoaded = true;
+          this.isLoggedIn = true;
         },
         error: error => {
           console.log(error);
@@ -89,10 +105,8 @@ export class NavBarComponent implements OnInit {
     this.router.navigate([`/${link}`]);
   }
 
-
   showProfile() {
     this.profileShow = true;
-
   }
 
   closeProfile(){
