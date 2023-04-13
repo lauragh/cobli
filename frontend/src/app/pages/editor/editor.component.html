@@ -15,7 +15,7 @@
       </div>
     </div>
     <div id="ventana" class="d-flex justify-content-center align-items-center">
-      <div *ngIf="!editar || clear" id="inputFile" #inputFile>
+      <div *ngIf="(!editar && !saved) || clear" id="inputFile" #inputFile>
         <label for="upload"><img src="../../../assets/img/uploadImg.svg"></label>
         <input #fileUpload (change)="uploadPic($event)" #imageUploaded type="file" name="photo" id="upload" />
       </div>
@@ -120,7 +120,7 @@
         <div class="seccion hsl">
           <div class="mb-3">
             <label class="me-3" for="color">Color</label>
-            <input (change)="colorFilter()" id="color" #color placeholder="Introduce un color" type="text" name="color">
+            <input (input)="colorFilter()" id="color" #color placeholder="Introduce un color" type="text" name="color">
           </div>
 
           <div id="colorPickerContainer" class="mb-3">
@@ -131,14 +131,14 @@
           <div>
             <div class="col">
               <div class="row d-flex mb-2">
-                <label for="luminosidad" class="form-label tamLabel" style=>Luminosidad</label>
-                <input type="range" min="0" max="100" value="32" class="form-range sliderFiltros" id="luminosidad">
-                <div class="width-auto">32</div>
+                <label for="saturacion" class="form-label tamLabel" style=>Saturación</label>
+                <input (input)="setSaturation(); colorFilter();" #saturation type="range" min="0" max="100" value="100" class="form-range sliderFiltros" id="saturacion">
+                <div #satValue class="width-auto">{{saturation.value}}</div>
               </div>
               <div class="row d-flex mb-2">
-                <label for="saturacion" class="form-label tamLabel" style=>Saturación</label>
-                <input type="range" min="0" max="100" value="11" class="form-range sliderFiltros" id="saturacion">
-                <div class="width-auto">11</div>
+                <label for="luminosidad" class="form-label tamLabel" style=>Luminosidad</label>
+                <input (input)="setLuminosity(); colorFilter();" #luminosity type="range" min="0" max="100" value="50" class="form-range sliderFiltros" id="luminosidad">
+                <div #lumValue class="width-auto">{{luminosity.value}}</div>
               </div>
             </div>
           </div>

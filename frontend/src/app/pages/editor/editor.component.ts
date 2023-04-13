@@ -53,6 +53,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
   infoColors: any[] = [];
 
   editar: boolean = false;
+  saved: boolean = false;
+
 
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
@@ -73,6 +75,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
   @ViewChild('projectName') projectName!: ElementRef;
   @ViewChild('colorAvg') colorAvg!: ElementRef;
 
+  @ViewChild('luminosity') luminosity!: ElementRef;
+  @ViewChild('lumValue') lumValue!: ElementRef;
+  @ViewChild('saturation') saturation!: ElementRef;
+  @ViewChild('satValue') satValue!: ElementRef;
+
   constructor(
     private imageService: ImageService,
     private route: ActivatedRoute,
@@ -90,9 +97,17 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.zoomInBtn = document.getElementById("lupaMas");
       this.zoomOutBtn = document.getElementById("lupaMenos");
 
-      if(this.image){
-        this.projectName.nativeElement.value = this.image.name;
-
+      if(this.image || localStorage.getItem('imageUrl')){
+        if(localStorage.getItem('projectName')){
+          this.projectName.nativeElement.value = localStorage.getItem('projectName');
+        }
+        else{
+          this.projectName.nativeElement.value = this.image.name;
+        }
+        if(localStorage.getItem('tagColors')){
+          this.tagColors = JSON.parse(localStorage.getItem('tagColors')!);
+          console.log(this.tagColors);
+        }
         this.loadCanvas(() => {
           setTimeout(() => {
             this.loadTags();
@@ -100,7 +115,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
         });
 
         this.activateFunctions();
-
       }
     }, 200);
     setTimeout(() => {
@@ -115,6 +129,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit() {
+    if(localStorage.getItem("imageUrl")){
+      this.saved = true;
+    }
     this.userId = this.authService.getUid();
     if(this.userId){
       this.isLogged = true;
@@ -133,13 +150,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const divs = this.tagContainer.getElementsByTagName('div');
     this.tagColors.length;
 
-    for (const [index, tagColor] of this.tagColors.entries()) {
-      let [x, y] = this.getPosicionVentana(tagColor.position[0], tagColor.position[1]);
-      divs[index].style.left = x + 'px';
-      divs[index].style.top = y + 'px';
+    if(divs.length > 0){
+      for (const [index, tagColor] of this.tagColors.entries()) {
+        let [x, y] = this.getPosicionVentana(tagColor.position[0], tagColor.position[1]);
+        divs[index].style.left = x + 'px';
+        divs[index].style.top = y + 'px';
+      }
     }
   }
-
 
   getData() {
     this.imageService.getImage(this.userId, this.imageId)
@@ -166,6 +184,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.imageUrl = e.target.result;
+      localStorage.setItem("imageUrl", this.imageUrl);
       this.loadCanvas(() => {
 
       });
@@ -198,7 +217,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.img = new Image();
     this.img.crossOrigin = "anonymous";
     console.log('entro a loadCanvas');
-    if(this.imageUrl){
+
+    if(localStorage.getItem("imageUrl")){
+      this.img.src = localStorage.getItem("imageUrl");
+    }
+    else if(this.imageUrl){
       this.img.src = this.imageUrl;
     }
     else{
@@ -215,10 +238,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       console.log(this.img.width, this.img.height);
       this.canvas.width = this.img.width;
       this.canvas.height = this.img.height;
-      // this.canvas.style.overflow = "auto";
-      // this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, this.canvas.width, this.canvas.height);
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
-      // this.ctx.drawImage(this.img, 0, 0);
       console.log('ancho y alto al cargar', this.canvas.offsetWidth, this.canvas.offsetHeight);
     });
 
@@ -326,7 +346,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     let [posX, posY] = this.getPosicionCanvas(x,y);
     img.addEventListener("load", () => {
-      // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
       ctx.drawImage(img,
         Math.min(posX, img.width ),
         Math.min(posY, img.height ),
@@ -339,9 +358,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
   pickColorPoint(pointX: number, pointY: number, accion?: string, num?: number, tagColor?: string) {
     let [x, y] = this.getPosicionCanvas(pointX, pointY);
 
-    // if ((x < 0 || x > this.img.width) || (y < 0 || y > this.img.height)){
-    //   return;
-    // }
+    if ((x < 0 || x > this.img.width) || (y < 0 || y > this.img.height)){
+      return;
+    }
 
     const pixel = this.ctx.getImageData(x, y, this.canvas.offsetWidth, this.canvas.offsetHeight);
     const data = pixel.data;
@@ -492,12 +511,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   getPositionClicks(x: number, y: number){
-
-    // let [posX, posY] = this.getPosicionCanvas(x,y);
-    // const bounding = this.tagContainer.getBoundingClientRect();
-    // const x = event.clientX - bounding.left;
-    // const y = event.clientY - bounding.top;
-
     console.log('hago click', x, y);
     this.pickColorPoint(x, y);
   }
@@ -579,6 +592,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       }
       console.log('voy a pushear',tagModel);
       this.tagColors.push(tagModel);
+      localStorage.setItem('tagColors', JSON.stringify(this.tagColors));
       setTimeout(() => {
         this.descriptionValue.get(this.tagColors.length - 1).nativeElement.focus();
       },100);
@@ -587,6 +601,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   checkDarkness(r: number, g: number, b: number, a: number){
     const brightness = r * 0.299 + g * 0.587 + b * 0.114 + (1 - a) * 255;
+    if(a < 0.10){
+      return "#000000";
+    }
     return brightness > 186 ? "#000000" : "#FFFFFF";
   }
 
@@ -646,6 +663,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
         if(!this.tagContainer.innerHTML){
           this.numTag = 0;
         }
+        localStorage.setItem('tagColors', JSON.stringify(this.tagColors));
+
       }
     });
   }
@@ -712,13 +731,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   updateDescription(pos: number){
     this.tagColors[pos].description = this.descriptionValue.get(pos).nativeElement.value;
-
     console.log(this.tagColors[pos]);
   }
 
   onKeyDown(event: any){
     if (event.key === "Enter") {
       event.target.blur();
+      localStorage.setItem('projectName', this.projectName.nativeElement.value);
+      localStorage.setItem('tagColors', JSON.stringify(this.tagColors));
     }
   }
 
@@ -848,6 +868,35 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return { h, s, l };
   }
 
+  hslToRgb(h: number, s: number, l: number) {
+    h /= 360;
+    s /= 100;
+    l /= 100;
+    let r, g, b;
+
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const hue2rgb = (p: number, q: number, t: number) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      }
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+  }
+
+
   rgbToHsv(r: number, g: number, b: number) {
     r /= 255;
     g /= 255;
@@ -882,23 +931,69 @@ export class EditorComponent implements OnInit, AfterViewInit{
   ////***** HSL COLORPICKER EVENTS *****////
 
   colorFilter(){
-    console.log('entro');
-    // this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 10% ,rgb(0, 0, 0) 20%, rgb(0, 0, 0) 30%, rgb(0, 0, 0) 40%, rgb(0, 0, 0) 50% ,rgb(0, 0, 0) 60%, rgb(0, 0, 0) 70%, rgb(0, 0, 0) 80%, rgb(0, 0, 0) 90%, rgb(0, 0, 0) 100%)';
+    const colorRanges: { [key: string]: number[] } = {
+      "rojo": [0, 15],
+      "naranja": [16, 48],
+      "amarillo": [49, 62],
+      "verde": [63, 160],
+      "azul": [171, 250],
+      "morado": [251, 286],
+      "rosa": [287, 330],
+    };
 
-    if(this.color.nativeElement.value === "azul"){
-      console.log('entro de azul');
-      this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 255, 250) 0%, rgb(0, 203, 255) 10% ,rgb(0, 174, 255) 20%, rgb(0, 131, 255) 30%, rgb(0, 101, 255) 40%, rgb(0, 93, 255) 50% ,rgb(0, 67, 255) 60%, rgb(0, 51, 255) 70%, rgb(0, 8, 255) 80%, rgb(38, 0, 255) 90%, rgb(67, 0, 255) 100%)';
+    const colorValue = this.color.nativeElement.value;
+    const colorRange = colorRanges[colorValue];
+
+    if(colorRange){
+      this.bgColors.style.background = this.getHue(colorRange[0], colorRange[1]);
     }
-    else if(this.color.nativeElement.value === "verde"){
-      this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 255, 119) 0%, rgb(0, 226, 90) 10% ,rgb(0, 198, 79) 20%, rgb(0, 168, 67) 30%, rgb(0, 147, 59) 40%, rgb(0, 127, 50) 50% ,rgb(0, 114, 45) 60%, rgb(0, 91, 36) 70%, rgb(0, 68, 27) 80%, rgb(0, 53, 21) 90%, rgb(0, 33, 13) 100%)';
+    else{
+      this.bgColors.style.background = 'linear-gradient(to right, rgb(255,0,0) 0%, rgb(255,255,0) 17%, rgb(0,255,0) 33%, rgb(0,255,255) 50%, rgb(0,0,255) 66%, rgb(255,0,255) 83%, rgb(255,0,0) 100%)';
     }
-    else if(this.color.nativeElement.value === "amarillo"){
-      this.bgColors.style.background = 'linear-gradient(to right, rgb(255, 246, 0) 0%, rgb(237, 229, 0) 10% ,rgb(216, 209, 0) 20%, rgb(196, 189, 0) 30%, rgb(181, 175, 0) 40%, rgb(163, 157, 0) 50% ,rgb(137, 133, 0) 60%, rgb(119, 115, 0) 70%, rgb(102, 98, 0) 80%, rgb(84, 81, 0) 90%, rgb(63, 61, 0) 100%)';
-    }
-    else if(this.color.nativeElement.value === "rojo"){
-    // this.bgColors.style.background = 'linear-gradient(to right, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 10% ,rgb(0, 0, 0) 20%, rgb(0, 0, 0) 30%, rgb(0, 0, 0) 40%, rgb(0, 0, 0) 50% ,rgb(0, 0, 0) 60%, rgb(0, 0, 0) 70%, rgb(0, 0, 0) 80%, rgb(0, 0, 0) 90%, rgb(0, 0, 0) 100%)';
-    }
+
     this.getColor();
+  }
+
+  setSaturation(){
+    this.satValue.nativeElement.value = this.saturation.nativeElement.value;
+  }
+
+  setLuminosity(){
+    this.lumValue.nativeElement.value = this.luminosity.nativeElement.value;
+  }
+
+  //Get the hue color by interpolation
+  getHue(min: number, max: number): string{
+    const lerp = (a: number, b: number, t: number) => a + t * (b - a);
+    const inLerp = (a: number, b: number, v: number) => (v - a) / (b - a);
+    const remap = (
+      v: number,
+      oMin: number,
+      oMax: number,
+      rMin: number,
+      rMax: number
+    ) => lerp(rMin, rMax, inLerp(oMin, oMax, v));
+
+    let colores = [];
+    for(let i = 0; i <= 100; i = i + 10){
+      let hue = remap(i, 0, 100, min, max);
+      colores.push(this.hslToRgb(hue, this.saturation.nativeElement.value, this.luminosity.nativeElement.value));
+    }
+
+    const gradient = `linear-gradient(to right,
+      rgb(${colores[0].r}, ${colores[0].g}, ${colores[0].b}) 0%,
+      rgb(${colores[1].r}, ${colores[1].g}, ${colores[1].b}) 10%,
+      rgb(${colores[2].r}, ${colores[2].g}, ${colores[2].b}) 20%,
+      rgb(${colores[3].r}, ${colores[3].g}, ${colores[3].b}) 30%,
+      rgb(${colores[4].r}, ${colores[4].g}, ${colores[4].b}) 40%,
+      rgb(${colores[5].r}, ${colores[5].g}, ${colores[5].b}) 50%,
+      rgb(${colores[6].r}, ${colores[6].g}, ${colores[6].b}) 60%,
+      rgb(${colores[7].r}, ${colores[7].g}, ${colores[7].b}) 70%,
+      rgb(${colores[8].r}, ${colores[8].g}, ${colores[8].b}) 80%,
+      rgb(${colores[9].r}, ${colores[9].g}, ${colores[9].b}) 90%,
+      rgb(${colores[10].r}, ${colores[10].g}, ${colores[10].b}) 100%`
+
+    return gradient;
   }
 
   obtenerColor(event: any){

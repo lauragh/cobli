@@ -5,8 +5,10 @@
     <p class="ms-1 add">+</p>
   </div>
   <div [ngClass]="images.length >= 4 ? 'justify-content-between': ''" class="row d-flex tarjetaDiv">
-    <div class="col" class="tarjeta shadow" *ngFor="let image of images; let i = index">
-      <img (click)="abrirEditor(imagesId[i])" class="foto cursor-pointer" src="{{image.img}}">
+    <div (click)="abrirEditor(imagesId[i])" class="col" class="tarjeta shadow" *ngFor="let image of images; let i = index">
+      <div class="cursor-pointer">
+        <img class="foto " src="{{image.img}}">
+      </div>
       <div class="info d-flex row" (mouseenter)="mostrarImagen(i)" (mouseleave)="ocultarImagen(i)">
         <div class="texto">
           <h6 class="PoppinsMedium">{{image.name}}</h6>

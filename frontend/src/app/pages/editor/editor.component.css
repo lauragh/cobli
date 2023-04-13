@@ -243,11 +243,6 @@ table {
   border-collapse: collapse;
   box-sizing: border-box;
 }
-/*
-thead {
-  width: 100%;
-  display: block;
-} */
 
 table::-webkit-scrollbar {
   width: 0.5em;
@@ -274,7 +269,3 @@ table::-webkit-scrollbar-thumb {
   /* margin-left: 500px; */
   width: 550px;
 }
-
-/* #colorAvg{
-  border: 1px solid black;
-} */
