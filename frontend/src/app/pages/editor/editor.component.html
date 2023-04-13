@@ -6,7 +6,7 @@
         <img *ngIf="isLogged" (click)="saveProject()" src="../../../assets/img/guardar.svg">
       </div>
       <div class="width-auto">
-        <input *ngIf="isLogged" #projectName placeholder="Nuevo proyecto" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
+        <input *ngIf="isLogged" #projectName placeholder="Nuevo proyecto" (input)="setProjectName()" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
       </div>
       <div class="width-auto">
         <img id="lupaMenos" src="../../../assets/img/lupaMenos.svg">

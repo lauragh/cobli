@@ -32,6 +32,8 @@ export class NavBarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    localStorage.setItem('imageLoaded', 'false');
+
     this.router.events
     .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
     .subscribe((ev: NavigationEnd) => {
@@ -102,6 +104,19 @@ export class NavBarComponent implements OnInit {
   }
 
   goToLink(link: string){
+    if(localStorage.getItem('imageUrl')){
+      localStorage.removeItem('imageUrl');
+    }
+    if(localStorage.getItem('tagColors')){
+      localStorage.removeItem('tagColors');
+    }
+    if(localStorage.getItem('paisaje')){
+      localStorage.removeItem('paisaje');
+    }
+    if(localStorage.getItem('projectName')){
+      localStorage.removeItem('projectName');
+    }
+
     this.router.navigate([`/${link}`]);
   }
 

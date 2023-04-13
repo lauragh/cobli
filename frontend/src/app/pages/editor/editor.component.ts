@@ -53,6 +53,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   infoColors: any[] = [];
 
   editar: boolean = false;
+  imageLoaded: boolean = false;
   saved: boolean = false;
 
 
@@ -99,14 +100,19 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
       if(this.image || localStorage.getItem('imageUrl')){
         if(localStorage.getItem('projectName')){
-          this.projectName.nativeElement.value = localStorage.getItem('projectName');
+          if(localStorage.getItem('projectName') !== ' '){
+            this.projectName.nativeElement.value = localStorage.getItem('projectName');
+          }
+          else{
+            this.projectName.nativeElement.value = '';
+          }
         }
-        else{
+        else if(this.image){
           this.projectName.nativeElement.value = this.image.name;
         }
+
         if(localStorage.getItem('tagColors')){
           this.tagColors = JSON.parse(localStorage.getItem('tagColors')!);
-          console.log(this.tagColors);
         }
         this.loadCanvas(() => {
           setTimeout(() => {
@@ -136,10 +142,13 @@ export class EditorComponent implements OnInit, AfterViewInit{
     if(this.userId){
       this.isLogged = true;
     }
+    localStorage.setItem('editar', 'false');
+
     this.route.paramMap.subscribe(params => {
       if (params.has('imageId')) {
         this.imageId = params.get('imageId')!;
         this.editar = true;
+        localStorage.setItem('editar', 'true');
         this.getData();
       }
     });
@@ -184,13 +193,23 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.imageUrl = e.target.result;
-      localStorage.setItem("imageUrl", this.imageUrl);
+
+      if(localStorage.getItem('imageLoaded') === 'true' || localStorage.getItem('editar') === 'false'){
+        console.log('deberia entrar');
+        localStorage.setItem("imageUrl", this.imageUrl);
+      }
+
       this.loadCanvas(() => {
 
       });
       this.activateFunctions();
     };
     reader.readAsDataURL(this.imageFile);
+
+    // quiero guardarme la imagen cuando la ruta no tiene una imgid
+    // cuando recargo
+
+    // cuando hago clearCanvas y hay umgId
   }
 
   loadTags(){
@@ -220,9 +239,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     if(localStorage.getItem("imageUrl")){
       this.img.src = localStorage.getItem("imageUrl");
-    }
-    else if(this.imageUrl){
-      this.img.src = this.imageUrl;
     }
     else{
       console.log('tengo imagen');
@@ -290,9 +306,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.infoColors = [];
       this.numTag = 0;
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      var ctx = this.canvas2.getContext("2d")!;
-      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      if(this.canvas2){
+        var ctx = this.canvas2.getContext("2d")!;
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }
       this.clear = true;
+      this.projectName.nativeElement.value = '';
+      localStorage.setItem('projectName', ' ');
+      localStorage.setItem('imageLoaded', 'true');
 
       if(this.inputFile){
         this.renderer2.removeClass(this.inputFile.nativeElement, 'ocultar');
@@ -737,9 +758,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
   onKeyDown(event: any){
     if (event.key === "Enter") {
       event.target.blur();
-      localStorage.setItem('projectName', this.projectName.nativeElement.value);
       localStorage.setItem('tagColors', JSON.stringify(this.tagColors));
     }
+  }
+
+  setProjectName(){
+    localStorage.setItem('projectName', this.projectName.nativeElement.value);
   }
 
   ////***** PROJECT FUNCTIONS *****////
