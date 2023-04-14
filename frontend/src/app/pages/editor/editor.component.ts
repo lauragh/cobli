@@ -314,6 +314,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.projectName.nativeElement.value = '';
       localStorage.setItem('projectName', ' ');
       localStorage.setItem('imageLoaded', 'true');
+      if(localStorage.getItem('imageUrl')){
+        localStorage.removeItem('imageUrl');
+      }
+      if(localStorage.getItem('tagColors')){
+        localStorage.removeItem('tagColors');
+      }
+      localStorage.setItem('imageLoaded', 'false');
+      localStorage.setItem('projectSaved', 'false');
 
       if(this.inputFile){
         this.renderer2.removeClass(this.inputFile.nativeElement, 'ocultar');
@@ -783,6 +791,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
             showConfirmButton: false,
             timer: 1500
           })
+          localStorage.setItem('projectSaved', 'true');
         },
         error: error => {
           console.log(error);
