@@ -5,14 +5,6 @@ const httpCodes = require('../database/httpCodes');
 const Image = require('../models/image');
 const { verifyToken } = require('../helpers/verifyToken');
 
-//Validate image
-// function validatePicture(picture){
-//     let pattern = ".+(\\.jpg|\\.png|\\.jpeg|\\.JPG|\\.PNG|\\.JPEG)";
-//     let matcher = new RegExp(pattern);
-
-//     return matcher.test(picture)
-// }
-
 //Convert image to base64
 function bf2base64(file) {
     // console.log(file.toString('base64'))

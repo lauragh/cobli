@@ -5,8 +5,8 @@
     <p class="ms-1 add">+</p>
   </div>
   <div [ngClass]="images.length >= 4 ? 'justify-content-between': ''" class="row d-flex tarjetaDiv">
-    <div (click)="abrirEditor(imagesId[i])" class="col" class="tarjeta shadow" *ngFor="let image of images; let i = index">
-      <div class="cursor-pointer">
+    <div class="col" class="tarjeta shadow" *ngFor="let image of images; let i = index">
+      <div (click)="abrirEditor(imagesId[i])" class="cursor-pointer">
         <img class="foto " src="{{image.img}}">
       </div>
       <div class="info d-flex row" (mouseenter)="mostrarImagen(i)" (mouseleave)="ocultarImagen(i)">
@@ -15,7 +15,7 @@
           <p class="PoppinsLight">Editado {{imagesCopy[i].dateUpdating}}</p>
         </div>
         <div id="divImagen">
-          <img (click)="eliminarImagen(imagesId[i], image.name)" #imagenes class="ocultar" src="../../../assets/img/cruz.svg">
+          <img (click)="eliminarImagen(imagesId[i], image.name)" #imagenes class="ocultar cursor-pointer" src="../../../assets/img/cruz.svg">
         </div>
       </div>
     </div>

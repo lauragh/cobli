@@ -1,6 +1,6 @@
 <div id="contenedor" class="container-fluid pt-4 ps-5 pe-5">
   <div class="pe-5">
-    <div class="row justify-content-between mb-2">
+    <div class="row justify-content-between mb-2 position-relative">
       <div class="width-auto">
         <img (click)="clearCanvas()" class="me-3" src="../../../assets/img/cruz.svg">
         <img *ngIf="isLogged" (click)="saveProject()" src="../../../assets/img/guardar.svg">
@@ -11,7 +11,35 @@
       <div class="width-auto">
         <img id="lupaMenos" src="../../../assets/img/lupaMenos.svg">
         <img id="lupaMas" class="ms-2" src="../../../assets/img/lupaMas.svg">
-        <img class="ms-2" src="../../../assets/img/filtros.svg">
+        <img (click)="showFilters()" class="ms-2" src="../../../assets/img/filtros.svg">
+      </div>
+      <div *ngIf="showFilter" class="position-absolute filters">
+        <div class="mb-3">
+          <label class="me-3" for="color">Tipo de daltonismo</label>
+          <select [(ngModel)]="filter" (change)="filterImage()" name="color">
+            <option value="-" selected>-</option>
+            <option value="deuteranopia">Deuteranopía/Deuternomalía (verde)</option>
+            <option value="protanopia">Protanopía/Protanomalía (rojo)</option>
+            <option value="tritanopia">Tritanopía/Tritanomalía (azul)</option>
+          </select>
+        </div>
+        <div class="col">
+          <div class="row d-flex mb-2">
+            <label for="lum" class="form-label tamLabel" style=>Luminosidad</label>
+            <input (input)="filterLum()" #lumFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltros" id="lum">
+            <div class="width-auto">{{lumFilter.value}}</div>
+          </div>
+          <div class="row d-flex mb-2">
+            <label for="sat" class="form-label tamLabel" style=>Saturación</label>
+            <input (input)="filterSat()" #satFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltros" id="sat">
+            <div #satFilterValue class="width-auto">{{satFilter.value}}</div>
+          </div>
+          <div class="row d-flex mb-2">
+            <label for="contraste" class="form-label tamLabel" style=>Contraste</label>
+            <input (input)="filterContrast()" #contrastFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltros" id="contraste">
+            <div #contrastFilterValue class="width-auto">{{contrastFilter.value}}</div>
+          </div>
+        </div>
       </div>
     </div>
     <div id="ventana" class="d-flex justify-content-center align-items-center">
@@ -85,11 +113,20 @@
         <h6 id="posModal" class="PoppinsBold mb-3">Etiquetas de colores</h6>
         <div class="seccion etiquetas">
           <div class="mb-3">
-            <label class="me-3" for="color">Color</label>
-            <select name="color">
-              <option value="rojo">Rojo</option>
-              <option value="azul">Azul</option>
-              <option value="azul">Marron</option>
+            <label class="me-3" for="color">Filtrar por color</label>
+            <select [(ngModel)]="selectedColor" name="color">
+              <option value="-" selected>-</option>
+              <option value="Rojo">Rojo</option>
+              <option value="Rosa">Rosa</option>
+              <option value="Marrón">Marrón</option>
+              <option value="Naranja">Naranja</option>
+              <option value="Amarillo">Amarillo</option>
+              <option value="Verde">Verde</option>
+              <option value="Azul">Azul</option>
+              <option value="Morado">Morado</option>
+              <option value="Blanco">Blanco</option>
+              <option value="Gris">Gris</option>
+              <option value="Negro">Negro</option>
             </select>
           </div>
           <table class="table table-hover">
@@ -102,7 +139,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="cursor-pointer" (click)="showTagValues(i)" *ngFor="let tag of tagColors; let i = index" (mouseenter)="showImage(i)" (mouseleave)="hideImage(i)">
+              <tr class="cursor-pointer" (click)="showTagValues(i)" *ngFor="let tag of getFilteredTags(selectedColor); let i = index" (mouseenter)="showImage(i)" (mouseleave)="hideImage(i)">
                 <th scope="row">{{tag.id}}</th>
                 <td>{{tag.hex}}</td>
                 <td><input #descriptionValue title="{{tag.description}}"type="text" id="description" (keydown)="onKeyDown($event)" (change)="updateDescription(i)" placeholder="Escribe una descripción" [value]="tag.description"></td>
@@ -132,13 +169,13 @@
             <div class="col">
               <div class="row d-flex mb-2">
                 <label for="saturacion" class="form-label tamLabel" style=>Saturación</label>
-                <input (input)="setSaturation(); colorFilter();" #saturation type="range" min="0" max="100" value="100" class="form-range sliderFiltros" id="saturacion">
-                <div #satValue class="width-auto">{{saturation.value}}</div>
+                <input (input)="colorFilter();" #saturation type="range" min="0" max="100" value="100" class="form-range sliderFiltros" id="saturacion">
+                <div class="width-auto">{{saturation.value}}</div>
               </div>
               <div class="row d-flex mb-2">
                 <label for="luminosidad" class="form-label tamLabel" style=>Luminosidad</label>
-                <input (input)="setLuminosity(); colorFilter();" #luminosity type="range" min="0" max="100" value="50" class="form-range sliderFiltros" id="luminosidad">
-                <div #lumValue class="width-auto">{{luminosity.value}}</div>
+                <input (input)="colorFilter();" #luminosity type="range" min="0" max="100" value="50" class="form-range sliderFiltros" id="luminosidad">
+                <div class="width-auto">{{luminosity.value}}</div>
               </div>
             </div>
           </div>

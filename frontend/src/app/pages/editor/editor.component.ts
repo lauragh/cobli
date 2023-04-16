@@ -52,9 +52,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
   tagColors: any[] = [];
   infoColors: any[] = [];
 
+  //localStorage
   editar: boolean = false;
   imageLoaded: boolean = false;
   saved: boolean = false;
+
+
+  selectedColor: string = '-';
+  filter: string = '-';
+  showFilter: boolean = false;
 
 
   @ViewChild('spectrum') spectrum!: ElementRef;
@@ -77,9 +83,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
   @ViewChild('colorAvg') colorAvg!: ElementRef;
 
   @ViewChild('luminosity') luminosity!: ElementRef;
-  @ViewChild('lumValue') lumValue!: ElementRef;
   @ViewChild('saturation') saturation!: ElementRef;
-  @ViewChild('satValue') satValue!: ElementRef;
+
+  @ViewChild('lumFilter') lumFilter!: ElementRef;
+  @ViewChild('satFilter') satFilter!: ElementRef;
+  @ViewChild('contrastFilter') contrastFilter!: ElementRef;
+
 
   constructor(
     private imageService: ImageService,
@@ -816,6 +825,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
         next: res => {
           console.log('resultado de crear imagen', res);
           this.imageId = res.image[1];
+          localStorage.setItem('projectSaved', 'true');
           this.updateNumImages();
         },
         error: error => {
@@ -845,6 +855,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
         console.log(error);
       }
     });
+  }
+
+  getFilteredTags(selectedColor: string): any[] {
+    if (this.selectedColor === "-") {
+      return this.tagColors;
+    } else {
+      return this.tagColors.filter(tag => tag.colorName === selectedColor);
+    }
   }
 
   ////***** COLOR CONVERTIONS *****////
@@ -961,6 +979,39 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return { h2, s2, v2 };
   }
 
+  hsvToRgb(h: number, s: number, v: number) {
+    const c = v * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = v - c;
+
+    let r = 0, g = 0, b = 0;
+    if (h >= 0 && h < 60) {
+      r = c;
+      g = x;
+    } else if (h >= 60 && h < 120) {
+      r = x;
+      g = c;
+    } else if (h >= 120 && h < 180) {
+      g = c;
+      b = x;
+    } else if (h >= 180 && h < 240) {
+      g = x;
+      b = c;
+    } else if (h >= 240 && h < 300) {
+      r = x;
+      b = c;
+    } else if (h >= 300 && h < 360) {
+      r = c;
+      b = x;
+    }
+
+    r += m;
+    g += m;
+    b += m;
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  }
+
   ////***** HSL COLORPICKER EVENTS *****////
 
   colorFilter(){
@@ -985,14 +1036,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
 
     this.getColor();
-  }
-
-  setSaturation(){
-    this.satValue.nativeElement.value = this.saturation.nativeElement.value;
-  }
-
-  setLuminosity(){
-    this.lumValue.nativeElement.value = this.luminosity.nativeElement.value;
   }
 
   //Get the hue color by interpolation
@@ -1097,6 +1140,165 @@ export class EditorComponent implements OnInit, AfterViewInit{
   showColor(color: string){
     this.renderer2.setStyle(this.muestra.nativeElement, 'background-color', color);
     this.hexadecimal.nativeElement.innerHTML = color;
+  }
+
+
+  /** FILTERS */
+
+  showFilters(){
+    this.showFilter = true;
+  }
+
+  getColorBlindness(object: string){
+    this.ctx.drawImage(this.img, 0, 0);
+    const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    const data = imageData.data;
+
+    //Cambia tonos azules por anaranjados
+    if(this.filter === 'tritanopia'){
+      for (var i = 0; i < data.length; i += 4) {
+        let red = data[i], green = data[i + 1], blue = data[i + 2];
+
+        data[i] = Math.min(Math.round(0.992 * red + 0.007 * green + 0.002 * blue), 255);
+        data[i + 1] = Math.min(Math.round(0.957 * red + 0.065 * green - 0.022 * blue), 255);
+        data[i + 2] = Math.min(Math.round(0.003 * red + 0.067 * green + 0.930 * blue), 255);
+      }
+    }
+
+    //Cambia tonos rojos en un tono naranja-verde y los verdes en un tono amarillo-verde.
+    else if(this.filter === 'deuteranopia'){
+      for (var i = 0; i < data.length; i += 4) {
+        let red = data[i], green = data[i + 1], blue = data[i + 2];
+        let newRed = Math.round(0.625 * green + 0.375 * blue);
+        let newGreen = Math.round(0.7 * red + 0.3 * blue);
+        let newBlue = Math.round(0.0 * red + 0.3 * green + 0.7 * blue);
+        data[i] = newRed;
+        data[i + 1] = newGreen;
+        data[i + 2] = newBlue;
+      }
+    }
+
+    //Cambia tonos rojos por una tonalidad de verde-amarillo y los verdes por una tonalidad de azul-violeta
+    else if(this.filter === 'protanopia'){
+      for (var i = 0; i < data.length; i += 4) {
+        let red = data[i], green = data[i + 1], blue = data[i + 2];
+
+        data[i] = Math.min(Math.round(0.56667 * green + 0.43333 * blue), 255);
+        data[i + 1] = Math.min(Math.round(0.55833 * red + 0.44167 * blue), 255);
+        data[i + 2] = Math.min(Math.round(0.24167 * red + 0.75833 * green), 255);
+      }
+    }
+
+    if(object === 'imageData'){
+      return imageData;
+    }
+    else{
+      return [imageData, data];
+    }
+  }
+
+
+  filterImage(){
+    this.ctx.drawImage(this.img, 0, 0);
+    const imageData = this.getColorBlindness('imageData');
+    this.lumFilter.nativeElement.value = 50;
+    this.satFilter.nativeElement.value = 50;
+    this.contrastFilter.nativeElement.value = 50;
+
+    this.filterLum();
+    this.filterSat();
+    this.filterContrast();
+    this.ctx.putImageData(imageData, 0, 0);
+  }
+
+  filterLum(){
+    let brightness = this.lumFilter.nativeElement.value;
+    console.log('entro');
+    // console.log(this.lumFilter.nativeElement.value);
+    if(brightness > 50){
+      brightness = 1 + brightness / 100;
+    }
+    else if(brightness == 50){
+      brightness = 100 / 100;
+    }
+    else if(brightness < 50){
+      brightness = 0.25 +  brightness / 100;
+    }
+
+    const [imageData, data] = this.getColorBlindness('data');
+
+    for (var i = 0; i < data.length; i += 4) {
+      if (brightness !== 0) {
+        data[i] = Math.round(data[i] * brightness);
+        data[i + 1] = Math.round(data[i + 1] * brightness);
+        data[i + 2] = Math.round(data[i + 2] * brightness);
+      }
+    }
+
+    this.ctx.putImageData(imageData, 0, 0);
+  }
+
+  filterSat() {
+    let saturation = this.satFilter.nativeElement.value;
+
+    // console.log(saturation);
+    if(saturation > 50){
+      saturation = 1.25 + saturation / 100;
+      console.log(saturation);
+    }
+    else if(saturation == 50){
+      saturation = 100 / 100;
+    }
+    else if(saturation < 50){
+      saturation = 0.25 +  saturation / 100;
+    }
+
+    const [imageData, data] = this.getColorBlindness('data');
+
+    for (let i = 0; i < data.length; i += 4) {
+      const [r, g, b] = data.slice(i, i + 3);
+
+      // calculate grayscale value of pixel
+      const gray = Math.round((r + g + b) / 3);
+
+      // adjust saturation
+      const newR = Math.round(gray + (r - gray) * saturation);
+      const newG = Math.round(gray + (g - gray) * saturation);
+      const newB = Math.round(gray + (b - gray) * saturation);
+
+      // update pixel data
+      data[i] = newR;
+      data[i + 1] = newG;
+      data[i + 2] = newB;
+    }
+
+    this.ctx.putImageData(imageData, 0, 0);
+  }
+
+  filterContrast() {
+    let contrast = parseFloat(this.contrastFilter.nativeElement.value);
+    // console.log(saturation);
+    if(contrast > 50){
+      contrast = 1.50 + contrast;
+    }
+    else if(contrast == 50){
+      contrast = 1;
+    }
+    else if(contrast < 50){
+      contrast = 0.25 + contrast;
+    }
+
+    const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+
+    const [imageData, data] = this.getColorBlindness('data');
+
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] = factor * (data[i] - 128) + 128;
+      data[i + 1] = factor * (data[i + 1] - 128) + 128;
+      data[i + 2] = factor * (data[i + 2] - 128) + 128;
+    }
+
+    this.ctx.putImageData(imageData, 0, 0);
   }
 
 }

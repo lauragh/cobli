@@ -10,7 +10,6 @@ import { BehaviorSubject } from 'rxjs';
 export class ImageService {
 
   private URL = environment.apiURL;
-  private isAuthenticated = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) { }
 
