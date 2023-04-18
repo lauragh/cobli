@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../../../services/user.service';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 
