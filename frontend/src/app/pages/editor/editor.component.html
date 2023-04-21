@@ -139,7 +139,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="cursor-pointer" (click)="showTagValues(i)" *ngFor="let tag of getFilteredTags(selectedColor); let i = index" (mouseenter)="showImage(i)" (mouseleave)="hideImage(i)">
+              <tr class="cursor-pointer" (click)="showTagValues(tag.id)" *ngFor="let tag of getFilteredTags(selectedColor); let i = index" (mouseenter)="showImage(i)" (mouseleave)="hideImage(i)">
                 <th scope="row">{{tag.id}}</th>
                 <td>{{tag.hex}}</td>
                 <td><input #descriptionValue title="{{tag.description}}"type="text" id="description" (keydown)="onKeyDown($event)" (change)="updateDescription(i)" placeholder="Escribe una descripción" [value]="tag.description"></td>

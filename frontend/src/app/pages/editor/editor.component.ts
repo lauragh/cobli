@@ -182,8 +182,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     .subscribe({
       next: res => {
         this.image = res.image;
-        console.log(this.image);
-        console.log('imagenes',res.image.colorTags);
         if(res.image.colorTags !== undefined){
           this.tagColors = res.image.colorTags;
         }
@@ -198,12 +196,17 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.removeClass(this.inputFile.nativeElement, 'ver');
     this.renderer2.addClass(this.inputFile.nativeElement, 'ocultar');
     this.imageFile = event.target.files[0];
-
+    let bigFile = false;
     const reader = new FileReader();
+
+    if(Number((this.imageFile.size / (1024*1024)).toFixed(2)) > 5){
+      console.log("Tamaño de archivo:", this.imageFile.size, (this.imageFile.size / (1024*1024)).toFixed(2));
+      bigFile = true;
+    }
+
     reader.onload = (e: any) => {
       this.imageUrl = e.target.result;
-
-      if(localStorage.getItem('imageLoaded') === 'true' || localStorage.getItem('editar') === 'false'){
+      if((localStorage.getItem('imageLoaded') === 'true' || localStorage.getItem('editar') === 'false') && !bigFile){
         console.log('deberia entrar');
         localStorage.setItem("imageUrl", this.imageUrl);
       }
@@ -214,11 +217,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.activateFunctions();
     };
     reader.readAsDataURL(this.imageFile);
-
-    // quiero guardarme la imagen cuando la ruta no tiene una imgid
-    // cuando recargo
-
-    // cuando hago clearCanvas y hay umgId
   }
 
   loadTags(){
@@ -249,9 +247,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
     if(localStorage.getItem("imageUrl")){
       this.img.src = localStorage.getItem("imageUrl");
     }
-    else{
+    else if(this.editar){
       console.log('tengo imagen');
       this.img.src = this.image?.img;
+    }
+    else{
+      this.img.src = this.imageUrl;
     }
     // this.img.src = '../../../assets/img/ejemplo.png';
     // this.img.src = '../../../assets/img/image.png';
@@ -329,7 +330,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       if(localStorage.getItem('tagColors')){
         localStorage.removeItem('tagColors');
       }
-      localStorage.setItem('imageLoaded', 'false');
       localStorage.setItem('projectSaved', 'false');
 
       if(this.inputFile){
@@ -752,6 +752,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   showTagValues(pos: number) {
+    pos = pos - 1;
     console.log(this.infoColors);
     this.rgb.nativeElement.innerHTML = this.infoColors[pos].rgb;
     this.hex.nativeElement.innerHTML = this.infoColors[pos].hex;
@@ -1153,15 +1154,33 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.ctx.drawImage(this.img, 0, 0);
     const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     const data = imageData.data;
+    const originalData = data.slice();
 
     //Cambia tonos azules por anaranjados
     if(this.filter === 'tritanopia'){
       for (var i = 0; i < data.length; i += 4) {
         let red = data[i], green = data[i + 1], blue = data[i + 2];
 
-        data[i] = Math.min(Math.round(0.992 * red + 0.007 * green + 0.002 * blue), 255);
-        data[i + 1] = Math.min(Math.round(0.957 * red + 0.065 * green - 0.022 * blue), 255);
-        data[i + 2] = Math.min(Math.round(0.003 * red + 0.067 * green + 0.930 * blue), 255);
+        // increase saturation of reds, oranges and yellows
+        if (red > green && red > blue) {
+          let newRed = Math.round(1.5 * red);
+          let newGreen = Math.round(0.5 * green);
+          let newBlue = Math.round(0.5 * blue);
+
+          data[i] = newRed;
+          data[i + 1] = newGreen;
+          data[i + 2] = newBlue;
+        }
+        // reduce saturation of blues and greens
+        else if (blue > red && blue > green) {
+          let newRed = Math.round(0.5 * red);
+          let newGreen = Math.round(0.5 * green);
+          let newBlue = Math.round(1.5 * blue);
+
+          data[i] = newRed;
+          data[i + 1] = newGreen;
+          data[i + 2] = newBlue;
+        }
       }
     }
 
@@ -1169,12 +1188,21 @@ export class EditorComponent implements OnInit, AfterViewInit{
     else if(this.filter === 'deuteranopia'){
       for (var i = 0; i < data.length; i += 4) {
         let red = data[i], green = data[i + 1], blue = data[i + 2];
-        let newRed = Math.round(0.625 * green + 0.375 * blue);
-        let newGreen = Math.round(0.7 * red + 0.3 * blue);
-        let newBlue = Math.round(0.0 * red + 0.3 * green + 0.7 * blue);
-        data[i] = newRed;
-        data[i + 1] = newGreen;
-        data[i + 2] = newBlue;
+        if (red > green && red > blue) { // si el pixel tiene rojo
+          let newRed = Math.round(0.0 * red + 0.7 * green + 0.3 * blue);
+          let newGreen = Math.round(0.7 * red + 0.0 * green + 0.3 * blue);
+          let newBlue = Math.round(0.3 * red + 0.7 * green + 0.0 * blue);
+          data[i] = newRed;
+          data[i + 1] = newGreen;
+          data[i + 2] = newBlue;
+        } else if (green > red && green > blue) { // si el pixel tiene verde
+          let newRed = Math.round(0.7 * red + 0.3 * green + 0.0 * blue);
+          let newGreen = Math.round(0.3 * red + 0.0 * green + 0.7 * blue);
+          let newBlue = Math.round(0.0 * red + 0.7 * green + 0.3 * blue);
+          data[i] = newRed;
+          data[i + 1] = newGreen;
+          data[i + 2] = newBlue;
+        }
       }
     }
 
@@ -1182,10 +1210,21 @@ export class EditorComponent implements OnInit, AfterViewInit{
     else if(this.filter === 'protanopia'){
       for (var i = 0; i < data.length; i += 4) {
         let red = data[i], green = data[i + 1], blue = data[i + 2];
-
-        data[i] = Math.min(Math.round(0.56667 * green + 0.43333 * blue), 255);
-        data[i + 1] = Math.min(Math.round(0.55833 * red + 0.44167 * blue), 255);
-        data[i + 2] = Math.min(Math.round(0.24167 * red + 0.75833 * green), 255);
+        if (red > green && red > blue) { // si el pixel tiene rojo
+          let newRed = Math.min(Math.round(0.0 * red + 0.56667 * green + 0.43333 * blue), 255);
+          let newGreen = Math.min(Math.round(0.55833 * red + 0.0 * green + 0.44167 * blue), 255);
+          let newBlue = Math.min(Math.round(0.24167 * red + 0.75833 * green + 0.0 * blue), 255);
+          data[i] = newRed;
+          data[i + 1] = newGreen;
+          data[i + 2] = newBlue;
+        } else if (green > red && green > blue) { // si el pixel tiene verde
+          let newRed = Math.min(Math.round(0.55833 * red + 0.44167 * blue), 255);
+          let newGreen = Math.min(Math.round(0.0 * red + 0.56667 * green + 0.43333 * blue), 255);
+          let newBlue = Math.min(Math.round(0.24167 * red + 0.75833 * green + 0.0 * blue), 255);
+          data[i] = newRed;
+          data[i + 1] = newGreen;
+          data[i + 2] = newBlue;
+        }
       }
     }
 
@@ -1193,7 +1232,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       return imageData;
     }
     else{
-      return [imageData, data];
+      return [imageData, data, originalData];
     }
   }
 
@@ -1225,13 +1264,16 @@ export class EditorComponent implements OnInit, AfterViewInit{
       brightness = 0.25 +  brightness / 100;
     }
 
-    const [imageData, data] = this.getColorBlindness('data');
+    const [imageData, data, originalData] = this.getColorBlindness('data');
 
     for (var i = 0; i < data.length; i += 4) {
-      if (brightness !== 0) {
-        data[i] = Math.round(data[i] * brightness);
-        data[i + 1] = Math.round(data[i + 1] * brightness);
-        data[i + 2] = Math.round(data[i + 2] * brightness);
+      // Aplicar la corrección de brillo solo a los píxeles que han cambiado de color
+      if (data[i] !== originalData[i] || data[i+1] !== originalData[i+1] || data[i+2] !== originalData[i+2]) {
+        if (brightness !== 0) {
+          data[i] = Math.round(data[i] * brightness);
+          data[i + 1] = Math.round(data[i + 1] * brightness);
+          data[i + 2] = Math.round(data[i + 2] * brightness);
+        }
       }
     }
 
@@ -1241,32 +1283,46 @@ export class EditorComponent implements OnInit, AfterViewInit{
   filterSat() {
     let saturation = this.satFilter.nativeElement.value;
 
-    // console.log(saturation);
     if(saturation > 50){
       saturation = 1.25 + saturation / 100;
-      console.log(saturation);
     }
     else if(saturation == 50){
       saturation = 100 / 100;
     }
     else if(saturation < 50){
-      saturation = 0.25 +  saturation / 100;
+      saturation = 0.25 + saturation / 100;
     }
 
-    const [imageData, data] = this.getColorBlindness('data');
+    const [imageData, data, originalData] = this.getColorBlindness('data');
+
+    const modified = [];
 
     for (let i = 0; i < data.length; i += 4) {
       const [r, g, b] = data.slice(i, i + 3);
-
-      // calculate grayscale value of pixel
       const gray = Math.round((r + g + b) / 3);
 
-      // adjust saturation
+      if (r !== originalData[i] || g !== originalData[i + 1] || b !== originalData[i + 2]) {
+        const newR = Math.round(gray + (r - gray) * saturation);
+        const newG = Math.round(gray + (g - gray) * saturation);
+        const newB = Math.round(gray + (b - gray) * saturation);
+
+        data[i] = newR;
+        data[i + 1] = newG;
+        data[i + 2] = newB;
+
+        modified.push(i);
+      }
+    }
+
+    // update only the modified pixels
+    for (const i of modified) {
+      const [r, g, b] = data.slice(i, i + 3);
+      const gray = Math.round((r + g + b) / 3);
+
       const newR = Math.round(gray + (r - gray) * saturation);
       const newG = Math.round(gray + (g - gray) * saturation);
       const newB = Math.round(gray + (b - gray) * saturation);
 
-      // update pixel data
       data[i] = newR;
       data[i + 1] = newG;
       data[i + 2] = newB;
@@ -1274,6 +1330,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     this.ctx.putImageData(imageData, 0, 0);
   }
+
 
   filterContrast() {
     let contrast = parseFloat(this.contrastFilter.nativeElement.value);
@@ -1289,13 +1346,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
 
     const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-
-    const [imageData, data] = this.getColorBlindness('data');
+    const [imageData, data, originalData] = this.getColorBlindness('data');
 
     for (let i = 0; i < data.length; i += 4) {
-      data[i] = factor * (data[i] - 128) + 128;
-      data[i + 1] = factor * (data[i + 1] - 128) + 128;
-      data[i + 2] = factor * (data[i + 2] - 128) + 128;
+      if (data[i] !== originalData[i] || data[i + 1] !== originalData[i + 1] || data[i + 2] !== originalData[i + 2]){
+        data[i] = factor * (data[i] - 128) + 128;
+        data[i + 1] = factor * (data[i + 1] - 128) + 128;
+        data[i + 2] = factor * (data[i + 2] - 128) + 128;
+      }
     }
 
     this.ctx.putImageData(imageData, 0, 0);
