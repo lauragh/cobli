@@ -1156,26 +1156,26 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const data = imageData.data;
     const originalData = data.slice();
 
-    //Cambia tonos azules por anaranjados
+    //Los tonos azules se vuelven más grisáceos y con menos brillo mientras que los tonos verdes son más brillantes y saturados
     if(this.filter === 'tritanopia'){
-      for (var i = 0; i < data.length; i += 4) {
+      for(let i = 0; i < data.length; i += 4){
         let red = data[i], green = data[i + 1], blue = data[i + 2];
 
-        // increase saturation of reds, oranges and yellows
-        if (red > green && red > blue) {
-          let newRed = Math.round(1.5 * red);
-          let newGreen = Math.round(0.5 * green);
-          let newBlue = Math.round(0.5 * blue);
+        // increase brightness and reduce saturation of greens
+        if(green > red && green > blue){
+          let newRed = Math.round(0.7 * red + 0.3 * green);
+          let newGreen = Math.round(0.7 * red + 0.3 * green);
+          let newBlue = Math.round(0.3 * blue);
 
           data[i] = newRed;
           data[i + 1] = newGreen;
           data[i + 2] = newBlue;
         }
-        // reduce saturation of blues and greens
-        else if (blue > red && blue > green) {
-          let newRed = Math.round(0.5 * red);
-          let newGreen = Math.round(0.5 * green);
-          let newBlue = Math.round(1.5 * blue);
+        // decrease brightness and increase saturation of blues
+        else if(blue > red && blue > green){
+          let newRed = Math.round(0.7 * red);
+          let newGreen = Math.round(0.7 * green);
+          let newBlue = Math.round(0.7 * blue + 0.3 * red + 0.3 * green);
 
           data[i] = newRed;
           data[i + 1] = newGreen;
@@ -1184,7 +1184,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       }
     }
 
-    //Cambia tonos rojos en un tono naranja-verde y los verdes en un tono amarillo-verde.
+    //Cambia tonos rojizos en verdosos y los tonos verdosos en morados (ellos lo verían verde = amarillento y morado/azul = azul)
     else if(this.filter === 'deuteranopia'){
       for (var i = 0; i < data.length; i += 4) {
         let red = data[i], green = data[i + 1], blue = data[i + 2];
@@ -1206,7 +1206,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       }
     }
 
-    //Cambia tonos rojos por una tonalidad de verde-amarillo y los verdes por una tonalidad de azul-violeta
+    //Cambia tonos rojizos en verdosos y los tonos verdosos/amarillos en azul oscuro/claro (ellos lo verían verde = amarillento/grisaceo y azul = azul)
     else if(this.filter === 'protanopia'){
       for (var i = 0; i < data.length; i += 4) {
         let red = data[i], green = data[i + 1], blue = data[i + 2];
@@ -1349,11 +1349,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const [imageData, data, originalData] = this.getColorBlindness('data');
 
     for (let i = 0; i < data.length; i += 4) {
-      if (data[i] !== originalData[i] || data[i + 1] !== originalData[i + 1] || data[i + 2] !== originalData[i + 2]){
+      // if (data[i] !== originalData[i] || data[i + 1] !== originalData[i + 1] || data[i + 2] !== originalData[i + 2]){
         data[i] = factor * (data[i] - 128) + 128;
         data[i + 1] = factor * (data[i + 1] - 128) + 128;
         data[i + 2] = factor * (data[i + 2] - 128) + 128;
-      }
+      // }
     }
 
     this.ctx.putImageData(imageData, 0, 0);
