@@ -109,6 +109,10 @@ input[type='range']::-webkit-slider-thumb {
   width: 55%;
 }
 
+.sliderFiltrosImg {
+  width: 340px;
+}
+
 .width-auto {
   width: auto;
   padding-left: 10px;
@@ -278,7 +282,7 @@ table::-webkit-scrollbar-thumb {
   right: 20px;
   top: 40px;
   z-index: 5;
-  height: 200px;
+  height: max-content;
   background-color: white;
   padding: 20px;
   border-radius: 5px;

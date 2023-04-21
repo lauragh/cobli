@@ -1150,6 +1150,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.showFilter = true;
   }
 
+  closeFilters(){
+    this.showFilter = false;
+  }
+
   getColorBlindness(object: string){
     this.ctx.drawImage(this.img, 0, 0);
     const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -1238,15 +1242,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
 
   filterImage(){
+    console.log('entro')
     this.ctx.drawImage(this.img, 0, 0);
     const imageData = this.getColorBlindness('imageData');
-    this.lumFilter.nativeElement.value = 50;
-    this.satFilter.nativeElement.value = 50;
-    this.contrastFilter.nativeElement.value = 50;
 
-    this.filterLum();
-    this.filterSat();
-    this.filterContrast();
     this.ctx.putImageData(imageData, 0, 0);
   }
 

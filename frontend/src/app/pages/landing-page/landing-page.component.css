@@ -230,3 +230,17 @@ input[type='range']::-webkit-slider-thumb {
   background: #434343;
 }
 
+.footer {
+  bottom: 0;
+  width: 100%;
+}
+
+.imgFiltros {
+  width: 300px;
+}
+
+.video {
+  width: 70%;
+  height: 760px;
+  padding: 20px;
+}

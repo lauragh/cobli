@@ -4,7 +4,6 @@
     <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
     <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
     <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="3" aria-label="Slide 4"></button>
-
   </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
@@ -39,7 +38,7 @@
               <div class="col d-flex align-items-center">
                 <div class="col limit">
                   <h1 class="PoppinsBold mb-3">¡Acierta con los colores!</h1>
-                  <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores. Esta aplicación web es para ti</h3>
+                  <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores, esta aplicación web es para ti</h3>
                   <h5 class="PoppinsMedium mb-5">Deja atrás las confusiones y elige el color adecuado</h5>
                     <button type="button" class="btn text-black" routerLink="/editor" id="botonEmpezar">Empezar ahora</button>
                 </div>
@@ -156,7 +155,8 @@
                       </table>
                   </div>
                   <div class="ml-2" style="max-width: 350px;">
-                    <p class="PoppinsRegular text-justify">Haciendo clic en cualquier punto la imagen, se generará una etiqueta de color que podrás copiar en formato hexadecimal o eliminar</p>
+                    <p class="PoppinsRegular text-justify">Al hacer clic en cualquier punto de la imagen, se generará una etiqueta con el color correspondiente al punto seleccionado.</p>
+                    <p class="PoppinsRegular text-justify">A partir de esta etiqueta, se podrán realizar dos acciones: copiar o eliminar.</p>
                   </div>
                 </div>
               </div>
@@ -165,13 +165,13 @@
         </div>
       </div>
     </div>
-   <div class="carousel-item">
+    <div class="carousel-item">
       <img src="../../../assets/img/bgSlider3.svg" class="d-block position-absolute" alt="fondoSlider" style="z-index: 0;">
       <div class="carousel-caption d-none d-md-block">
         <div class="row marginDiv">
-          <div class="col" style="text-align: start; padding-left: 274px;">
+          <div class="col" style="text-align: start; padding-left: 336px;">
             <h3 class="PoppinsMedium mb-3" style="width: 600px;">Aplica filtros para ayudarte a distinguir los colores</h3>
-            <h5 class="PoppinsRegular text-justify" style="max-width: 550px; padding-bottom: 50px">Se han incorporado filtros para corregir diferentes tipos de daltonismo y se han incluido controles para que puedas ajustar la imagen según tus necesidades visuales</h5>
+            <h5 class="PoppinsRegular text-justify" style="max-width: 550px; padding-bottom: 50px">Se han agregado filtros para facilitar la distinción de los colores, así como controles para ajustar la imagen de acuerdo a tus necesidades visuales</h5>
             <div class="tagsContent" style="width: 430px">
               <p class="PoppinsMedium selector bgAzulCobli mb-3" id="selectorBl">Trinomalía<img src="../../../assets//img/flechaPico.svg" class="tamFlecha" style="margin-left: 5px;"></p>
               <div class="col">
@@ -194,9 +194,8 @@
             </div>
           </div>
           <div class="col d-flex position-relative">
-            <img id="ejemplo" class="position-absolute" src="../../../assets/img/ejemploTexto.svg" width="300px" style="left: -165px;">
-            <img id="ejemplo" class="position-absolute" src="../../../assets/img/dobleFlecha.svg" width="24px" style="top: 135px; left: 150px;">
-            <img id="ejemplo" class="position-absolute" src="../../../assets/img/ejemploFiltro.svg" width="400px" style="top: 80px; left: 180px;">
+            <img class="position-absolute" src="../../../assets/img/ejemploSinFiltros.png" width="230px" style="left: -165px;">
+            <img class="position-absolute" src="../../../assets/img/ejemploConFiltros.png" width="230px" style="left: 180px;">
           </div>
         </div>
       </div>
@@ -204,43 +203,9 @@
     <div class="carousel-item">
       <img src="../../../assets/img/bgSlider4.svg" class="d-block position-absolute" alt="fondoSlider" style="z-index: 0;">
       <div class="carousel-caption d-none d-md-block">
-        <div class="row marginDiv">
-          <div class="col d-flex align-items-center maxWidth position-relative">
-            <img class="cabeza margin-auto" src="../../../assets/img/cabeza.svg">
-            <div class="posicion">
-              <div class="fila mb-3">
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #B7ABFF;">
-                  No sé si esto quedará bien
-                </div>
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #ABE6FF;">
-                  Esto es rojo o marrón?
-                </div>
-              </div>
-              <div class="fila mb-3 ">
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #FF9E9E;">
-                  De qué color es esto? <span class="Emoji">🤔</span>
-                </div>
-                <div class="PoppinsSemiBold bocadillo" style="background-color: #9FCCBF;">
-                  No veo bien la paleta de colores <span class="Emoji">😔</span>
-                </div>
-              </div>
-
-              <div class="PoppinsSemiBold bocadillo" style="background-color: #ACC774; float: none; margin: 0 auto;">
-                El fondo del banner tiene que ser azul claro y las hojas verde oscuro!
-              </div>
-            </div>
-          </div>
-          <div class="row max-content">
-            <div class="col d-flex align-items-center">
-              <div class="col limit">
-                <h1 class="PoppinsBold mb-3" style="color: red">¡Acierta con los colores!</h1>
-                <h3 class="PoppinsMedium mb-3">Si tienes daltonismo y trabajas con colores. Esta aplicación web es para ti</h3>
-                <h5 class="PoppinsMedium mb-5">Deja atrás las confusiones y elige el color adecuado</h5>
-                  <button type="button" (click)="goEditor()" class="btn btn-primary botonEmpezar text-black">Empezar ahora</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <iframe class="video" src="https://drive.google.com/file/d/1xH3UWuhfAJEvT-GETsUGHCRWELhci0z0/preview" allow="autoplay"></iframe>
+        <!-- <iframe class="video" src="https://www.youtube.com/embed/xw7Y2gviWbA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
+        <!-- <iframe src="https://drive.google.com/file/d/1xH3UWuhfAJEvT-GETsUGHCRWELhci0z0/preview" style="width: 70%; padding: 20px" height="760"></iframe> -->
       </div>
     </div>
   </div>
@@ -253,4 +218,4 @@
     <span class="visually-hidden">Next</span>
   </button>
 </div>
-<app-footer></app-footer>
+<app-footer class="position-absolute footer"></app-footer>
