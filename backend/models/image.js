@@ -2,6 +2,7 @@ class Image {
     constructor(
         img,
         name,
+        colorblindness,
         brightness,
         saturation,
         contrast,
@@ -11,6 +12,7 @@ class Image {
     ){
         this.img = img;
         this.name = name;
+        this.colorblindness = colorblindness;
         this.brightness = brightness;
         this.saturation = saturation;
         this.contrast = contrast;

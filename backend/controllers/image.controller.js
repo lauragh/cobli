@@ -22,6 +22,7 @@ async function createImage(userId, data, db) {
         let image = new Image(
             data.img,
             data.name,
+            data.colorblindness,
             data.brightness,
             data.saturation,
             data.contrast,
@@ -33,6 +34,7 @@ async function createImage(userId, data, db) {
         let imageObject = {
             img: image.img,
             name: image.name,
+            colorblindness: image.colorblindness,
             brightness: image.brightness,
             saturation: image.saturation,
             contrast: image.contrast,
@@ -101,6 +103,7 @@ async function updateImage(userId, imageId, data, db) {
         let image = new Image(
             data.img,
             data.name,
+            data.colorblindness,
             data.brightness,
             data.saturation,
             data.contrast,
@@ -112,6 +115,7 @@ async function updateImage(userId, imageId, data, db) {
         let imageObject = {
             img: image.img,
             name: image.name,
+            colorblindness: image.colorblindness,
             brightness: image.brightness,
             saturation: image.saturation,
             contrast: image.contrast,

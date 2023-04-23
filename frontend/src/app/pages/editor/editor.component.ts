@@ -57,10 +57,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
   imageLoaded: boolean = false;
   saved: boolean = false;
 
-
   selectedColor: string = '-';
   filter: string = '-';
-  showFilter: boolean = false;
+
+  lastPosX: any;
 
 
   @ViewChild('spectrum') spectrum!: ElementRef;
@@ -85,6 +85,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   @ViewChild('luminosity') luminosity!: ElementRef;
   @ViewChild('saturation') saturation!: ElementRef;
 
+  @ViewChild('filters') filters!: ElementRef;
   @ViewChild('lumFilter') lumFilter!: ElementRef;
   @ViewChild('satFilter') satFilter!: ElementRef;
   @ViewChild('contrastFilter') contrastFilter!: ElementRef;
@@ -126,6 +127,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
         this.loadCanvas(() => {
           setTimeout(() => {
             this.loadTags();
+            if(this.filter !== '-'){
+              this.lumFilter.nativeElement.value = this.image.brightness;
+              this.satFilter.nativeElement.value = this.image.saturation;
+              this.contrastFilter.nativeElement.value = this.image.contrast;
+              this.filterImage();
+              this.filtersLSC();
+            }
+
           },100);
         });
 
@@ -182,6 +191,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     .subscribe({
       next: res => {
         this.image = res.image;
+        console.log(res.image);
+        if(res.image.colorblindness !== '-'){
+          this.filter = res.image.colorblindness;
+        }
         if(res.image.colorTags !== undefined){
           this.tagColors = res.image.colorTags;
         }
@@ -338,6 +351,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
         this.fileUpload.nativeElement.value = '';
       }
       this.tagContainer.innerHTML = '';
+      this.filter = '-';
+
       this.deactivateFunctions();
       this.clearValues();
     }
@@ -790,6 +805,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
       // console.log('colores',this.tagColors, this.image);
       this.image.colorTags = this.tagColors;
       this.image.dateUpdating = new Date().toLocaleString();
+      this.image.brightness = Number(this.lumFilter.nativeElement.value);
+      this.image.saturation = Number(this.satFilter.nativeElement.value);
+      this.image.contrast = Number(this.contrastFilter.nativeElement.value);
+      this.image.colorblindness = this.filter;
       console.log('voy a mandar', this.userId, this.imageId, this.image);
       this.imageService.updateImage(this.userId, this.imageId, this.image)
       .subscribe({
@@ -811,9 +830,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     else{
       const image: ImageUser = {
         img: this.imageUrl,
-        brightness: 0,
-        contrast: 0,
-        saturation: 0,
+        brightness: Number(this.lumFilter.nativeElement.value),
+        contrast: Number(this.satFilter.nativeElement.value),
+        saturation: Number(this.contrastFilter.nativeElement.value),
+        colorblindness: this.filter,
         dateCreation: new Date().toLocaleString(),
         dateUpdating: new Date().toLocaleString(),
         name: this.projectName.nativeElement.value ? this.projectName.nativeElement.value : 'Nuevo proyecto',
@@ -1037,6 +1057,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
 
     this.getColor();
+    this.obtenerColor(this.lastPosX);
   }
 
   //Get the hue color by interpolation
@@ -1081,6 +1102,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.showColor(this.rgbToHex(color));
   }
 
+  showColor(color: string){
+    this.renderer2.setStyle(this.muestra.nativeElement, 'background-color', color);
+    this.hexadecimal.nativeElement.innerHTML = color;
+  }
 
   getColor(){
     this.gradientColors = [];
@@ -1126,32 +1151,26 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.colorPickerBottom.style.left = this.newX + 'px';
 
       this.obtenerColor(evento);
+      this.lastPosX = evento;
     }
   }
 
   stopDrag(event: any){
-    if(this.move){
-        const color = this.muestra.nativeElement.style.backgroundColor;
-        this.rgbToHex(color);
-    }
     this.isDragging = false;
     this.move = false;
-  }
-
-  showColor(color: string){
-    this.renderer2.setStyle(this.muestra.nativeElement, 'background-color', color);
-    this.hexadecimal.nativeElement.innerHTML = color;
   }
 
 
   /** FILTERS */
 
   showFilters(){
-    this.showFilter = true;
+    this.renderer2.removeClass(this.filters.nativeElement, 'ocultar');
+    this.renderer2.addClass(this.filters.nativeElement, 'ver');
   }
 
   closeFilters(){
-    this.showFilter = false;
+    this.renderer2.removeClass(this.filters.nativeElement, 'ver');
+    this.renderer2.addClass(this.filters.nativeElement, 'ocultar');
   }
 
   getColorBlindness(object: string){
@@ -1249,10 +1268,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.ctx.putImageData(imageData, 0, 0);
   }
 
-  filterLum(){
+  filtersLSC(){
     let brightness = this.lumFilter.nativeElement.value;
-    console.log('entro');
-    // console.log(this.lumFilter.nativeElement.value);
+    let saturation = this.satFilter.nativeElement.value;
+    let contrast = parseFloat(this.contrastFilter.nativeElement.value);
+
+    //Brightness
     if(brightness > 50){
       brightness = 1 + brightness / 100;
     }
@@ -1263,25 +1284,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       brightness = 0.25 +  brightness / 100;
     }
 
-    const [imageData, data, originalData] = this.getColorBlindness('data');
-
-    for (var i = 0; i < data.length; i += 4) {
-      // Aplicar la corrección de brillo solo a los píxeles que han cambiado de color
-      if (data[i] !== originalData[i] || data[i+1] !== originalData[i+1] || data[i+2] !== originalData[i+2]) {
-        if (brightness !== 0) {
-          data[i] = Math.round(data[i] * brightness);
-          data[i + 1] = Math.round(data[i + 1] * brightness);
-          data[i + 2] = Math.round(data[i + 2] * brightness);
-        }
-      }
-    }
-
-    this.ctx.putImageData(imageData, 0, 0);
-  }
-
-  filterSat() {
-    let saturation = this.satFilter.nativeElement.value;
-
+    //Saturation
     if(saturation > 50){
       saturation = 1.25 + saturation / 100;
     }
@@ -1292,8 +1295,30 @@ export class EditorComponent implements OnInit, AfterViewInit{
       saturation = 0.25 + saturation / 100;
     }
 
+    //Contrast
+    if(contrast > 50){
+      contrast = 1.50 + contrast;
+    }
+    else if(contrast == 50){
+      contrast = 1;
+    }
+    else if(contrast < 50){
+      contrast = 0.25 + contrast;
+    }
+
+    //Contrast Algorithm
+    const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
     const [imageData, data, originalData] = this.getColorBlindness('data');
 
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i] !== originalData[i] || data[i + 1] !== originalData[i + 1] || data[i + 2] !== originalData[i + 2]){
+        data[i] = factor * (data[i] - 128) + 128;
+        data[i + 1] = factor * (data[i + 1] - 128) + 128;
+        data[i + 2] = factor * (data[i + 2] - 128) + 128;
+      }
+    }
+
+    //Saturation Algorithm
     const modified = [];
 
     for (let i = 0; i < data.length; i += 4) {
@@ -1327,32 +1352,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
       data[i + 2] = newB;
     }
 
-    this.ctx.putImageData(imageData, 0, 0);
-  }
-
-
-  filterContrast() {
-    let contrast = parseFloat(this.contrastFilter.nativeElement.value);
-    // console.log(saturation);
-    if(contrast > 50){
-      contrast = 1.50 + contrast;
-    }
-    else if(contrast == 50){
-      contrast = 1;
-    }
-    else if(contrast < 50){
-      contrast = 0.25 + contrast;
-    }
-
-    const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-    const [imageData, data, originalData] = this.getColorBlindness('data');
-
-    for (let i = 0; i < data.length; i += 4) {
-      // if (data[i] !== originalData[i] || data[i + 1] !== originalData[i + 1] || data[i + 2] !== originalData[i + 2]){
-        data[i] = factor * (data[i] - 128) + 128;
-        data[i + 1] = factor * (data[i + 1] - 128) + 128;
-        data[i + 2] = factor * (data[i + 2] - 128) + 128;
-      // }
+    //Brightness Algorithm
+    for (var i = 0; i < data.length; i += 4) {
+      if (data[i] !== originalData[i] || data[i+1] !== originalData[i+1] || data[i+2] !== originalData[i+2]) {
+        if (brightness !== 0) {
+          data[i] = Math.round(data[i] * brightness);
+          data[i + 1] = Math.round(data[i + 1] * brightness);
+          data[i + 2] = Math.round(data[i + 2] * brightness);
+        }
+      }
     }
 
     this.ctx.putImageData(imageData, 0, 0);

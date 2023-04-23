@@ -13,30 +13,30 @@
         <img id="lupaMas" class="ms-2" src="../../../assets/img/lupaMas.svg">
         <img (click)="showFilters()" class="ms-2" src="../../../assets/img/filtros.svg">
       </div>
-      <div *ngIf="showFilter" class="position-absolute filters">
+      <div #filters class="position-absolute filters ocultar">
         <div class="mb-3">
           <label class="me-3 mb-2" for="color">Tipo de daltonismo</label>
           <select [(ngModel)]="filter" (change)="filterImage()" name="color">
             <option value="-" selected>-</option>
             <option value="deuteranopia">Deuteranopía/Deuternomalía (verde/rojo)</option>
             <option value="protanopia">Protanopía/Protanomalía (rojo/verde)</option>
-            <option value="tritanopia">Tritanopía/Tritanomalía (azul/verde)</option>
+            <option value="tritanopia-av">Tritanopía/Tritanomalía (azul/verde)</option>
           </select>
         </div>
         <div *ngIf="filter !== '-'" class="justify-content-center">
           <div class="row d-flex mb-2">
             <label for="lum" class="form-label tamLabel" style=>Luminosidad</label>
-            <input (input)="filterLum()" #lumFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltrosImg" id="lum">
+            <input (input)="filtersLSC()" #lumFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltrosImg" id="lum">
             <div class="width-auto">{{lumFilter.value}}</div>
           </div>
           <div class="row d-flex mb-2">
             <label for="sat" class="form-label tamLabel" style=>Saturación</label>
-            <input (input)="filterSat()" #satFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltrosImg" id="sat">
+            <input (input)="filtersLSC()" #satFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltrosImg" id="sat">
             <div #satFilterValue class="width-auto">{{satFilter.value}}</div>
           </div>
           <div class="row d-flex mb-2">
             <label for="contraste" class="form-label tamLabel" style=>Contraste</label>
-            <input (input)="filterContrast()" #contrastFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltrosImg" id="contraste">
+            <input (input)="filtersLSC()" #contrastFilter type="range" min="0" max="100" value="50" class="form-range sliderFiltrosImg" id="contraste">
             <div #contrastFilterValue class="width-auto">{{contrastFilter.value}}</div>
           </div>
         </div>
