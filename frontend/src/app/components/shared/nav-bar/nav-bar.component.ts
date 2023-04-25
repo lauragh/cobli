@@ -113,7 +113,7 @@ export class NavBarComponent implements OnInit {
         buttonsStyling: false
       })
       swalWithBootstrapButtons.fire({
-        title: 'Cancela Oferta',
+        title: 'Cancela Imagen',
         text: `Se van a perder los cambios sin guardar. ¿Desea continuar?`,
         icon: 'warning',
         showCancelButton: true,

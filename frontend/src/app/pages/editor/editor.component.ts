@@ -176,6 +176,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
   getScreenSize() {
     const divs = this.tagContainer.getElementsByTagName('div');
     this.tagColors.length;
+    this.tagContainer.style.width = this.canvas.offsetWidth + 'px';
+    this.tagContainer.style.height = this.canvas.offsetHeight + 'px';
 
     if(divs.length > 0){
       for (const [index, tagColor] of this.tagColors.entries()) {
@@ -279,6 +281,13 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.canvas.height = this.img.height;
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
       console.log('ancho y alto al cargar', this.canvas.offsetWidth, this.canvas.offsetHeight);
+
+      console.log('tagContainer',this.tagContainer.style.width, 'canvas', this.canvas.width);
+      this.tagContainer.style.width = this.canvas.width + 'px';
+      console.log(this.tagContainer.style.width);
+
+      this.tagContainer.style.height = this.canvas.height + 'px';
+
     });
 
     callback();
@@ -564,37 +573,24 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   getPositionClicks(x: number, y: number){
-    console.log('hago click', x, y);
     this.pickColorPoint(x, y);
   }
 
   //Dada una posición de la ventana devuelve un pixel (aspect ratio considerado)
   getPosicionCanvas(x: number, y: number){
-    const tamContainerX = this.tagContainer.offsetWidth;
-    const tamContainerY = this.tagContainer.offsetHeight;
-    const displX = Math.trunc((tamContainerX - this.canvas.offsetWidth)/2);
-    const displY = Math.trunc((tamContainerY - this.canvas.offsetHeight)/2);
-
-
     const ratioX = this.img.width/this.canvas.offsetWidth;
     const ratioY = this.img.height/this.canvas.offsetHeight;
 
-    return [(x - displX - 5) * ratioX, (y - displY - 5) * ratioY]
+    return [(x - 5) * ratioX, (y - 5) * ratioY]
   }
 
   //Dado un pixel, devuelve la posición de la vetana
   getPosicionVentana(posX: number, posY: number) {
-    const tamContainerX = this.tagContainer.offsetWidth;
-    const tamContainerY = this.tagContainer.offsetHeight;
-
-    const displX = Math.trunc((tamContainerX - this.canvas.offsetWidth) / 2);
-    const displY = Math.trunc((tamContainerY - this.canvas.offsetHeight) / 2);
-
     const ratioX = this.img.width / this.canvas.offsetWidth;
     const ratioY = this.img.height / this.canvas.offsetHeight;
 
-    const x = Math.trunc(posX / ratioX + displX + 5);
-    const y = Math.trunc(posY / ratioY + displY + 5);
+    const x = Math.trunc(posX / ratioX + 5);
+    const y = Math.trunc(posY / ratioY + 5);
 
     return [x, y];
   }
