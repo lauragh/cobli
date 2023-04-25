@@ -1041,7 +1041,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       "naranja": [16, 48],
       "amarillo": [49, 62],
       "verde": [63, 160],
-      "azul": [171, 250],
+      "azul": [161, 250],
       "morado": [251, 286],
       "rosa": [287, 330],
     };
@@ -1090,7 +1090,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       rgb(${colores[8].r}, ${colores[8].g}, ${colores[8].b}) 80%,
       rgb(${colores[9].r}, ${colores[9].g}, ${colores[9].b}) 90%,
       rgb(${colores[10].r}, ${colores[10].g}, ${colores[10].b}) 100%`
-
     return gradient;
   }
 
