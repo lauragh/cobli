@@ -54,7 +54,6 @@ export class ProfileComponent implements OnInit, OnChanges {
     this.userForm.get('colorBlindness')?.setValue(this.userForm.get('colorBlindness')!.value || null);
     this.userForm.get('occupation')?.setValue(this.userForm.get('occupation')!.value || null);
 
-    console.log(this.userForm.value);
     this.userService.updateUserProfile(this.uid, this.userForm.value)
     .subscribe({
       next: res => {
@@ -110,7 +109,6 @@ export class ProfileComponent implements OnInit, OnChanges {
     .subscribe({
       next: res => {
         this.userForm.get('uid')?.setValue(this.uid);
-        console.log(res.user.colorBlindness);
         this.userForm.patchValue({
           name: res.user.name,
           email: res.user.email,

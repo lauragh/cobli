@@ -38,10 +38,10 @@ export class NavBarComponent implements OnInit {
     .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
     .subscribe((ev: NavigationEnd) => {
       let url = ev.url;
-      if (url.includes('login') || url.includes('register')) {
+      if(url.includes('login') || url.includes('register')) {
         this.hidden = true;
-      } else {
-        console.log('Entro en', url);
+      }
+      else {
         this.hidden = false;
       }
     });

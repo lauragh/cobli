@@ -13,21 +13,16 @@ export class AuthGuard implements CanActivate {
   constructor(
     private authService: AuthService,
     private router: Router,
-    // private _snackBar: MatSnackBar
   ) { }
 
   canActivate(): boolean {
-
-    return true;
-    // if(this.authService.checkSesion()){
-    //   console.log('tengo la sesion iniciada');
-    //   return true;
-    // }
-    // else{
-    //   this._snackBar.open("La sesión ha caducado", "Cerrar", {duration: 2500});
-    //   this.router.navigate(['/login']);
-    //   return false;
-    // }
+    if(this.authService.getToken()){
+      return true;
+    }
+    else{
+      this.router.navigate(['/login']);
+      return false;
+    }
   }
 
 }

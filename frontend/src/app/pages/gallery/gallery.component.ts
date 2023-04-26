@@ -53,7 +53,6 @@ export class GalleryComponent implements OnInit{
   }
 
   loadImages() {
-    console.log(this.userId);
     this.imageService.getImages(this.userId)
     .subscribe({
       next: res => {
@@ -136,9 +135,7 @@ export class GalleryComponent implements OnInit{
           showConfirmButton: false,
           timer: 1500
         });
-        console.log(res);
         if(res.data > 0){
-          console.log('tengo que volver a cargar');
           callback();
         }
         else {

@@ -193,7 +193,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     .subscribe({
       next: res => {
         this.image = res.image;
-        console.log(res.image);
         if(res.image.colorblindness !== '-'){
           this.filter = res.image.colorblindness;
         }
@@ -215,14 +214,13 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const reader = new FileReader();
 
     if(Number((this.imageFile.size / (1024*1024)).toFixed(2)) > 5){
-      console.log("Tamaño de archivo:", this.imageFile.size, (this.imageFile.size / (1024*1024)).toFixed(2));
+      // console.log("Tamaño de archivo:", this.imageFile.size, (this.imageFile.size / (1024*1024)).toFixed(2));
       bigFile = true;
     }
 
     reader.onload = (e: any) => {
       this.imageUrl = e.target.result;
       if((localStorage.getItem('imageLoaded') === 'true' || localStorage.getItem('editar') === 'false') && !bigFile){
-        console.log('deberia entrar');
         localStorage.setItem("imageUrl", this.imageUrl);
       }
 
@@ -257,41 +255,31 @@ export class EditorComponent implements OnInit, AfterViewInit{
   loadCanvas(callback: () => void): void {
     this.img = new Image();
     this.img.crossOrigin = "anonymous";
-    console.log('entro a loadCanvas');
 
     if(localStorage.getItem("imageUrl")){
       this.img.src = localStorage.getItem("imageUrl");
     }
     else if(this.editar){
-      console.log('tengo imagen');
       this.img.src = this.image?.img;
     }
     else{
       this.img.src = this.imageUrl;
     }
-    // this.img.src = '../../../assets/img/ejemplo.png';
-    // this.img.src = '../../../assets/img/image.png';
-    // this.img.src = `https://media.discordapp.net/attachments/1052568195493548082/1083733464571986010/paisaje-e1549600034372.png`;
-    // this.img.style.imageRendering = 'auto';
+
     this.ctx = this.canvas.getContext("2d")!;
 
     this.img.addEventListener("load", () => {
-      console.log(this.img.width, this.img.height);
       this.canvas.width = this.img.width;
       this.canvas.height = this.img.height;
+
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
-      console.log('ancho y alto al cargar', this.canvas.offsetWidth, this.canvas.offsetHeight);
 
-      console.log('tagContainer',this.tagContainer.style.width, 'canvas', this.canvas.width);
       this.tagContainer.style.width = this.canvas.width + 'px';
-      console.log(this.tagContainer.style.width);
-
       this.tagContainer.style.height = this.canvas.height + 'px';
 
     });
 
     callback();
-
   }
 
   listenerClickPos!: () => void;
@@ -430,7 +418,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
 
     const darkness = this.checkDarkness(data[0], data[1], data[2], data[3]/255);
-    console.log(darkness);
+
     if(accion){
       this.createTag(x, y, tagColor, num);
     }
@@ -474,14 +462,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   getZoomedPixelsColor(x: number, y: number) {
     const ctx = this.canvas2.getContext('2d')!;
-    const pixelData = ctx.getImageData(0, 0, 150, 150).data; // seleccionar la región de 6 píxeles
+    const pixelData = ctx.getImageData(0, 0, 150, 150).data;
     let rgb = {
       r: 0,
       g: 0,
       b: 0},
     count = 0;
 
-    for (let i = 0; i < pixelData.length; i += 4) { // iterar sobre los valores de los píxeles
+    for (let i = 0; i < pixelData.length; i += 4) {
       ++count;
       rgb.r += pixelData[i];
       rgb.g += pixelData[i+1];
@@ -503,7 +491,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     let s = Math.floor(sValue);
     let h = Math.floor(hValue);
 
-    if (s <= 10 && l >= 90) {
+    if (l >= 90) {
       return ("Blanco")
     }
     else if (l <= 15) {
@@ -549,7 +537,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   getIntensity(r: number, g: number, b: number){
     const intensity = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
-    // Definir los umbrales para cada categoría de intensidad
+    // Define los umbrales para cada categoría de intensidad
     const thresholds = {
       very_light: 230,
       light: 170,
@@ -558,7 +546,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       very_dark: 0
     };
 
-    // Comparar la intensidad del color con los umbrales para determinar la categoría
+    // Compara la intensidad del color con los umbrales para determinar la categoría
     if (intensity >= thresholds.very_light) {
       return "Muy claro";
     } else if (intensity >= thresholds.light) {
@@ -576,7 +564,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.pickColorPoint(x, y);
   }
 
-  //Dada una posición de la ventana devuelve un pixel (aspect ratio considerado)
+  //Dada una posición de la ventana devuelve un pixel de la imagen(aspect ratio considerado)
   getPosicionCanvas(x: number, y: number){
     const ratioX = this.img.width/this.canvas.offsetWidth;
     const ratioY = this.img.height/this.canvas.offsetHeight;
@@ -639,7 +627,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
         position: [x, y],
         colorAvg: this.hex.nativeElement.innerHTML,
       }
-      console.log('voy a pushear',tagModel);
       this.tagColors.push(tagModel);
       localStorage.setItem('tagColors', JSON.stringify(this.tagColors));
       setTimeout(() => {
@@ -728,7 +715,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     mensaje.style.position = "fixed";
     mensaje.style.top = `${elemento.offsetTop}px`;
     mensaje.style.left = `${elemento.offsetLeft}px`;
-    // mensaje.style.transform = "translate(0%, 20%)";
     mensaje.style.padding = "10px";
     mensaje.style.background = "rgba(0, 0, 0, 0.8)";
     mensaje.style.color = "#fff";
@@ -740,31 +726,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }, 2000);
   }
 
-  copyText2(){
-    document.addEventListener("keydown", (event) => {
-      if (event.ctrlKey && event.key === "c") {
-        const mensaje = document.createElement("div");
-        mensaje.innerText = "El texto se ha copiado correctamente";
-        mensaje.style.position = "fixed";
-        mensaje.style.top = "50%";
-        mensaje.style.left = "50%";
-        mensaje.style.transform = "translate(-50%, -50%)";
-        mensaje.style.padding = "10px";
-        mensaje.style.background = "rgba(0, 0, 0, 0.8)";
-        mensaje.style.color = "#fff";
-        mensaje.style.borderRadius = "5px";
-        mensaje.style.zIndex = "9999";
-        document.body.appendChild(mensaje);
-        setTimeout(() => {
-          mensaje.remove();
-        }, 2000);
-      }
-    });
-  }
-
   showTagValues(pos: number) {
     pos = pos - 1;
-    console.log(this.infoColors);
     this.rgb.nativeElement.innerHTML = this.infoColors[pos].rgb;
     this.hex.nativeElement.innerHTML = this.infoColors[pos].hex;
     this.hsl.nativeElement.innerHTML = this.infoColors[pos].hsl;
@@ -772,7 +735,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.colorName.nativeElement.innerHTML = this.infoColors[pos].colorName;
     this.brightness.nativeElement.innerHTML = this.infoColors[pos].brightness;
     this.renderer2.setStyle(this.colorAvg.nativeElement, 'background-color', this.infoColors[pos].colorAvg);
-    // this.drawZoomCanvas(this.infoColors[pos].pixelDataX, this.infoColors[pos].pixelDataY);
     if(this.infoColors[pos].pixelData){
       const ctx = this.canvas2.getContext('2d')!;
       ctx.putImageData(this.infoColors[pos].pixelData, 0, 0);
@@ -781,7 +743,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   updateDescription(pos: number){
     this.tagColors[pos].description = this.descriptionValue.get(pos).nativeElement.value;
-    console.log(this.tagColors[pos]);
   }
 
   onKeyDown(event: any){
@@ -798,14 +759,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
   ////***** PROJECT FUNCTIONS *****////
   saveProject(){
     if(this.editar){
-      // console.log('colores',this.tagColors, this.image);
       this.image.colorTags = this.tagColors;
       this.image.dateUpdating = new Date().toLocaleString();
       this.image.brightness = Number(this.lumFilter.nativeElement.value);
       this.image.saturation = Number(this.satFilter.nativeElement.value);
       this.image.contrast = Number(this.contrastFilter.nativeElement.value);
       this.image.colorblindness = this.filter;
-      console.log('voy a mandar', this.userId, this.imageId, this.image);
       this.imageService.updateImage(this.userId, this.imageId, this.image)
       .subscribe({
         next: res => {
@@ -836,11 +795,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
         colorTags: this.tagColors,
       }
       this.image = image;
-      console.log(this.userId, this.image);
       this.imageService.createImage(this.userId, this.image)
       .subscribe({
         next: res => {
-          console.log('resultado de crear imagen', res);
           this.imageId = res.image[1];
           localStorage.setItem('projectSaved', 'true');
           this.updateNumImages();
@@ -884,8 +841,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   ////***** COLOR CONVERTIONS *****////
 
-  rgbToHex(rgb: string) {
-    // Extrae los valores de r, g y b de la cadena rgb(r, g, b)
+  rgbToHex(rgb: string){
     const match = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
     if (!match) {
       throw new Error('Formato de color incorrecto: ' + rgb);
@@ -894,12 +850,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const g = parseInt(match[2]);
     const b = parseInt(match[3]);
 
-    // Convierte cada valor a su representación hexadecimal de 2 dígitos
     const rHex = r.toString(16).padStart(2, '0');
     const gHex = g.toString(16).padStart(2, '0');
     const bHex = b.toString(16).padStart(2, '0');
 
-    // Concatena los valores hexadecimales en una cadena con formato #RRGGBB
     const hex = '#' + rHex + gHex + bHex;
 
     return hex
@@ -915,10 +869,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     let h = 0, s = 0, l = (max + min) / 2;
 
-    if (max !== min) {
+    if(max !== min){
       const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
+      switch (max){
         case r: h = (g - b) / d + (g < b ? 6 : 0);
           break;
         case g: h = (b - r) / d + 2;
@@ -936,15 +890,16 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return { h, s, l };
   }
 
-  hslToRgb(h: number, s: number, l: number) {
+  hslToRgb(h: number, s: number, l: number){
     h /= 360;
     s /= 100;
     l /= 100;
     let r, g, b;
 
-    if (s === 0) {
+    if(s === 0){
       r = g = b = l;
-    } else {
+    }
+    else{
       const hue2rgb = (p: number, q: number, t: number) => {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
@@ -964,8 +919,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
   }
 
-
-  rgbToHsv(r: number, g: number, b: number) {
+  rgbToHsv(r: number, g: number, b: number){
     r /= 255;
     g /= 255;
     b /= 255;
@@ -976,13 +930,15 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     let h2 = 0, s2 = 0, v2 = max;
 
-    if (delta !== 0) {
+    if(delta !== 0){
       s2 = delta / max;
-      if (max === r) {
+      if(max === r){
         h2 = 60 * (((g - b) / delta) % 6);
-      } else if (max === g) {
+      }
+      else if(max === g){
         h2 = 60 * (((b - r) / delta) + 2);
-      } else {
+      }
+      else{
         h2 = 60 * (((r - g) / delta) + 4);
       }
     }
@@ -994,39 +950,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     v2 = Math.trunc(v2 * 100);
 
     return { h2, s2, v2 };
-  }
-
-  hsvToRgb(h: number, s: number, v: number) {
-    const c = v * s;
-    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-    const m = v - c;
-
-    let r = 0, g = 0, b = 0;
-    if (h >= 0 && h < 60) {
-      r = c;
-      g = x;
-    } else if (h >= 60 && h < 120) {
-      r = x;
-      g = c;
-    } else if (h >= 120 && h < 180) {
-      g = c;
-      b = x;
-    } else if (h >= 180 && h < 240) {
-      g = x;
-      b = c;
-    } else if (h >= 240 && h < 300) {
-      r = x;
-      b = c;
-    } else if (h >= 300 && h < 360) {
-      r = c;
-      b = x;
-    }
-
-    r += m;
-    g += m;
-    b += m;
-
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
   }
 
   ////***** HSL COLORPICKER EVENTS *****////
@@ -1129,16 +1052,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
       const rect = this.container.getBoundingClientRect();
 
       const maxXTop = rect.width - this.colorPickerTop.getBoundingClientRect().width;
-      // console.log('tamaño max', maxXTop);
       this.newX = this.colorPickerTop.offsetLeft + diffX;
-      // console.log('nueva pos x', this.newX);
 
       if (this.newX < 0) {
-        // console.log('limite');
         this.newX = 0;
       }
       else if (this.newX > maxXTop) {
-        // console.log('me muevo');
         this.newX = maxXTop;
       }
 
@@ -1254,9 +1173,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
   }
 
-
   filterImage(){
-    console.log('entro')
     this.ctx.drawImage(this.img, 0, 0);
     const imageData = this.getColorBlindness('imageData');
 

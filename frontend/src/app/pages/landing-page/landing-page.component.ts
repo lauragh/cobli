@@ -31,7 +31,6 @@ export class LandingPageComponent implements OnInit{
   }
 
   mostrar(): void {
-    console.log('hola');
     this.renderer2.removeClass(this.slider1.nativeElement,'oculto');
   }
 
