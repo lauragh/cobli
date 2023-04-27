@@ -759,11 +759,13 @@ export class EditorComponent implements OnInit, AfterViewInit{
   ////***** PROJECT FUNCTIONS *****////
   saveProject(){
     if(this.editar){
+      this.image.img = this.imageUrl ? this.imageUrl : this.image.img;
+      this.image.name = this.projectName.nativeElement.value ? this.projectName.nativeElement.value : 'Nuevo proyecto';
       this.image.colorTags = this.tagColors;
       this.image.dateUpdating = new Date().toLocaleString();
-      this.image.brightness = Number(this.lumFilter.nativeElement.value);
-      this.image.saturation = Number(this.satFilter.nativeElement.value);
-      this.image.contrast = Number(this.contrastFilter.nativeElement.value);
+      this.image.brightness = this.lumFilter ? Number(this.lumFilter.nativeElement.value) : 50,
+      this.image.saturation = this.satFilter ? Number(this.satFilter.nativeElement.value) : 50,
+      this.image.contrast = this.contrastFilter ? Number(this.contrastFilter.nativeElement.value) : 50,
       this.image.colorblindness = this.filter;
       this.imageService.updateImage(this.userId, this.imageId, this.image)
       .subscribe({
@@ -785,9 +787,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
     else{
       const image: ImageUser = {
         img: this.imageUrl,
-        brightness: Number(this.lumFilter.nativeElement.value),
-        contrast: Number(this.satFilter.nativeElement.value),
-        saturation: Number(this.contrastFilter.nativeElement.value),
+        brightness: this.lumFilter ? Number(this.lumFilter.nativeElement.value) : 50,
+        saturation: this.satFilter ? Number(this.satFilter.nativeElement.value) : 50,
+        contrast: this.contrastFilter ? Number(this.contrastFilter.nativeElement.value) : 50,
         colorblindness: this.filter,
         dateCreation: new Date().toLocaleString(),
         dateUpdating: new Date().toLocaleString(),
@@ -1094,7 +1096,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const originalData = data.slice();
 
     //Los tonos azules se vuelven más grisáceos y con menos brillo mientras que los tonos verdes son más brillantes y saturados
-    if(this.filter === 'tritanopia'){
+    if(this.filter === 'tritanopia-av'){
       for(let i = 0; i < data.length; i += 4){
         let red = data[i], green = data[i + 1], blue = data[i + 2];
 

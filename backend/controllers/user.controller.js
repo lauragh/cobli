@@ -12,7 +12,6 @@ const { verifyToken } = require('../helpers/verifyToken');
 //Create a user
 async function createUser(data, db) {
     try{
-        console.log('recibo',data);
         const salt = bcrypt.genSaltSync();
         const cpassword = bcrypt.hashSync(data.password, salt);
         const userDateLastAccess = new Date();
@@ -162,7 +161,7 @@ async function updateUser(userId, data, db) {
             occupation: user.occupation,
             dateRegistration: user.dateRegistration,
             dateLastAccess: user.dateLastAccess,
-            numImages: user.images,
+            numImages: user.numImages,
             images: user.images
         }
 

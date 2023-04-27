@@ -100,3 +100,7 @@ img {
 .blueCoblie {
   background-color: var(--blue-cobli);
 }
+
+#fondo {
+  width: 1860px;
+}

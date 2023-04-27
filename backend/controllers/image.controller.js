@@ -78,9 +78,7 @@ async function getImages(userId, db) {
 //Get one image in particular from one user
 async function getImage(imageId, userId, db) {
     let result = null;
-    // console.log(imageId);
     await firebaseRef.get(
-        // console.log('key',firebaseRef.child(db, `users/${userId}`).key);
         firebaseRef.child(db, `users/${userId}/images/${imageId}`)
     )
     .then((snapshot) => {
