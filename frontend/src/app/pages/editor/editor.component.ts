@@ -1089,82 +1089,79 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.addClass(this.filters.nativeElement, 'ocultar');
   }
 
-  getColorBlindness(object: string){
+  getColorBlindness(object: string): any{
     this.ctx.drawImage(this.img, 0, 0);
     const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     const data = imageData.data;
     const originalData = data.slice();
 
-    //Los tonos azules se vuelven más grisáceos y con menos brillo mientras que los tonos verdes son más brillantes y saturados
-    if(this.filter === 'tritanopia-av'){
       for(let i = 0; i < data.length; i += 4){
         let red = data[i], green = data[i + 1], blue = data[i + 2];
 
-        // increase brightness and reduce saturation of greens
-        if(green > red && green > blue){
-          let newRed = Math.round(0.7 * red + 0.3 * green);
-          let newGreen = Math.round(0.7 * red + 0.3 * green);
-          let newBlue = Math.round(0.3 * blue);
+        //Los tonos azules se vuelven más grisáceos y con menos brillo mientras que los tonos verdes son más brillantes y saturados
+        if(this.filter === 'tritanopia-av'){
+          // increase brightness and reduce saturation of greens
+          if(green > red && green > blue){
+            let newRed = Math.round(0.7 * red + 0.3 * green);
+            let newGreen = Math.round(0.7 * red + 0.3 * green);
+            let newBlue = Math.round(0.3 * blue);
 
-          data[i] = newRed;
-          data[i + 1] = newGreen;
-          data[i + 2] = newBlue;
-        }
-        // decrease brightness and increase saturation of blues
-        else if(blue > red && blue > green){
-          let newRed = Math.round(0.7 * red);
-          let newGreen = Math.round(0.7 * green);
-          let newBlue = Math.round(0.7 * blue + 0.3 * red + 0.3 * green);
+            data[i] = newRed;
+            data[i + 1] = newGreen;
+            data[i + 2] = newBlue;
+          }
+          // decrease brightness and increase saturation of blues
+          else if(blue > red && blue > green){
+            let newRed = Math.round(0.7 * red);
+            let newGreen = Math.round(0.7 * green);
+            let newBlue = Math.round(0.7 * blue + 0.3 * red + 0.3 * green);
 
-          data[i] = newRed;
-          data[i + 1] = newGreen;
-          data[i + 2] = newBlue;
+            data[i] = newRed;
+            data[i + 1] = newGreen;
+            data[i + 2] = newBlue;
+          }
         }
-      }
-    }
 
-    //Cambia tonos rojizos en verdosos y los tonos verdosos en morados (ellos lo verían verde = amarillento y morado/azul = azul)
-    else if(this.filter === 'deuteranopia'){
-      for (var i = 0; i < data.length; i += 4) {
-        let red = data[i], green = data[i + 1], blue = data[i + 2];
-        if (red > green && red > blue) { // si el pixel tiene rojo
-          let newRed = Math.round(0.0 * red + 0.7 * green + 0.3 * blue);
-          let newGreen = Math.round(0.7 * red + 0.0 * green + 0.3 * blue);
-          let newBlue = Math.round(0.3 * red + 0.7 * green + 0.0 * blue);
-          data[i] = newRed;
-          data[i + 1] = newGreen;
-          data[i + 2] = newBlue;
-        } else if (green > red && green > blue) { // si el pixel tiene verde
-          let newRed = Math.round(0.7 * red + 0.3 * green + 0.0 * blue);
-          let newGreen = Math.round(0.3 * red + 0.0 * green + 0.7 * blue);
-          let newBlue = Math.round(0.0 * red + 0.7 * green + 0.3 * blue);
-          data[i] = newRed;
-          data[i + 1] = newGreen;
-          data[i + 2] = newBlue;
-        }
-      }
-    }
+        //Cambia tonos rojizos en verdosos y los tonos verdosos en morados (ellos lo verían verde = amarillento y morado/azul = azul)
+        else if(this.filter === 'deuteranopia'){
+          if (red > green && red > blue) { // si el pixel tiene rojo
+            let newRed = Math.round(0.0 * red + 0.7 * green + 0.3 * blue);
+            let newGreen = Math.round(0.7 * red + 0.0 * green + 0.3 * blue);
+            let newBlue = Math.round(0.3 * red + 0.7 * green + 0.0 * blue);
 
-    //Cambia tonos rojizos en verdosos y los tonos verdosos/amarillos en azul oscuro/claro (ellos lo verían verde = amarillento/grisaceo y azul = azul)
-    else if(this.filter === 'protanopia'){
-      for (var i = 0; i < data.length; i += 4) {
-        let red = data[i], green = data[i + 1], blue = data[i + 2];
-        if (red > green && red > blue) { // si el pixel tiene rojo
-          let newRed = Math.min(Math.round(0.0 * red + 0.56667 * green + 0.43333 * blue), 255);
-          let newGreen = Math.min(Math.round(0.55833 * red + 0.0 * green + 0.44167 * blue), 255);
-          let newBlue = Math.min(Math.round(0.24167 * red + 0.75833 * green + 0.0 * blue), 255);
-          data[i] = newRed;
-          data[i + 1] = newGreen;
-          data[i + 2] = newBlue;
-        } else if (green > red && green > blue) { // si el pixel tiene verde
-          let newRed = Math.min(Math.round(0.55833 * red + 0.44167 * blue), 255);
-          let newGreen = Math.min(Math.round(0.0 * red + 0.56667 * green + 0.43333 * blue), 255);
-          let newBlue = Math.min(Math.round(0.24167 * red + 0.75833 * green + 0.0 * blue), 255);
-          data[i] = newRed;
-          data[i + 1] = newGreen;
-          data[i + 2] = newBlue;
+            data[i] = newRed;
+            data[i + 1] = newGreen;
+            data[i + 2] = newBlue;
+          }
+          else if (green > red && green > blue) { // si el pixel tiene verde
+            let newRed = Math.round(0.7 * red + 0.3 * green + 0.0 * blue);
+            let newGreen = Math.round(0.3 * red + 0.0 * green + 0.7 * blue);
+            let newBlue = Math.round(0.0 * red + 0.7 * green + 0.3 * blue);
+
+            data[i] = newRed;
+            data[i + 1] = newGreen;
+            data[i + 2] = newBlue;
+          }
         }
-      }
+
+        //Cambia tonos rojizos en verdosos y los tonos verdosos/amarillos en azul oscuro/claro (ellos lo verían verde = amarillento/grisaceo y azul = azul)
+        else if(this.filter === 'protanopia'){
+          if (red > green && red > blue) { // si el pixel tiene rojo
+            let newRed = Math.min(Math.round(0.0 * red + 0.56667 * green + 0.43333 * blue), 255);
+            let newGreen = Math.min(Math.round(0.55833 * red + 0.0 * green + 0.44167 * blue), 255);
+            let newBlue = Math.min(Math.round(0.24167 * red + 0.75833 * green + 0.0 * blue), 255);
+            data[i] = newRed;
+            data[i + 1] = newGreen;
+            data[i + 2] = newBlue;
+          } else if (green > red && green > blue) { // si el pixel tiene verde
+            let newRed = Math.min(Math.round(0.55833 * red + 0.44167 * blue), 255);
+            let newGreen = Math.min(Math.round(0.0 * red + 0.56667 * green + 0.43333 * blue), 255);
+            let newBlue = Math.min(Math.round(0.24167 * red + 0.75833 * green + 0.0 * blue), 255);
+            data[i] = newRed;
+            data[i + 1] = newGreen;
+            data[i + 2] = newBlue;
+          }
+        }
     }
 
     if(object === 'imageData'){
@@ -1180,6 +1177,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const imageData = this.getColorBlindness('imageData');
 
     this.ctx.putImageData(imageData, 0, 0);
+    this.filtersLSC();
   }
 
   filtersLSC(){
