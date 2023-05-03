@@ -56,14 +56,11 @@ async function updatePassword(email) {
 async function loginUserFirebase(data) {
     try{
         await firebaseRef.setPersistence(firebaseRef.auth, firebaseRef.browserSessionPersistence);
-        console.log('datos',data);
         await firebaseRef.signInWithEmailAndPassword(firebaseRef.auth, data.email, data.password);
         let user = firebaseRef.auth.currentUser;
-        let userToken = await user.getIdToken(true);
         let uid = user.uid;
      
         let objeto = {
-            token: userToken,
             uid: uid
         }
         return objeto

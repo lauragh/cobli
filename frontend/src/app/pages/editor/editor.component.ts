@@ -102,7 +102,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.bgColors = document.querySelector('.bgColors');
-      this.getColor();
+      this.setGradientColors();
       this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
       this.tagContainer = document.getElementById('tagContainer')!;
       this.zoomInBtn = document.getElementById("lupaMas");
@@ -977,8 +977,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.bgColors.style.background = 'linear-gradient(to right, rgb(255,0,0) 0%, rgb(255,255,0) 17%, rgb(0,255,0) 33%, rgb(0,255,255) 50%, rgb(0,0,255) 66%, rgb(255,0,255) 83%, rgb(255,0,0) 100%)';
     }
 
-    this.getColor();
-    this.obtenerColor(this.lastPosX);
+    this.setGradientColors();
+    this.getColorFromGradient(this.lastPosX);
   }
 
   //Get the hue color by interpolation
@@ -1014,20 +1014,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     return gradient;
   }
 
-  obtenerColor(event: any){
-    const rect = this.container.getBoundingClientRect();
-    const percent = (event.clientX - rect.left) / rect.width;
-    const index = Math.round(percent * (this.gradientColors.length - 1));
-    const color = this.gradientColors[index];
-    this.showColor(this.rgbToHex(color));
-  }
-
-  showColor(color: string){
-    this.renderer2.setStyle(this.muestra.nativeElement, 'background-color', color);
-    this.hexadecimal.nativeElement.innerHTML = color;
-  }
-
-  getColor(){
+  setGradientColors(){
     this.gradientColors = [];
     const style = window.getComputedStyle(this.bgColors);
     const backgroundImage = style.backgroundImage;
@@ -1039,6 +1026,20 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.gradientColors.push(color);
       match = regex.exec(backgroundImage);
     }
+  }
+
+  getColorFromGradient(event: any){
+    const rect = this.container.getBoundingClientRect();
+    const percent = (event.clientX - rect.left) / rect.width;
+    const index = Math.round(percent * (this.gradientColors.length - 1));
+    const color = this.gradientColors[index];
+
+    this.showColor(this.rgbToHex(color));
+  }
+
+  showColor(color: string){
+    this.renderer2.setStyle(this.muestra.nativeElement, 'background-color', color);
+    this.hexadecimal.nativeElement.innerHTML = color;
   }
 
   dragColorPicker(event: any){
@@ -1066,7 +1067,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.colorPickerTop.style.left = this.newX + 'px';
       this.colorPickerBottom.style.left = this.newX + 'px';
 
-      this.obtenerColor(evento);
+      this.getColorFromGradient(evento);
       this.lastPosX = evento;
     }
   }
