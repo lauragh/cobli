@@ -61,8 +61,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
   filter: string = '-';
 
   lastPosX: any;
-  mouseSize: number = 0;
-
 
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
@@ -183,8 +181,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
     if(divs.length > 0){
       for (const [index, tagColor] of this.tagColors.entries()) {
         let [x, y] = this.getPixelToCanvasPos(tagColor.position[0], tagColor.position[1]);
-        divs[index].style.left = x + 'px';
-        divs[index].style.top = y + 'px';
+        const tagHalfWidth = 12.5;
+
+        divs[index].style.left = x - tagHalfWidth + 'px';
+        divs[index].style.top = y - tagHalfWidth + 'px';
       }
     }
   }
@@ -351,7 +351,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
         this.fileUpload.nativeElement.value = '';
       }
       this.tagContainer.innerHTML = '';
-      console.log(this.tagContainer.innerHTML);
       this.filter = '-';
 
       this.deactivateFunctions();
@@ -470,19 +469,20 @@ export class EditorComponent implements OnInit, AfterViewInit{
     let rgb = {
       r: 0,
       g: 0,
-      b: 0},
-    count = 0;
+      b: 0
+    },
+    cont = 0;
 
     for (let i = 0; i < pixelData.length; i += 4) {
-      ++count;
+      ++cont;
       rgb.r += pixelData[i];
       rgb.g += pixelData[i+1];
       rgb.b += pixelData[i+2];
     }
 
-    rgb.r = ~~(rgb.r/count);
-    rgb.g = ~~(rgb.g/count);
-    rgb.b = ~~(rgb.b/count);
+    rgb.r = ~~(rgb.r/cont);
+    rgb.g = ~~(rgb.g/cont);
+    rgb.b = ~~(rgb.b/cont);
 
     const color = this.rgbToHex("rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
     this.renderer2.setStyle(this.colorAvg.nativeElement, 'background-color', color);
@@ -570,10 +570,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   //Dada una posición de la ventana devuelve un pixel de la imagen(aspect ratio considerado)
   getCanvasToPixelPos(x: number, y: number){
-    const ratioX = this.img.width/this.canvas.offsetWidth;
-    const ratioY = this.img.height/this.canvas.offsetHeight;
+    const ratioX = this.img.width / this.canvas.offsetWidth;
+    const ratioY = this.img.height / this.canvas.offsetHeight;
 
-    return [(x - this.mouseSize) * ratioX, (y - this.mouseSize) * ratioY]
+    return [x * ratioX, y * ratioY]
   }
 
   //Dado un pixel, devuelve la posición de la ventana
@@ -581,8 +581,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const ratioX = this.img.width / this.canvas.offsetWidth;
     const ratioY = this.img.height / this.canvas.offsetHeight;
 
-    const x = Math.trunc(posX / ratioX + this.mouseSize );
-    const y = Math.trunc(posY / ratioY + this.mouseSize );
+    const x = Math.trunc(posX / ratioX );
+    const y = Math.trunc(posY / ratioY );
 
     return [x, y];
   }
@@ -610,6 +610,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(div, 'z-index', '3');
 
     let [posx, posy] = this.getPixelToCanvasPos(x, y);
+
     //mitad del tamaño de la etiqueta con forma cuadrada
     const tagHalfWidth = 12.5;
 
@@ -646,7 +647,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     if(a < 0.10){
       return "#000000";
     }
-    return brightness > 186 ? "#000000" : "#FFFFFF";
+    return brightness > 150  ? "#000000" : "#FFFFFF";
   }
 
   ////***** COLORTAGS FUNCTIONS *****////

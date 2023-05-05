@@ -70,6 +70,8 @@ select {
 
 .etiquetas {
   height: 360px;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .hsl {

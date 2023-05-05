@@ -104,7 +104,7 @@ export class NavBarComponent implements OnInit {
   }
 
   goToLink(page: string){
-    if(this.location.path().includes("editor") && localStorage.getItem('projectSaved') === 'false' && localStorage.getItem('imageUrl')){
+    if(this.location.path().includes("editor") && localStorage.getItem('projectSaved') === 'false' && localStorage.getItem('imageUrl') && this.isLoggedIn){
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
           confirmButton: 'btn btn-success',
