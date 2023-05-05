@@ -61,6 +61,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   filter: string = '-';
 
   lastPosX: any;
+  mouseSize: number = 5;
 
 
   @ViewChild('spectrum') spectrum!: ElementRef;
@@ -181,7 +182,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     if(divs.length > 0){
       for (const [index, tagColor] of this.tagColors.entries()) {
-        let [x, y] = this.getPosicionVentana(tagColor.position[0], tagColor.position[1]);
+        let [x, y] = this.getPixelToCanvasPos(tagColor.position[0], tagColor.position[1]);
         divs[index].style.left = x + 'px';
         divs[index].style.top = y + 'px';
       }
@@ -394,7 +395,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     img.crossOrigin = "anonymous";
     img.src = this.img.src;
 
-    let [posX, posY] = this.getPosicionCanvas(x,y);
+    let [posX, posY] = this.getCanvasToPixelPos(x,y);
     img.addEventListener("load", () => {
       ctx.drawImage(img,
         Math.min(posX, img.width ),
@@ -406,7 +407,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   pickColorPoint(pointX: number, pointY: number, accion?: string, num?: number, tagColor?: string) {
-    let [x, y] = this.getPosicionCanvas(pointX, pointY);
+    let [x, y] = this.getCanvasToPixelPos(pointX, pointY);
 
     if ((x < 0 || x > this.img.width) || (y < 0 || y > this.img.height)){
       return;
@@ -565,20 +566,25 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   //Dada una posición de la ventana devuelve un pixel de la imagen(aspect ratio considerado)
-  getPosicionCanvas(x: number, y: number){
+  getCanvasToPixelPos(x: number, y: number){
     const ratioX = this.img.width/this.canvas.offsetWidth;
     const ratioY = this.img.height/this.canvas.offsetHeight;
 
-    return [(x - 5) * ratioX, (y - 5) * ratioY]
+    console.log(this.mouseSize);
+
+    return [(x - this.mouseSize) * ratioX, (y - this.mouseSize) * ratioY]
   }
 
-  //Dado un pixel, devuelve la posición de la vetana
-  getPosicionVentana(posX: number, posY: number) {
+  //Dado un pixel, devuelve la posición de la ventana
+  getPixelToCanvasPos(posX: number, posY: number) {
     const ratioX = this.img.width / this.canvas.offsetWidth;
     const ratioY = this.img.height / this.canvas.offsetHeight;
 
-    const x = Math.trunc(posX / ratioX + 5);
-    const y = Math.trunc(posY / ratioY + 5);
+    console.log(this.mouseSize);
+
+
+    const x = Math.trunc(posX / ratioX + this.mouseSize);
+    const y = Math.trunc(posY / ratioY + this.mouseSize);
 
     return [x, y];
   }
@@ -605,7 +611,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(div, 'position', 'absolute');
     this.renderer2.setStyle(div, 'z-index', '3');
 
-    let [posx, posy] = this.getPosicionVentana(x, y);
+    let [posx, posy] = this.getPixelToCanvasPos(x, y);
 
     this.renderer2.setStyle(div, 'left', `${posx}px`);
     this.renderer2.setStyle(div, 'top', `${posy}px`);
@@ -758,56 +764,58 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   ////***** PROJECT FUNCTIONS *****////
   saveProject(){
-    if(this.editar){
-      this.image.img = this.imageUrl ? this.imageUrl : this.image.img;
-      this.image.name = this.projectName.nativeElement.value ? this.projectName.nativeElement.value : 'Nuevo proyecto';
-      this.image.colorTags = this.tagColors;
-      this.image.dateUpdating = new Date().toLocaleString();
-      this.image.brightness = this.lumFilter ? Number(this.lumFilter.nativeElement.value) : 50,
-      this.image.saturation = this.satFilter ? Number(this.satFilter.nativeElement.value) : 50,
-      this.image.contrast = this.contrastFilter ? Number(this.contrastFilter.nativeElement.value) : 50,
-      this.image.colorblindness = this.filter;
-      this.imageService.updateImage(this.userId, this.imageId, this.image)
-      .subscribe({
-        next: res => {
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Se guardado con éxito',
-            showConfirmButton: false,
-            timer: 1500
-          })
-          localStorage.setItem('projectSaved', 'true');
-        },
-        error: error => {
-          console.log(error);
-        }
-      });
-    }
-    else{
-      const image: ImageUser = {
-        img: this.imageUrl,
-        brightness: this.lumFilter ? Number(this.lumFilter.nativeElement.value) : 50,
-        saturation: this.satFilter ? Number(this.satFilter.nativeElement.value) : 50,
-        contrast: this.contrastFilter ? Number(this.contrastFilter.nativeElement.value) : 50,
-        colorblindness: this.filter,
-        dateCreation: new Date().toLocaleString(),
-        dateUpdating: new Date().toLocaleString(),
-        name: this.projectName.nativeElement.value ? this.projectName.nativeElement.value : 'Nuevo proyecto',
-        colorTags: this.tagColors,
+    if(this.isLogged){
+      if(this.editar){
+        this.image.img = this.imageUrl ? this.imageUrl : this.image.img;
+        this.image.name = this.projectName.nativeElement.value ? this.projectName.nativeElement.value : 'Nuevo proyecto';
+        this.image.colorTags = this.tagColors;
+        this.image.dateUpdating = new Date().toLocaleString();
+        this.image.brightness = this.lumFilter ? Number(this.lumFilter.nativeElement.value) : 50,
+        this.image.saturation = this.satFilter ? Number(this.satFilter.nativeElement.value) : 50,
+        this.image.contrast = this.contrastFilter ? Number(this.contrastFilter.nativeElement.value) : 50,
+        this.image.colorblindness = this.filter;
+        this.imageService.updateImage(this.userId, this.imageId, this.image)
+        .subscribe({
+          next: res => {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'Se guardado con éxito',
+              showConfirmButton: false,
+              timer: 1500
+            })
+            localStorage.setItem('projectSaved', 'true');
+          },
+          error: error => {
+            console.log(error);
+          }
+        });
       }
-      this.image = image;
-      this.imageService.createImage(this.userId, this.image)
-      .subscribe({
-        next: res => {
-          this.imageId = res.image[1];
-          localStorage.setItem('projectSaved', 'true');
-          this.updateNumImages();
-        },
-        error: error => {
-          console.log(error);
+      else{
+        const image: ImageUser = {
+          img: this.imageUrl,
+          brightness: this.lumFilter ? Number(this.lumFilter.nativeElement.value) : 50,
+          saturation: this.satFilter ? Number(this.satFilter.nativeElement.value) : 50,
+          contrast: this.contrastFilter ? Number(this.contrastFilter.nativeElement.value) : 50,
+          colorblindness: this.filter,
+          dateCreation: new Date().toLocaleString(),
+          dateUpdating: new Date().toLocaleString(),
+          name: this.projectName.nativeElement.value ? this.projectName.nativeElement.value : 'Nuevo proyecto',
+          colorTags: this.tagColors,
         }
-      });
+        this.image = image;
+        this.imageService.createImage(this.userId, this.image)
+        .subscribe({
+          next: res => {
+            this.imageId = res.image[1];
+            localStorage.setItem('projectSaved', 'true');
+            this.updateNumImages();
+          },
+          error: error => {
+            console.log(error);
+          }
+        });
+      }
     }
   }
 

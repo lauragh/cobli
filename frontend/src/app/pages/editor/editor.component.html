@@ -2,16 +2,17 @@
   <div class="pe-5">
     <div class="row justify-content-between mb-2 position-relative">
       <div class="width-auto">
-        <img (click)="clearCanvas()" class="me-3" src="../../../assets/img/cruz.svg">
-        <img *ngIf="isLogged" (click)="saveProject()" src="../../../assets/img/guardar.svg">
+        <img (click)="clearCanvas()"  class="me-3 cursor-pointer" src="../../../assets/img/cruz.svg">
+        <img [title]="!isLogged ? 'Debe iniciar sesión para guardar el proyecto' : null"
+        [ngClass]="{'disabled': !isLogged, 'cursor-pointer': isLogged}" (click)="saveProject()" src="../../../assets/img/guardar.svg">
       </div>
       <div class="width-auto">
         <input *ngIf="isLogged" #projectName placeholder="Nuevo proyecto" (input)="setProjectName()" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
       </div>
       <div class="width-auto">
-        <img id="lupaMenos" src="../../../assets/img/lupaMenos.svg">
-        <img id="lupaMas" class="ms-2" src="../../../assets/img/lupaMas.svg">
-        <img (click)="showFilters()" class="ms-2" src="../../../assets/img/filtros.svg">
+        <img id="lupaMenos" class="disabled" src="../../../assets/img/lupaMenos.svg">
+        <img id="lupaMas" class="ms-2 disabled" src="../../../assets/img/lupaMas.svg">
+        <img (click)="showFilters()" class="ms-2 cursor-pointer" src="../../../assets/img/filtros.svg">
       </div>
       <div #filters class="position-absolute filters ocultar">
         <div class="mb-3">
