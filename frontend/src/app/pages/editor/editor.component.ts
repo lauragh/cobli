@@ -61,7 +61,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   filter: string = '-';
 
   lastPosX: any;
-  mouseSize: number = 5;
+  mouseSize: number = 0;
 
 
   @ViewChild('spectrum') spectrum!: ElementRef;
@@ -110,7 +110,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.zoomOutBtn = document.getElementById("lupaMenos");
 
       if(this.image || localStorage.getItem('imageUrl')){
-        if(localStorage.getItem('projectName')){
+        if(localStorage.getItem('projectName') && this.projectName){
           if(localStorage.getItem('projectName') !== ' '){
             this.projectName.nativeElement.value = localStorage.getItem('projectName');
           }
@@ -289,7 +289,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   listenerZoomOut!: () => void;
 
   activateFunctions () {
-    this.tagContainer.style.cursor = 'pointer';
+    this.tagContainer.style.cursor = 'crosshair';
 
     this.listenerClickPos = this.renderer2.listen(this.tagContainer, 'click', (event) => {
       const x = event.layerX;
@@ -332,7 +332,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       }
       this.clear = true;
-      this.projectName.nativeElement.value = '';
+      if(this.projectName){
+        this.projectName.nativeElement.value = '';
+      }
       localStorage.setItem('projectName', ' ');
       localStorage.setItem('imageLoaded', 'true');
       if(localStorage.getItem('imageUrl')){
@@ -349,6 +351,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
         this.fileUpload.nativeElement.value = '';
       }
       this.tagContainer.innerHTML = '';
+      console.log(this.tagContainer.innerHTML);
       this.filter = '-';
 
       this.deactivateFunctions();
@@ -570,8 +573,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const ratioX = this.img.width/this.canvas.offsetWidth;
     const ratioY = this.img.height/this.canvas.offsetHeight;
 
-    console.log(this.mouseSize);
-
     return [(x - this.mouseSize) * ratioX, (y - this.mouseSize) * ratioY]
   }
 
@@ -580,11 +581,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const ratioX = this.img.width / this.canvas.offsetWidth;
     const ratioY = this.img.height / this.canvas.offsetHeight;
 
-    console.log(this.mouseSize);
-
-
-    const x = Math.trunc(posX / ratioX + this.mouseSize);
-    const y = Math.trunc(posY / ratioY + this.mouseSize);
+    const x = Math.trunc(posX / ratioX + this.mouseSize );
+    const y = Math.trunc(posY / ratioY + this.mouseSize );
 
     return [x, y];
   }
@@ -612,9 +610,11 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.setStyle(div, 'z-index', '3');
 
     let [posx, posy] = this.getPixelToCanvasPos(x, y);
+    //mitad del tamaño de la etiqueta con forma cuadrada
+    const tagHalfWidth = 12.5;
 
-    this.renderer2.setStyle(div, 'left', `${posx}px`);
-    this.renderer2.setStyle(div, 'top', `${posy}px`);
+    this.renderer2.setStyle(div, 'left', `${posx - tagHalfWidth }px`);
+    this.renderer2.setStyle(div, 'top', `${posy - tagHalfWidth }px`);
 
     this.renderer2.appendChild(div,contenido);
     this.renderer2.appendChild(tagContainer, div);
