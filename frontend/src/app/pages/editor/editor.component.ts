@@ -104,8 +104,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.setGradientColors();
       this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
       this.tagContainer = document.getElementById('tagContainer')!;
-      this.zoomInBtn = document.getElementById("lupaMas");
-      this.zoomOutBtn = document.getElementById("lupaMenos");
 
       if(this.image || localStorage.getItem('imageUrl')){
         if(localStorage.getItem('projectName') && this.projectName){
@@ -173,6 +171,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   @HostListener('window:resize', ['$event'])
   getScreenSize() {
+    console.log('resizeo', this.tagContainer.style.width, this.tagContainer.style.height, this.canvas.offsetWidth,  this.canvas.offsetHeight);
     const divs = this.tagContainer.getElementsByTagName('div');
     this.tagColors.length;
     this.tagContainer.style.width = this.canvas.offsetWidth + 'px';
@@ -275,10 +274,10 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
       this.ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height);
 
-      this.tagContainer.style.width = this.canvas.width + 'px';
-      this.tagContainer.style.height = this.canvas.height + 'px';
-
+      this.tagContainer.style.width = this.canvas.offsetWidth + 'px';
+      this.tagContainer.style.height = this.canvas.offsetHeight + 'px';
     });
+
 
     callback();
   }
@@ -302,8 +301,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.drawZoomCanvas(x, y);
       this.getZoomedPixelsColor(x,y);
     });
-    this.listenerZoomIn = this.renderer2.listen(this.zoomInBtn, 'click', (event) => this.zoomIn('in'));
-    this.listenerZoomOut = this.renderer2.listen(this.zoomOutBtn, 'click', (event) => this.zoomIn('out'));
   }
 
   deactivateFunctions () {
@@ -396,6 +393,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = this.img.src;
+
+    console.log('zoom',this.tagContainer.style.width, this.tagContainer.style.height, this.canvas.offsetWidth,  this.canvas.offsetHeight);
 
     let [posX, posY] = this.getCanvasToPixelPos(x,y);
     img.addEventListener("load", () => {
@@ -733,6 +732,25 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }, 2000);
   }
 
+  showHelp(){
+    const elemento = document.getElementById("imgHelp")!;
+
+    const mensaje = document.createElement("div");
+    mensaje.innerText = "Esta herramienta muestra el rango de colores al que pertenece el color específico que se introduce";
+    mensaje.style.position = "fixed";
+    mensaje.style.top = `${elemento.offsetTop + 30}px`;
+    mensaje.style.left = `${elemento.offsetLeft}px`;
+    mensaje.style.padding = "10px";
+    mensaje.style.background = "rgba(0, 0, 0, 0.8)";
+    mensaje.style.color = "#fff";
+    mensaje.style.borderRadius = "5px";
+    mensaje.style.zIndex = "9999";
+    document.body.appendChild(mensaje);
+    setTimeout(() => {
+      mensaje.remove();
+    }, 2200);
+  }
+
 
   showTagValues(pos: number) {
     pos = pos - 1;
@@ -988,7 +1006,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
 
     this.setGradientColors();
-    this.getColorFromGradient(this.lastPosX);
+    if(this.lastPosX){
+      this.getColorFromGradient(this.lastPosX);
+    }
   }
 
   //Get the hue color by interpolation
@@ -1188,6 +1208,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const imageData = this.getColorBlindness('imageData');
 
     this.ctx.putImageData(imageData, 0, 0);
+
+    //reset de valores para la prueba
+    this.lumFilter.nativeElement.value = 50;
+    this.satFilter.nativeElement.value = 50;
+    this.contrastFilter.nativeElement.value = 50;
+
     this.filtersLSC();
   }
 

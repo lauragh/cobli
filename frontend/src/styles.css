@@ -15,6 +15,10 @@
   width: auto;
 }
 
+.max-content {
+  width: max-content;
+}
+
 /* Clases para asignar fuentes */
 
 .PoppinsThin {

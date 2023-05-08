@@ -10,8 +10,8 @@
         <input *ngIf="isLogged" #projectName placeholder="Nuevo proyecto" (input)="setProjectName()" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
       </div>
       <div class="width-auto">
-        <img id="lupaMenos" class="disabled" src="../../../assets/img/lupaMenos.svg">
-        <img id="lupaMas" class="ms-2 disabled" src="../../../assets/img/lupaMas.svg">
+        <!-- <img id="lupaMenos" class="disabled" src="../../../assets/img/lupaMenos.svg">
+        <img id="lupaMas" class="ms-2 disabled" src="../../../assets/img/lupaMas.svg"> -->
         <img (click)="showFilters()" class="ms-2 cursor-pointer" src="../../../assets/img/filtros.svg">
       </div>
       <div #filters class="position-absolute filters ocultar">
@@ -157,11 +157,14 @@
         </div>
       </div>
       <div class="col">
-        <h6 class="PoppinsBold mb-3">Sistema HSL</h6>
+        <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+          <h6 class="PoppinsBold width-auto" style="margin: 0 !important;">Sistema HSL</h6>
+          <img id="imgHelp" (click)="showHelp()" class="width-auto cursor-pointer" src="../../../assets/img/help.svg">
+        </div>
         <div class="seccion hsl">
           <div class="mb-3">
             <label class="me-3" for="color">Color</label>
-            <input (input)="colorFilter()" id="color" #color placeholder="Introduce un color" type="text" name="color">
+            <input (input)="colorFilter()" id="color" #color placeholder="Ejemplo: azul" type="text" name="color">
           </div>
 
           <div id="colorPickerContainer" class="mb-3">
