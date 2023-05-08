@@ -35,3 +35,7 @@ app-profile {
 .ver {
   visibility: visible;
 }
+
+li {
+  width: max-content;
+}

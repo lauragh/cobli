@@ -19,9 +19,9 @@
           <label class="me-3 mb-2" for="color">Tipo de daltonismo</label>
           <select [(ngModel)]="filter" (change)="filterImage()" name="color">
             <option value="-" selected>-</option>
-            <option value="deuteranopia">Deuteranopía/Deuternomalía (verde/rojo)</option>
-            <option value="protanopia">Protanopía/Protanomalía (verde/rojo)</option>
-            <option value="tritanopia-av">Tritanopía/Tritanomalía (azul/verde)</option>
+            <option value="rv1">Verde-Rojo 1</option>
+            <option value="rv2">Verde-Rojo 2</option>
+            <option value="av">Azul-Verde</option>
           </select>
         </div>
         <div *ngIf="filter !== '-'" class="justify-content-center">

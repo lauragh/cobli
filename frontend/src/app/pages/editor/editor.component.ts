@@ -718,7 +718,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     const elemento = document.getElementById("posModal")!;
 
     const mensaje = document.createElement("div");
-    mensaje.innerText = "El texto se ha copiado correctamente";
+    mensaje.innerText = "El texto se ha copiado al portapapeles";
     mensaje.style.position = "fixed";
     mensaje.style.top = `${elemento.offsetTop}px`;
     mensaje.style.left = `${elemento.offsetLeft}px`;
@@ -732,6 +732,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       mensaje.remove();
     }, 2000);
   }
+
 
   showTagValues(pos: number) {
     pos = pos - 1;
@@ -1109,7 +1110,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
         let red = data[i], green = data[i + 1], blue = data[i + 2];
 
         //Los tonos azules se vuelven más grisáceos y con menos brillo mientras que los tonos verdes son más brillantes y saturados
-        if(this.filter === 'tritanopia-av'){
+        if(this.filter === 'av'){
           // increase brightness and reduce saturation of greens
           if(green > red && green > blue){
             let newRed = Math.round(0.7 * red + 0.3 * green);
@@ -1133,7 +1134,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
         }
 
         //Cambia tonos rojizos en verdosos y los tonos verdosos en morados (ellos lo verían verde = amarillento y morado/azul = azul)
-        else if(this.filter === 'deuteranopia'){
+        else if(this.filter === 'rv1'){
           if (red > green && red > blue) { // si el pixel tiene rojo
             let newRed = Math.round(0.0 * red + 0.7 * green + 0.3 * blue);
             let newGreen = Math.round(0.7 * red + 0.0 * green + 0.3 * blue);
@@ -1155,7 +1156,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
         }
 
         //Cambia tonos rojizos en verdosos y los tonos verdosos/amarillos en azul oscuro/claro (ellos lo verían verde = amarillento/grisaceo y azul = azul)
-        else if(this.filter === 'protanopia'){
+        else if(this.filter === 'rv2'){
           if (red > green && red > blue) { // si el pixel tiene rojo
             let newRed = Math.min(Math.round(0.0 * red + 0.56667 * green + 0.43333 * blue), 255);
             let newGreen = Math.min(Math.round(0.55833 * red + 0.0 * green + 0.44167 * blue), 255);

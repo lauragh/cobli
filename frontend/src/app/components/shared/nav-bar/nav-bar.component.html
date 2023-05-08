@@ -13,12 +13,12 @@
             <a class="nav-link cursor-pointer" (click)="goToLink('gallery')">Inicio</a>
           </li>
         </ul>
-        <span class="navbar-text">
-          <li *ngIf="isLoggedIn" class="nav-item active">
+        <span class="navbar-text row d-flex">
+          <li *ngIf="isLoggedIn" class="nav-item active" style="list-style-type: none;">
             <a (click)="showProfile()" class="nav-link cursor-pointer">{{name}}</a>
           </li>
           <button *ngIf="!isLoggedIn && !hidden" type="button" (click)="goToLink('login')" class="btn btn-primary">Iniciar sesión</button>
-          <li *ngIf="isLoggedIn" class="nav-item">
+          <li *ngIf="isLoggedIn" class="nav-item" style="list-style-type: none;">
             <a class="nav-link" (click)="logout()">
               <img class="icon cursor-pointer" src="assets/img/exit.svg" alt="Icono de salir">
             </a>
