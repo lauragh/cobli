@@ -59,11 +59,17 @@
     <div class="info row justify-content-between mb-4">
       <div class="col-6">
         <div>
-          <h5>Zoom</h5>
+          <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+            <h5 class="width-auto" style="margin: 0 !important;">Zoom</h5>
+            <img id="imgHelpZoom" (click)="showHelp('imgHelpZoom')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+          </div>
           <canvas id="canvas2"></canvas>
         </div>
         <div>
-          <h5>Color medio</h5>
+          <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+            <h5 class="width-auto" style="margin: 0 !important;">Color medio</h5>
+            <img id="imgHelpColorZoom" (click)="showHelp('imgHelpColorZoom')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+          </div>
           <div id="colorAvg" #colorAvg style="width: 100px; height:100px"></div>
         </div>
       </div>
@@ -159,7 +165,7 @@
       <div class="col">
         <div class="row d-flex align-items-center" style="margin-bottom: 10px">
           <h6 class="PoppinsBold width-auto" style="margin: 0 !important;">Sistema HSL</h6>
-          <img id="imgHelp" (click)="showHelp()" class="width-auto cursor-pointer" src="../../../assets/img/help.svg">
+          <img id="imgHelpHsl" (click)="showHelp('imgHelpHsl')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
         </div>
         <div class="seccion hsl">
           <div class="mb-3">

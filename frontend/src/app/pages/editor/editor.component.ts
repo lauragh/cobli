@@ -732,11 +732,18 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }, 2000);
   }
 
-  showHelp(){
-    const elemento = document.getElementById("imgHelp")!;
-
+  showHelp(tipo: string){
+    const elemento = document.getElementById(tipo)!;
     const mensaje = document.createElement("div");
-    mensaje.innerText = "Esta herramienta muestra el rango de colores al que pertenece el color específico que se introduce";
+    if(tipo === 'imgHelpHsl'){
+      mensaje.innerText = "Esta herramienta muestra el rango de colores al que pertenece el color específico que se introduce";
+    }
+    else if(tipo === 'imgHelpZoom'){
+      mensaje.innerText = "Aquí se muestra la zona ampliada alrededor del cursor del ratón";
+    }
+    else if(tipo === 'imgHelpColorZoom'){
+      mensaje.innerText = "Esta sección muestra el color promedio del conjunto de píxeles del zoom";
+    }
     mensaje.style.position = "fixed";
     mensaje.style.top = `${elemento.offsetTop + 30}px`;
     mensaje.style.left = `${elemento.offsetLeft}px`;
