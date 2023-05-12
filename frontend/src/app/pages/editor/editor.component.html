@@ -16,6 +16,11 @@
       </div>
       <div #filters class="position-absolute filters ocultar">
         <div class="mb-3">
+          <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+            <h5 class="width-auto" style="margin: 0 !important;">Filtros</h5>
+            <img (mouseover)="showHelp('filterHelpMsg', 'open')" (mouseout)="showHelp('filterHelpMsg', 'close')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+          </div>
+          <div *ngIf="filterHelpMsg" class="position-absolute helpMsg p-2">Los filtros ayudan a distinguir los colores con los que presentes dificultades</div>
           <label class="me-3 mb-2" for="color">Tipo de daltonismo</label>
           <select [(ngModel)]="filter" (change)="filterImage()" name="color">
             <option value="-" selected>-</option>
@@ -59,16 +64,22 @@
     <div class="info row justify-content-between mb-4">
       <div class="col-6">
         <div>
-          <div class="row d-flex align-items-center" style="margin-bottom: 10px">
-            <h5 class="width-auto" style="margin: 0 !important;">Zoom</h5>
-            <img id="imgHelpZoom" (click)="showHelp('imgHelpZoom')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+          <div class="position-relative">
+            <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+              <h5 class="width-auto" style="margin: 0 !important;">Zoom</h5>
+              <img (mouseover)="showHelp('imgHelpZoom', 'open')" (mouseout)="showHelp('imgHelpZoom', 'close')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+            </div>
+            <div *ngIf="zoomHelpMsg" class="position-absolute helpMsg p-2">Aquí se muestra la zona ampliada alrededor del cursor del ratón</div>
           </div>
           <canvas id="canvas2"></canvas>
         </div>
         <div>
-          <div class="row d-flex align-items-center" style="margin-bottom: 10px">
-            <h5 class="width-auto" style="margin: 0 !important;">Color medio</h5>
-            <img id="imgHelpColorZoom" (click)="showHelp('imgHelpColorZoom')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+          <div class="position-relative">
+            <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+              <h5 class="width-auto" style="margin: 0 !important;">Color medio</h5>
+              <img (mouseover)="showHelp('imgHelpColorZoom', 'open')" (mouseout)="showHelp('imgHelpColorZoom', 'close')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+            </div>
+            <div *ngIf="avgColorHelpMsg" class="position-absolute helpMsg p-2">Esta sección muestra el color promedio del conjunto de píxeles del zoom</div>
           </div>
           <div id="colorAvg" #colorAvg style="width: 100px; height:100px"></div>
         </div>
@@ -120,7 +131,13 @@
     </div>
     <div id="conten" class="row justify-content-between">
       <div class="col">
-        <h6 id="posModal" class="PoppinsBold mb-3">Etiquetas de colores</h6>
+        <div class="position-relative">
+          <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+            <h6 id="posModal" class="PoppinsBold mb-3 width-auto"  style="margin: 0 !important;">Etiquetas de colores</h6>
+            <img (mouseover)="showHelp('colorTagsHelpMsg', 'open')" (mouseout)="showHelp('colorTagsHelpMsg', 'close')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+          </div>
+          <div *ngIf="colorTagsHelpMsg" class="position-absolute helpMsg p-2">Estas etiquetas se crean al pinchar en un punto de la imagen, se pueden filtrar, copiar y eliminar</div>
+        </div>
         <div class="seccion etiquetas">
           <div class="mb-3">
             <label class="me-3" for="color">Filtrar por color</label>
@@ -163,16 +180,18 @@
         </div>
       </div>
       <div class="col">
-        <div class="row d-flex align-items-center" style="margin-bottom: 10px">
-          <h6 class="PoppinsBold width-auto" style="margin: 0 !important;">Sistema HSL</h6>
-          <img id="imgHelpHsl" (click)="showHelp('imgHelpHsl')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+        <div class="position-relative">
+          <div class="row d-flex align-items-center" style="margin-bottom: 10px">
+            <h6 class="PoppinsBold width-auto" style="margin: 0 !important;">Sistema HSL</h6>
+            <img (mouseover)="showHelp('imgHelpHsl', 'open')" (mouseout)="showHelp('imgHelpHsl', 'close')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
+          </div>
+          <div *ngIf="hslsysHelpMsg" class="position-absolute helpMsg p-2">Este sistema te orienta sobre las diferentes tonalidades que representan cada color</div>
         </div>
         <div class="seccion hsl">
           <div class="mb-3">
             <label class="me-3" for="color">Color</label>
             <input (input)="colorFilter()" id="color" #color placeholder="Ejemplo: azul" type="text" name="color">
           </div>
-
           <div id="colorPickerContainer" class="mb-3">
             <div class="bgColors"></div>
             <p class="cursor-pointer" id="pickerTop">&#x25BC;</p>

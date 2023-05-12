@@ -62,6 +62,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   lastPosX: any;
 
+  filterHelpMsg: boolean = false;
+  zoomHelpMsg: boolean = false;
+  avgColorHelpMsg: boolean = false;
+  colorTagsHelpMsg: boolean = false;
+  hslsysHelpMsg: boolean = false;
+
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
   @ViewChild('muestra') muestra!: ElementRef;
@@ -732,30 +738,54 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }, 2000);
   }
 
-  showHelp(tipo: string){
-    const elemento = document.getElementById(tipo)!;
-    const mensaje = document.createElement("div");
+  showHelp(tipo: string, accion: string){
     if(tipo === 'imgHelpHsl'){
-      mensaje.innerText = "Esta herramienta muestra el rango de colores al que pertenece el color específico que se introduce";
+      if(accion === 'open'){
+        this.hslsysHelpMsg = true;
+      }
+      else {
+        this.hslsysHelpMsg = false;
+      }
     }
     else if(tipo === 'imgHelpZoom'){
-      mensaje.innerText = "Aquí se muestra la zona ampliada alrededor del cursor del ratón";
+      if(accion === 'open'){
+        this.zoomHelpMsg = true;
+      }
+      else {
+        this.zoomHelpMsg = false;
+      }
+      // mensaje.innerText = "";
     }
     else if(tipo === 'imgHelpColorZoom'){
-      mensaje.innerText = "Esta sección muestra el color promedio del conjunto de píxeles del zoom";
+      if(accion === 'open'){
+        this.avgColorHelpMsg = true;
+      }
+      else {
+        this.avgColorHelpMsg = false;
+      }
+      // mensaje.innerText = "Esta sección muestra el color promedio del conjunto de píxeles del zoom";
     }
-    mensaje.style.position = "fixed";
-    mensaje.style.top = `${elemento.offsetTop + 30}px`;
-    mensaje.style.left = `${elemento.offsetLeft}px`;
-    mensaje.style.padding = "10px";
-    mensaje.style.background = "rgba(0, 0, 0, 0.8)";
-    mensaje.style.color = "#fff";
-    mensaje.style.borderRadius = "5px";
-    mensaje.style.zIndex = "9999";
-    document.body.appendChild(mensaje);
-    setTimeout(() => {
-      mensaje.remove();
-    }, 2200);
+    else if(tipo === 'filterHelpMsg'){
+      if(accion === 'open'){
+        this.filterHelpMsg = true;
+      }
+      else {
+        this.filterHelpMsg = false;
+      }
+    }
+    else if(tipo === 'colorTagsHelpMsg'){
+      if(accion === 'open'){
+        this.colorTagsHelpMsg = true;
+      }
+      else {
+        this.colorTagsHelpMsg = false;
+      }
+    }
+
+  }
+
+  closeHelp(tipo: string){
+
   }
 
 
@@ -1002,7 +1032,12 @@ export class EditorComponent implements OnInit, AfterViewInit{
       "rosa": [287, 330],
     };
 
-    const colorValue = this.color.nativeElement.value;
+    if(!this.color.nativeElement.value || colorRanges[this.color.nativeElement.value] === undefined ){
+      this.saturation.nativeElement.value = 100;
+      this.luminosity.nativeElement.value = 50;
+    }
+
+    const colorValue = this.color.nativeElement.value.toLowerCase();
     const colorRange = colorRanges[colorValue];
 
     if(colorRange){
@@ -1013,6 +1048,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
     }
 
     this.setGradientColors();
+
     if(this.lastPosX){
       this.getColorFromGradient(this.lastPosX);
     }
@@ -1217,9 +1253,9 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.ctx.putImageData(imageData, 0, 0);
 
     //reset de valores para la prueba
-    this.lumFilter.nativeElement.value = 50;
-    this.satFilter.nativeElement.value = 50;
-    this.contrastFilter.nativeElement.value = 50;
+    // this.lumFilter.nativeElement.value = 50;
+    // this.satFilter.nativeElement.value = 50;
+    // this.contrastFilter.nativeElement.value = 50;
 
     this.filtersLSC();
   }

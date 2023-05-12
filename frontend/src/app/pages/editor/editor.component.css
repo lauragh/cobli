@@ -274,7 +274,6 @@ table::-webkit-scrollbar-thumb {
   width: 550px;
 }
 
-
 .filters {
   position: absolute;
   width: max-content;
@@ -290,4 +289,12 @@ table::-webkit-scrollbar-thumb {
 
 .disabled {
   filter: contrast(0);
+}
+
+.helpMsg {
+  background-color: rgba(0, 0, 0, 0.8);
+  top: 10px;
+  left: 150px;
+  color: white;
+  border-radius: 5px;
 }
