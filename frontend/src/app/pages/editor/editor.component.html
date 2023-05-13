@@ -12,7 +12,7 @@
       <div class="width-auto">
         <!-- <img id="lupaMenos" class="disabled" src="../../../assets/img/lupaMenos.svg">
         <img id="lupaMas" class="ms-2 disabled" src="../../../assets/img/lupaMas.svg"> -->
-        <img (click)="showFilters()" class="ms-2 cursor-pointer" src="../../../assets/img/filtros.svg">
+        <img title="Filtros" (click)="showFilters()" class="ms-2 cursor-pointer" src="../../../assets/img/filtros.svg">
       </div>
       <div #filters class="position-absolute filters ocultar">
         <div class="mb-3">
@@ -54,7 +54,7 @@
     <div id="ventana" class="d-flex justify-content-center align-items-center">
       <div *ngIf="(!editar && !saved) || clear" id="inputFile" #inputFile>
         <label for="upload"><img src="../../../assets/img/uploadImg.svg"></label>
-        <input #fileUpload (change)="uploadPic($event)" #imageUploaded type="file" name="photo" id="upload" />
+        <input class="cursor-pointer" #fileUpload (change)="uploadPic($event)" #imageUploaded type="file" name="photo" id="upload" />
       </div>
       <div id="tagContainer"></div>
       <canvas id="canvas"></canvas>
@@ -185,7 +185,9 @@
             <h6 class="PoppinsBold width-auto" style="margin: 0 !important;">Sistema HSL</h6>
             <img (mouseover)="showHelp('imgHelpHsl', 'open')" (mouseout)="showHelp('imgHelpHsl', 'close')" class="width-auto cursor-pointer" style="padding: 0" src="../../../assets/img/help.svg">
           </div>
-          <div *ngIf="hslsysHelpMsg" class="position-absolute helpMsg p-2">Este sistema te orienta sobre las diferentes tonalidades que representan cada color</div>
+          <div *ngIf="hslsysHelpMsg" class="position-absolute helpMsg p-2">
+            Este sistema te orienta sobre las diferentes tonalidades que representan cada color introducido por texto. <br><br> *No está relacionado con el resto de herramientas
+          </div>
         </div>
         <div class="seccion hsl">
           <div class="mb-3">

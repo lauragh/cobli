@@ -136,8 +136,6 @@ input[type='range']::-webkit-slider-thumb {
 #hexadecimal {
   width: 200px;
   height: 30px;
-  border: 1px solid black;
-  border-radius: 5px;
   margin-left: 12%;
 }
 
@@ -216,7 +214,9 @@ input[type='range']::-webkit-slider-thumb {
 #upload {
   opacity: 0;
   position: absolute;
-  z-index: -1;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
 }
 
 #inputFile {
@@ -225,11 +225,13 @@ input[type='range']::-webkit-slider-thumb {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
 }
 
-#inputFile  img {
-  cursor: pointer;
-}
 
 .ocultar {
   visibility: hidden;
@@ -293,8 +295,11 @@ table::-webkit-scrollbar-thumb {
 
 .helpMsg {
   background-color: rgba(0, 0, 0, 0.8);
-  top: 10px;
-  left: 150px;
+  top: 30px;
+  left: 100px;
   color: white;
   border-radius: 5px;
+  z-index: 6;
+  text-justify: inter-word;
+
 }
