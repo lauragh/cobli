@@ -68,6 +68,8 @@ export class EditorComponent implements OnInit, AfterViewInit{
   colorTagsHelpMsg: boolean = false;
   hslsysHelpMsg: boolean = false;
 
+  bigFile: boolean = false;
+
   @ViewChild('spectrum') spectrum!: ElementRef;
   @ViewChild('color') color!: ElementRef;
   @ViewChild('muestra') muestra!: ElementRef;
@@ -177,7 +179,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
   @HostListener('window:resize', ['$event'])
   getScreenSize() {
-    console.log('resizeo', this.tagContainer.style.width, this.tagContainer.style.height, this.canvas.offsetWidth,  this.canvas.offsetHeight);
     const divs = this.tagContainer.getElementsByTagName('div');
     this.tagColors.length;
     this.tagContainer.style.width = this.canvas.offsetWidth + 'px';
@@ -216,22 +217,21 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.renderer2.removeClass(this.inputFile.nativeElement, 'ver');
     this.renderer2.addClass(this.inputFile.nativeElement, 'ocultar');
     this.imageFile = event.target.files[0];
-    let bigFile = false;
     const reader = new FileReader();
-
-    if(Number((this.imageFile.size / (1024*1024)).toFixed(2)) > 5){
-      // console.log("Tamaño de archivo:", this.imageFile.size, (this.imageFile.size / (1024*1024)).toFixed(2));
-      bigFile = true;
-    }
 
     reader.onload = (e: any) => {
       this.imageUrl = e.target.result;
-      if((localStorage.getItem('imageLoaded') === 'true' || localStorage.getItem('editar') === 'false') && !bigFile){
-        localStorage.setItem("imageUrl", this.imageUrl);
+      if((localStorage.getItem('imageLoaded') === 'true' || localStorage.getItem('editar') === 'false')){
+        try{
+          localStorage.setItem("imageUrl", this.imageUrl);
+        }
+        catch(error){
+          console.log('La imagen es muy grande para el localStorage');
+          this.bigFile = true;
+        }
       }
 
       this.loadCanvas(() => {
-
       });
       this.activateFunctions();
     };
@@ -304,7 +304,14 @@ export class EditorComponent implements OnInit, AfterViewInit{
     this.listenerZoomCanvas =  this.renderer2.listen(this.tagContainer, 'mousemove', (event) => {
       const x = event.layerX;
       const y = event.layerY;
-      this.drawZoomCanvas(x, y);
+
+      //para coger bien las coordenadas si está encima de un tag
+      if(event.target.classList.contains('nums')){
+        this.drawZoomCanvas(x + event.target.offsetLeft, y + event.target.offsetTop);
+      }
+      else{
+        this.drawZoomCanvas(x, y);
+      }
       this.getZoomedPixelsColor(x,y);
     });
   }
@@ -400,8 +407,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
     img.crossOrigin = "anonymous";
     img.src = this.img.src;
 
-    console.log('zoom',this.tagContainer.style.width, this.tagContainer.style.height, this.canvas.offsetWidth,  this.canvas.offsetHeight);
-
     let [posX, posY] = this.getCanvasToPixelPos(x,y);
     img.addEventListener("load", () => {
       ctx.drawImage(img,
@@ -441,7 +446,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
   saveZoomedPixelsColor(x: number, y: number) {
     const rgb = this.getZoomedPixelsColor(x,y);
 
-    this.rgb.nativeElement.innerHTML = "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
+    this.rgb.nativeElement.innerHTML = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
     this.hex.nativeElement.innerHTML = this.rgbToHex(this.rgb.nativeElement.innerHTML);
     const { h, s, l } = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
     this.hsl.nativeElement.innerHTML = "hsl(" + h + ", " + s + "%, " + l + "%)";
@@ -717,16 +722,16 @@ export class EditorComponent implements OnInit, AfterViewInit{
     });
   }
 
-  copyText(text: string){
+  copyText(text: string, pos: number){
     navigator.clipboard.writeText(text);
 
-    const elemento = document.getElementById("posModal")!;
-
     const mensaje = document.createElement("div");
-    mensaje.innerText = "El texto se ha copiado al portapapeles";
-    mensaje.style.position = "fixed";
-    mensaje.style.top = `${elemento.offsetTop}px`;
-    mensaje.style.left = `${elemento.offsetLeft}px`;
+    const elemento = this.descriptionValue.get(pos).nativeElement;
+;
+    mensaje.innerText = "El hexadecimal se ha copiado al portapapeles";
+    mensaje.style.position = "absolute";
+    mensaje.style.top = `${elemento.getBoundingClientRect().top + 30}px`;
+    mensaje.style.left = `${elemento.getBoundingClientRect().left}px`;
     mensaje.style.padding = "10px";
     mensaje.style.background = "rgba(0, 0, 0, 0.8)";
     mensaje.style.color = "#fff";
@@ -754,7 +759,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       else {
         this.zoomHelpMsg = false;
       }
-      // mensaje.innerText = "";
     }
     else if(tipo === 'imgHelpColorZoom'){
       if(accion === 'open'){
@@ -763,7 +767,6 @@ export class EditorComponent implements OnInit, AfterViewInit{
       else {
         this.avgColorHelpMsg = false;
       }
-      // mensaje.innerText = "Esta sección muestra el color promedio del conjunto de píxeles del zoom";
     }
     else if(tipo === 'filterHelpMsg'){
       if(accion === 'open'){
@@ -781,11 +784,35 @@ export class EditorComponent implements OnInit, AfterViewInit{
         this.colorTagsHelpMsg = false;
       }
     }
-
   }
 
-  closeHelp(tipo: string){
+  copyText2(event: any, tipo: string){
+    const text = event.target.innerHTML;
+    navigator.clipboard.writeText(text);
 
+    const mensaje = document.createElement("div");
+    const map = new Map();
+
+    map.set('hex', this.hex.nativeElement);
+    map.set('rgb', this.rgb.nativeElement);
+    map.set('hsl', this.hsl.nativeElement);
+    map.set('hsv', this.hsv.nativeElement);
+
+    const elemento = map.get(tipo);
+
+    mensaje.innerText = `${text} copiado al portapapeles`;
+    mensaje.style.position = "absolute";
+    mensaje.style.top = `${elemento.getBoundingClientRect().top + 30}px`;
+    mensaje.style.left = `${elemento.getBoundingClientRect().left}px`;
+    mensaje.style.padding = "10px";
+    mensaje.style.background = "rgba(0, 0, 0, 0.8)";
+    mensaje.style.color = "#fff";
+    mensaje.style.borderRadius = "5px";
+    mensaje.style.zIndex = "9999";
+    document.body.appendChild(mensaje);
+    setTimeout(() => {
+      mensaje.remove();
+    }, 2000);
   }
 
 

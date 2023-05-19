@@ -8,6 +8,7 @@
       </div>
       <div class="width-auto">
         <input *ngIf="isLogged" #projectName placeholder="Nuevo proyecto" (input)="setProjectName()" (keydown)="onKeyDown($event)" id="projectTitle" type="text">
+        <p id="bFile" *ngIf="bigFile">*La imagen detectada es muy grande, se van a perder los datos al refrescar</p>
       </div>
       <div class="width-auto">
         <!-- <img id="lupaMenos" class="disabled" src="../../../assets/img/lupaMenos.svg">
@@ -103,28 +104,28 @@
           <h6 class="me-2 PoppinsBold descripcion">
             Hex
           </h6>
-          <div #hex class="valor PoppinsRegular">
+          <div #hex (dblclick)="copyText2($event, 'hex')" class="valor PoppinsRegular">
           </div>
         </div>
         <div class="row align-items-center mb-4">
           <h6 class="me-2 PoppinsBold descripcion">
             RGB
           </h6>
-          <div #rgb class="valor PoppinsRegular">
+          <div #rgb (dblclick)="copyText2($event, 'rgb')" class="valor PoppinsRegular">
           </div>
         </div>
         <div class="row align-items-center mb-4">
           <h6 class="me-2 PoppinsBold descripcion">
             HSL
           </h6>
-          <div #hsl class="valor PoppinsRegular">
+          <div #hsl (dblclick)="copyText2($event, 'hsl')" class="valor PoppinsRegular">
           </div>
         </div>
         <div class="row align-items-center mb-4">
           <h6 class="me-2 PoppinsBold descripcion">
             HSV
           </h6>
-          <div #hsv class="valor PoppinsRegular">
+          <div #hsv (dblclick)="copyText2($event, 'hsv')" class="valor PoppinsRegular">
           </div>
         </div>
       </div>
@@ -171,7 +172,7 @@
                 <td>{{tag.hex}}</td>
                 <td><input #descriptionValue title="{{tag.description}}"type="text" id="description" (keydown)="onKeyDown($event)" (change)="updateDescription(i)" placeholder="Escribe una descripción" [value]="tag.description"></td>
                 <td id="divImagen">
-                  <img (click)="copyText(tag.hex); $event.stopPropagation()" #tagC class="ocultar me-2 cursor-pointer" src="../../../assets/img/copy.png">
+                  <img (click)="copyText(tag.hex, i); $event.stopPropagation()" #tagC class="ocultar me-2 cursor-pointer" src="../../../assets/img/copy.png">
                   <img (click)="deleteTag(tag.id, i); $event.stopPropagation()" #tagD class="ocultar cursor-pointer" src="../../../assets/img/cruz.svg">
                 </td>
               </tr>

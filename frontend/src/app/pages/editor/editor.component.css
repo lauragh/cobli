@@ -303,3 +303,7 @@ table::-webkit-scrollbar-thumb {
   text-justify: inter-word;
 
 }
+
+#bFile {
+  background-color: rgb(255, 255, 0, 0.3);
+}
