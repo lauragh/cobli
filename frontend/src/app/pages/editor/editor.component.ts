@@ -336,6 +336,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
       this.tagColors = [];
       this.infoColors = [];
       this.numTag = 0;
+      this.bigFile = false;
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       if(this.canvas2){
         var ctx = this.canvas2.getContext("2d")!;
