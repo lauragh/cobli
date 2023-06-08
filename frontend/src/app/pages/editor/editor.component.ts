@@ -728,7 +728,7 @@ export class EditorComponent implements OnInit, AfterViewInit{
 
     const mensaje = document.createElement("div");
     const elemento = this.descriptionValue.get(pos).nativeElement;
-;
+
     mensaje.innerText = "El hexadecimal se ha copiado al portapapeles";
     mensaje.style.position = "absolute";
     mensaje.style.top = `${elemento.getBoundingClientRect().top + 30}px`;
@@ -1015,30 +1015,48 @@ export class EditorComponent implements OnInit, AfterViewInit{
   }
 
   rgbToHsv(r: number, g: number, b: number){
-    r /= 255;
-    g /= 255;
-    b /= 255;
+    const var_R = ( r / 255 )
+    const var_G = ( g / 255 )
+    const var_B = ( b / 255 )
 
-    let max = Math.max(r, g, b);
-    let min = Math.min(r, g, b);
-    let delta = max - min;
+    const var_Min = Math.min( var_R, var_G, var_B )    //Min. value of RGB
+    const var_Max = Math.max( var_R, var_G, var_B )    //Max. value of RGB
+    const del_Max = var_Max - var_Min             //Delta RGB value
 
-    let h2 = 0, s2 = 0, v2 = max;
+    let v2 = var_Max;
+    let h2 = 0;
+    let s2 = 0;
 
-    if(delta !== 0){
-      s2 = delta / max;
-      if(max === r){
-        h2 = 60 * (((g - b) / delta) % 6);
+    //This2 is a gray, no chroma...
+    if ( del_Max == 0 ){
+      h2 = 0
+      s2 = 0
+    }
+     //Chromatic data...
+    else{
+      s2 = del_Max / var_Max;
+
+      let del_R = ( ( ( var_Max - var_R ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
+      let del_G = ( ( ( var_Max - var_G ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
+      let del_B = ( ( ( var_Max - var_B ) / 6 ) + ( del_Max / 2 ) ) / del_Max;
+
+      if( var_R == var_Max ){
+        h2 = del_B - del_G
       }
-      else if(max === g){
-        h2 = 60 * (((b - r) / delta) + 2);
+      else if( var_G == var_Max ){
+        h2 = ( 1 / 3 ) + del_R - del_B;
       }
-      else{
-        h2 = 60 * (((r - g) / delta) + 4);
+      else if( var_B == var_Max ){
+        h2 = ( 2 / 3 ) + del_G - del_R;
+      }
+
+      if(h2 < 0 ){
+        h2 += 1;
+      }
+      if(h2 > 1 ){
+        h2 -= 1;
       }
     }
-
-    h2 = (h2 < 0) ? h2 + 360 : h2;
 
     h2 = Math.trunc(h2);
     s2 = Math.trunc(s2 * 100);
